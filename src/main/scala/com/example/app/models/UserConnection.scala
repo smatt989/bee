@@ -28,10 +28,7 @@ object UserConnection extends SlickDbObject[UserConnection, (Int, Int, Int), Tab
   lazy val table = Tables.userConnections
 
   def reify(tuple: (Int, Int, Int)) =
-    UserConnection(tuple._1, tuple._2, tuple._3)
-
-  def classToTuple(a: UserConnection) =
-    (a.id, a.senderUserId, a.receiverUserId)
+    (apply _).tupled(tuple)
 
   def safeSave(connection: UserConnection) = {
     findConnection(connection.senderUserId, connection.receiverUserId).flatMap(optionalConnection => {

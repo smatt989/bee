@@ -1,6 +1,6 @@
 package com.example.app.models
 
-import com.example.app.{HasIntId, Tables, Updatable}
+import com.example.app.{HasIntId, Tables, Updatable, UpdatableDBObject}
 import slick.driver.PostgresDriver.api._
 
 import scala.concurrent.Await
@@ -12,7 +12,7 @@ case class DeviceToken(id: Int = 0, userId: Int, deviceToken: Option[String]) ex
     this.copy(id = id)
 }
 
-object DeviceToken extends Updatable[DeviceToken, (Int, Int, Option[String]), Tables.DeviceTokens] {
+object DeviceToken extends UpdatableDBObject[DeviceToken, (Int, Int, Option[String]), Tables.DeviceTokens] {
   def updateQuery(a: DeviceToken) = table.filter(_.id === a.id)
     .map(x => (x.deviceToken))
     .update((a.deviceToken))
@@ -20,10 +20,7 @@ object DeviceToken extends Updatable[DeviceToken, (Int, Int, Option[String]), Ta
   lazy val table = Tables.deviceTokens
 
   def reify(tuple: (Int, Int, Option[String])) =
-    DeviceToken(tuple._1, tuple._2, tuple._3)
-
-  def classToTuple(a: DeviceToken) =
-    (a.id, a.userId, a.deviceToken)
+    (apply _).tupled(tuple)
 
   def getByUserIds(ids: Seq[Int]): Map[Int, Option[String]] = {
     val tokens = Await.result(db.run(table.filter(_.userId inSet ids).result).map(_.map(reify)), Duration.Inf)

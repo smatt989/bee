@@ -1,6 +1,6 @@
 package com.example.app.models
 
-import com.example.app.{HasIntId, Tables, Updatable}
+import com.example.app.{HasIntId, Tables, Updatable, UpdatableDBObject}
 import org.mindrot.jbcrypt.BCrypt
 import slick.driver.PostgresDriver.api._
 
@@ -8,18 +8,18 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 
-case class User(email: String, hashedPassword: String, id: Int) extends HasIntId[User] {
+case class User(id: Int, email: String, hashedPassword: String) extends HasIntId[User] {
 
   def updateId(id: Int) =
     this.copy(id = id)
 
   lazy val toJson =
-    UserJson(email, id)
+    UserJson(id, email)
 }
 
 case class UserCreate(email: String, password: String) {
   lazy val makeUser =
-    User(email, User.makeHash(password), 0)
+    User(0, email, User.makeHash(password))
 }
 
 case class UpdateUser(email: String, password: String, newEmail: Option[String], newPassword: Option[String]){
@@ -29,20 +29,17 @@ case class UpdateUser(email: String, password: String, newEmail: Option[String],
 
 case class UserLogin(email: String, password: String)
 
-case class UserJson(email: String, id: Int)
+case class UserJson(id: Int, email: String)
 
-object User extends Updatable[User, (Int, String, String), Tables.Users]{
+object User extends UpdatableDBObject[User, (Int, String, String), Tables.Users]{
 
   lazy val table = Tables.users
 
   def reify(tuple: (Int, String, String)) =
-    User(tuple._2, tuple._3, tuple._1)
+    (apply _).tupled(tuple)
 
   def reifyJson(tuple: (Int, String, String)) =
     reify(tuple).toJson
-
-  def classToTuple(a: User) =
-    (a.id, a.email, a.hashedPassword)
 
   def updateQuery(a: User) = table.filter(_.id === a.id)
     .map(x => (x.email, x.hashedPassword))
