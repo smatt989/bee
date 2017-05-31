@@ -9,13 +9,12 @@ import slick.profile.SqlProfile.ColumnOption.SqlType
 
 object Tables {
 
-  class Users(tag: Tag) extends Table[(Int, String, String, String)](tag, "USER_ACCOUNTS") with HasIdColumn[Int] {
+  class Users(tag: Tag) extends Table[(Int, String, String)](tag, "USER_ACCOUNTS") with HasIdColumn[Int] {
     def id = column[Int]("USER_ACCOUNT_ID", O.PrimaryKey, O.AutoInc)
-    def username = column[String]("USERNAME")
     def email = column[String]("EMAIL")
     def hashedPassword = column[String]("HASHED_PASSWORD")
 
-    def * = (id, username, email, hashedPassword)
+    def * = (id, email, hashedPassword)
   }
 
   class DeviceTokens(tag: Tag) extends Table[(Int, Int, Option[String])](tag, "DEVICE_TOKENS") with HasIdColumn[Int] {
