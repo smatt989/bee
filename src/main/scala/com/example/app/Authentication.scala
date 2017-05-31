@@ -10,7 +10,6 @@ import org.scalatra.auth.{ScentryConfig, ScentryStrategy, ScentrySupport}
 
 object SessionTokenStrategy {
   val HeaderKey = "Rekki-Session-Key"
-  val Username = "username"
   val Email = "email"
   val Password = "password"
 }
@@ -40,12 +39,11 @@ class SessionTokenStrategy(protected val app: ScalatraBase) extends ScentryStrat
 class PasswordStrategy(protected val app: ScalatraBase) extends ScentryStrategy[User] {
 
   override def isValid(implicit request: HttpServletRequest) =
-    (request.getHeader(SessionTokenStrategy.Username) != null || request.getHeader(SessionTokenStrategy.Email) != null) && request.getHeader(SessionTokenStrategy.Password) != null
+    request.getHeader(SessionTokenStrategy.Email) != null && request.getHeader(SessionTokenStrategy.Password) != null
 
   def authenticate()(implicit request: HttpServletRequest, response: HttpServletResponse): Option[User] = {
-    val uName = headerOption(request, SessionTokenStrategy.Username)
-    val eMail = headerOption(request, SessionTokenStrategy.Email)
-    User.authenticatedUser(UserLogin(uName, eMail, request.getHeader(SessionTokenStrategy.Password)))
+    val eMail = headerOption(request, SessionTokenStrategy.Email).get
+    User.authenticatedUser(UserLogin(eMail, request.getHeader(SessionTokenStrategy.Password)))
   }
 
   private[this] def headerOption(request: HttpServletRequest, key: String) =
