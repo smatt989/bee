@@ -1,6 +1,9 @@
 package com.example.app
 
+import java.util.UUID
+
 import slick.lifted.TableQuery
+import slick.profile.FixedSqlStreamingAction
 
 import scala.concurrent.Future
 //import slick.driver.H2Driver.api._
@@ -11,31 +14,51 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /**
   * Created by matt on 12/1/16.
   */
-trait SlickDbObject[ScalaClass <: HasIntId[ScalaClass], TupleSignature, SlickTable <: Table[TupleSignature] with HasIdColumn[Int]] {
+
+trait SlickObject[IDType, ScalaClass <: HasId[ScalaClass, IDType], TupleSignature, SlickTable <: Table[TupleSignature]] {
+
+  def createQuery(as: Seq[ScalaClass]): FixedSqlAction[Seq[IDType], NoStream, Effect.Write]
+  def deleteQuery(ids: Seq[IDType]): FixedSqlAction[Int, NoStream, Effect.Write]
+  def byIdsQuery(ids: Seq[IDType]): FixedSqlStreamingAction[Seq[TupleSignature], TupleSignature, Effect.Read]
+
 
   def table: TableQuery[SlickTable]
   def reify(tuple: TupleSignature): ScalaClass
   def db = AppGlobals.db()
-  def classToTuple(a: ScalaClass): TupleSignature
 
+  def zipWithNewIds(as: Seq[ScalaClass], ids: Seq[IDType]): Seq[ScalaClass]
+
+  def unapply(a: ScalaClass): Option[TupleSignature]
+
+  def classToTuple(a: ScalaClass): TupleSignature =
+    unapply(a).get
+
+
+  def createMany(as: Seq[ScalaClass]): Future[Seq[ScalaClass]] = {
+    if(as.size > 0) {
+      Future.sequence(as.grouped(1000).map(group => {
+        val ids = db.run(createQuery(group.map(_.makeSavingId)))
+        ids.map(is => zipWithNewIds(group, is))
+      }).toSeq).map(_.flatten)
+    } else
+      Future.apply(as)
+  }
+
+  def byIds(ids: Seq[IDType]): Future[Seq[ScalaClass]] =
+    db.run(byIdsQuery(ids)).map(_.map(a => reify(a)))
+
+  def deleteMany(ids: Seq[IDType]): Future[Int] =
+    db.run(deleteQuery(ids))
 
   def getAll =
     db.run(table.result).map(_.map(a => reify(a)))
 
-  def createMany(as: Seq[ScalaClass]): Future[Seq[ScalaClass]] = {
-    val ids = db.run(createQuery(as))
-    ids.map(is => zipWithNewIds(as, is))
-  }
-
-  def byIds(ids: Seq[Int]): Future[Seq[ScalaClass]] =
-    db.run(byIdsQuery(ids)).map(_.map(a => reify(a)))
-
-  def deleteMany(ids: Seq[Int]): Future[Int] =
-    db.run(deleteQuery(ids))
-
   def create(a: ScalaClass): Future[ScalaClass] = createMany(Seq(a)).map(_.head)
-  def byId(id: Int): Future[ScalaClass] = byIds(Seq(id)).map(_.head)
-  def delete(id: Int): Future[Int] = deleteMany(Seq(id))
+  def byId(id: IDType): Future[ScalaClass] = byIds(Seq(id)).map(_.head)
+  def delete(id: IDType): Future[Int] = deleteMany(Seq(id))
+}
+
+trait SlickDbObject[ScalaClass <: HasIntId[ScalaClass], TupleSignature, SlickTable <: Table[TupleSignature] with HasIdColumn[Int]] extends SlickObject[Int, ScalaClass, TupleSignature, SlickTable]{
 
   //HELPER QUERY STATEMENTS
 
@@ -53,7 +76,30 @@ trait SlickDbObject[ScalaClass <: HasIntId[ScalaClass], TupleSignature, SlickTab
 
 }
 
-trait Updatable[ScalaClass <: HasIntId[ScalaClass], TupleSignature, SlickTable <: Table[TupleSignature] with HasIdColumn[Int]] extends SlickDbObject[ScalaClass, TupleSignature, SlickTable] {
+trait SlickUUIDObject[ScalaClass <: HasUUID[ScalaClass], TupleSignature, SlickTable <: Table[TupleSignature] with HasIdColumn[String]] extends SlickObject[String, ScalaClass, TupleSignature, SlickTable] {
+
+  def createQuery(as: Seq[ScalaClass]) =
+    (table returning table.map(_.id)) ++= as.map(classToTuple)
+
+  def zipWithNewIds(as: Seq[ScalaClass], ids: Seq[String]) =
+    as
+
+  def deleteQuery(ids: Seq[String]) =
+    table.filter(_.id inSet ids).delete
+
+  def byIdsQuery(ids: Seq[String]) =
+    table.filter(_.id inSet ids).result
+}
+
+trait UpdatableDBObject[ScalaClass <: HasIntId[ScalaClass], TupleSignature, SlickTable <: Table[TupleSignature]
+  with HasIdColumn[Int]] extends Updatable[Int, ScalaClass, TupleSignature, SlickTable]
+  with SlickDbObject[ScalaClass, TupleSignature, SlickTable]
+
+trait UpdatableUUIDObject[ScalaClass <: HasUUID[ScalaClass], TupleSignature, SlickTable <: Table[TupleSignature]
+  with HasIdColumn[String]] extends Updatable[String, ScalaClass, TupleSignature, SlickTable]
+  with SlickUUIDObject[ScalaClass, TupleSignature, SlickTable]
+
+trait Updatable[IDType, ScalaClass <: HasId[ScalaClass, IDType], TupleSignature, SlickTable <: Table[TupleSignature] with HasIdColumn[IDType]] extends SlickObject[IDType, ScalaClass, TupleSignature, SlickTable] {
   def updateQuery(a: ScalaClass): FixedSqlAction[Int, NoStream, Effect.Write]
 
   def save(a: ScalaClass): Future[ScalaClass] = saveMany(Seq(a)).map(_.head)
@@ -68,13 +114,13 @@ trait Updatable[ScalaClass <: HasIntId[ScalaClass], TupleSignature, SlickTable <
 
   def saveMany(as: Seq[ScalaClass]): Future[Seq[ScalaClass]] = {
     val withTempId = as.zipWithIndex
-    val doNotExist = withTempId.filter(a => a._1.id == 0 || a._1.id == null)
+    val doNotExist = withTempId.filterNot(_._1.existsInDb)
     val createTempIds = doNotExist.map(_._2)
     val created = createMany(doNotExist.map(_._1))
     val createdWithTempIds = created.map(c =>
       createTempIds.zipWithIndex.map{ case (tempId, index) => (c(index), tempId)}
     )
-    val doExist = withTempId.filter(_._1.id > 0)
+    val doExist = withTempId.filter(_._1.existsInDb)
     val doExistTempIds = doExist.map(_._2)
     val updated = updateMany(doExist.map(_._1))
     val updatedWithTempIds = updated.map( u =>
@@ -87,7 +133,25 @@ trait Updatable[ScalaClass <: HasIntId[ScalaClass], TupleSignature, SlickTable <
   }
 }
 
-trait HasIntId[A] {
-  def id: Int
-  def updateId(id: Int): A
+trait HasId[A, IDType] {
+  def id: IDType
+  def existsInDb: Boolean
+  def makeSavingId: A
+  def updateId(id: IDType): A
+}
+
+trait HasIntId[A] extends HasId[A, Int] {
+
+  def makeSavingId = updateId(0)
+  def existsInDb =
+    !(id == 0 || id == null)
+}
+
+trait HasUUID[A] extends HasId[A, String] {
+  def makeUUID = UUID.randomUUID().toString
+
+
+  def makeSavingId = updateId(makeUUID)
+  def existsInDb =
+    id != null
 }

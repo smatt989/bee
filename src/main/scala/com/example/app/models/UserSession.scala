@@ -10,7 +10,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 
 
-case class UserSession(userId: Int, hashString: String, id: Int) extends HasIntId[UserSession]{
+case class UserSession(id: Int, userId: Int, hashString: String) extends HasIntId[UserSession]{
 
   def updateId(id: Int) =
     this.copy(id = id)
@@ -30,15 +30,12 @@ object UserSession extends SlickDbObject[UserSession, (Int, Int, String), Tables
 
   def findFromUserOrCreate(userId: Int) = {
     fromUser(userId).getOrElse(
-      Await.result(create(UserSession(userId, UUID.randomUUID().toString, 0)), waitDuration)
+      Await.result(create(UserSession(0, userId, UUID.randomUUID().toString)), waitDuration)
     )
   }
 
   def reify(tuple: (Int, Int, String)) =
-    UserSession(tuple._2, tuple._3, tuple._1)
-
-  def classToTuple(a: UserSession) =
-    (a.id, a.userId, a.hashString)
+    (apply _).tupled(tuple)
 
   def user(userSession: UserSession) =
     User.byId(userSession.userId)
