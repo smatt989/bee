@@ -11,24 +11,38 @@ import scala.concurrent.duration.Duration
 /**
   * Created by matt on 5/31/17.
   */
-case class OntologyVersion(id: Int, versionString: String, order: Int, taskId: Int, ontologyType: String, minValue: Option[Double], maxValue: Option[Double], isAreaLabel: Boolean, labelLimit: Int, createdMillis: Long) extends HasIntId[OntologyVersion] {
+case class OntologyVersion(id: Int,
+                           name: String,
+                           versionString: String,
+                           order: Int,
+                           taskId: Int,
+                           ontologyType: String,
+                           minValue: Option[Double],
+                           maxValue: Option[Double],
+                           isAreaLabel: Boolean,
+                           isLengthLabel: Boolean,
+                           labelLimit: Int,
+                           createdMillis: Long) extends HasIntId[OntologyVersion] {
   def updateId(id: Int) = this.copy(id = id)
+
+  def toJson =
+    OntologyVersionJson(name, versionString, ontologyType, minValue, maxValue, isAreaLabel, isLengthLabel, labelLimit)
 }
 
-case class OntologyVersionCreate(versionString: String, taskId: Int, ontologyType: String, minValue: Option[Double] = None, maxValue: Option[Double] = None, isAreaLabel: Boolean = false, labelLimit: Int = 1) {
-  def toModel(order: Int) =
-    OntologyVersion(0, versionString, order, taskId, ontologyType, minValue, maxValue, isAreaLabel, labelLimit, new DateTime().getMillis)
+case class OntologyVersionJson(name: String, versionString: String, ontologyType: String, minValue: Option[Double] = None, maxValue: Option[Double] = None, isAreaLabel: Boolean = false, isLengthLabel: Boolean, labelLimit: Int = 1) {
+  def toModel(order: Int, taskId: Int) =
+    OntologyVersion(0, name, versionString, order, taskId, ontologyType, minValue, maxValue, isAreaLabel, isLengthLabel, labelLimit, new DateTime().getMillis)
 }
 
-object OntologyVersion extends SlickDbObject[OntologyVersion, (Int, String, Int, Int, String, Option[Double], Option[Double], Boolean, Int, Long), Tables.OntologyVersions] {
+object OntologyVersion extends SlickDbObject[OntologyVersion, (Int, String, String, Int, Int, String, Option[Double], Option[Double], Boolean, Boolean, Int, Long), Tables.OntologyVersions] {
   lazy val table = Tables.ontologyVersions
 
-  def reify(tuple: (Int, String, Int, Int, String, Option[Double], Option[Double], Boolean, Int, Long)) =
+  def reify(tuple: (Int, String, String, Int, Int, String, Option[Double], Option[Double], Boolean, Boolean, Int, Long)) =
     (apply _).tupled(tuple)
 
-  def createOntologyVersion(version: OntologyVersionCreate) = {
-    val latestVersion = Await.result(latestVersionByTask(version.taskId), Duration.Inf)
-    val newVersion = version.toModel(latestVersion.map(_.order + 1).getOrElse(0))
+  def createOntologyVersion(taskId: Int, version: OntologyVersionJson) = {
+    val latestVersion = Await.result(latestVersionByTask(taskId), Duration.Inf)
+    val newVersion = version.toModel(latestVersion.map(_.order + 1).getOrElse(0), taskId)
     create(newVersion)
   }
 

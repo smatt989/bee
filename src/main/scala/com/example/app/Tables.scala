@@ -56,8 +56,9 @@ object Tables {
     def creator = foreignKey("TASK_TO_USERS_FK", creatorUserId, users)(_.id)
   }
 
-  class OntologyVersions(tag: Tag) extends Table[(Int, String, Int, Int, String, Option[Double], Option[Double], Boolean, Int, Long)](tag, "ONTOLOGY_VERSIONS") with HasIdColumn[Int] {
+  class OntologyVersions(tag: Tag) extends Table[(Int, String, String, Int, Int, String, Option[Double], Option[Double], Boolean, Boolean, Int, Long)](tag, "ONTOLOGY_VERSIONS") with HasIdColumn[Int] {
     def id = column[Int]("ONTOLOGY_VERSION_ID", O.PrimaryKey, O.AutoInc)
+    def name = column[String]("ONTOLOGY_NAME")
     def versionString = column[String]("VERSION_STRING")
     def order = column[Int]("ORDER_VALUE")
     def taskId = column[Int]("TASK_ID")
@@ -65,10 +66,11 @@ object Tables {
     def minValue = column[Option[Double]]("MIN_VALUE")
     def maxValue = column[Option[Double]]("MAX_VALUE")
     def isAreaLabel = column[Boolean]("IS_AREA_LABEL")
+    def isLengthLabel = column[Boolean]("IS_LENGTH_LABEL")
     def labelLimit = column[Int]("LABEL_LIMIT")
     def createdMillis = column[Long]("CREATED_MILLIS")
 
-    def * = (id, versionString, order, taskId, ontologyType, minValue, maxValue, isAreaLabel, labelLimit, createdMillis)
+    def * = (id, name, versionString, order, taskId, ontologyType, minValue, maxValue, isAreaLabel, isLengthLabel, labelLimit, createdMillis)
 
     def task = foreignKey("ONTOLOGY_VERSION_TO_TASKS_FK", taskId, tasks)(_.id)
   }
@@ -126,7 +128,7 @@ object Tables {
     def task = foreignKey("IMAGE_SOURCE_TO_TASK_FK", taskId, tasks)(_.id)
   }
 
-  class Labels(tag: Tag) extends Table[(String, Int, String, Int, String, String, Double, Option[Double], Option[Double], Option[Double], Option[Double], Long)](tag, "LABELS") with HasIdColumn[String] {
+  class Labels(tag: Tag) extends Table[(String, Int, String, Int, String, String, Double, Option[Double], Option[Double], Option[Double], Option[Double], Option[Double], Option[Double], Option[Double], Option[Double], Long)](tag, "LABELS") with HasIdColumn[String] {
     def id = column[String]("LABEL_ID", O.PrimaryKey)
     def participantId = column[Int]("PARTICIPANT_ID")
     def imageId = column[String]("IMAGE_ID")
@@ -138,9 +140,13 @@ object Tables {
     def yCoordinate = column[Option[Double]]("Y_COORDINATE")
     def width = column[Option[Double]]("WIDTH")
     def height = column[Option[Double]]("HEIGHT")
+    def point1x = column[Option[Double]]("POINT_1_X")
+    def point1y = column[Option[Double]]("POINT_1_Y")
+    def point2x = column[Option[Double]]("POINT_2_X")
+    def point2y = column[Option[Double]]("POINT_2_Y")
     def createdMillis = column[Long]("CREATED_MILLIS")
 
-    def * = (id, participantId, imageId, ontologyVersionId, classification, classificationType, classificationValue, xCoordinate, yCoordinate, width, height, createdMillis)
+    def * = (id, participantId, imageId, ontologyVersionId, classification, classificationType, classificationValue, xCoordinate, yCoordinate, width, height, point1x, point1y, point2x, point2y, createdMillis)
 
     def participant = foreignKey("LABEL_TO_PARTICIPANTS_FK", participantId, participants)(_.id)
     def image = foreignKey("LABEL_TO_IMAGES_FK", imageId, images)(_.id)
