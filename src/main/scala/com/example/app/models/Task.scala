@@ -67,4 +67,11 @@ object Task extends UpdatableDBObject[Task, (Int, String, Int, Long), Tables.Tas
     val taskId = participant.taskId
     authorizedToEditTask(userId, taskId)
   }
+
+  def saveWithParticipantCreation(userId: Int, task: Task) = {
+    val saved = Await.result(save(task), Duration.Inf)
+    if(!Participant.isParticipantInTask(userId, saved.id))
+      Participant.create(Participant(0, saved.id, userId, true))
+    saved
+  }
 }
