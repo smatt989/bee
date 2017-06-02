@@ -18,7 +18,7 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
     val toSave = inputTask.task(userId)
 
     if(!(toSave.existsInDb && !Task.authorizedToEditTask(userId, toSave.id)))
-      Task.save(toSave).map(_.toJson)
+      Task.saveWithParticipantCreation(userId, toSave).toJson
     else
       throw new Exception("Not authorized to edit this task")
   }
