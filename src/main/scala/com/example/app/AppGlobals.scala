@@ -6,6 +6,4 @@ import slick.driver.PostgresDriver.api._
 object AppGlobals {
 
   var db: () => Database = null
-
-  val googleMapsKey = System.getenv("GOOGLE_API_KEY")
 }
