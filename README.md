@@ -1,11 +1,11 @@
-# Scalatra Template #
+# Bee Label Maker #
 
-This is a scalatra template with a connection to H2 db with Slick and serving up a react/redux web front end.
+This is image annotation software built using scalatra with a connection to Postgres/H2 db with Slick and serving up a react/redux web front end.
 
 ## Build & Run ##
 
 ```sh
-$ cd spool
+$ cd bee
 $ ./sbt
 > jetty:start
 > browse
@@ -13,9 +13,24 @@ $ ./sbt
 
 If `browse` doesn't launch your browser, manually open [http://localhost:8080/](http://localhost:8080/) in your browser.
 
-For first time use, you can create and populate the db by visiting in order:
- [http://localhost:8080/db/create-tables](http://localhost:8080/db/create-tables)
- [http://localhost:8080/db/load-tables](http://localhost:8080/db/load-tables)
+## Development ##
 
-From there, you can visit [http://localhost:8080/adventures/1](http://localhost:8080/adventures/1) and [http://localhost:8080/adventures/1/waypoints](http://localhost:8080/adventures/1/waypoints) to view the first adventure and its waypoints respectively.
+For development you can have the web server recompile and restart after every code change by using the following code snippit:
+
+```sh
+$ cd bee
+$ ./sbt
+> ~;jetty:stop;jetty:start
+```
+
+To develop the front end separately from the backend, start the server the normal way, and separately run the front end on a different port:
+
+```sh
+$ cd bee/src/main/webapp/front-end
+$ webpack-dev-server --host 0.0.0.0 --port 9000
+```
+
+
+For first time use, to create the db schema:
+ [http://localhost:8080/db/create-tables](http://localhost:8080/db/create-tables)
 
