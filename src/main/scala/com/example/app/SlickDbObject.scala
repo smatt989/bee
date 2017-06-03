@@ -17,7 +17,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 trait SlickObject[IDType, ScalaClass <: HasId[ScalaClass, IDType], TupleSignature, SlickTable <: Table[TupleSignature]] {
 
-  def createQuery(as: Seq[ScalaClass]): FixedSqlAction[Seq[IDType], NoStream, Effect.Write]
   def deleteQuery(ids: Seq[IDType]): FixedSqlAction[Int, NoStream, Effect.Write]
   def byIdsQuery(ids: Seq[IDType]): FixedSqlStreamingAction[Seq[TupleSignature], TupleSignature, Effect.Read]
 
@@ -26,23 +25,12 @@ trait SlickObject[IDType, ScalaClass <: HasId[ScalaClass, IDType], TupleSignatur
   def reify(tuple: TupleSignature): ScalaClass
   def db = AppGlobals.db()
 
-  def zipWithNewIds(as: Seq[ScalaClass], ids: Seq[IDType]): Seq[ScalaClass]
-
   def unapply(a: ScalaClass): Option[TupleSignature]
 
   def classToTuple(a: ScalaClass): TupleSignature =
     unapply(a).get
 
-
-  def createMany(as: Seq[ScalaClass]): Future[Seq[ScalaClass]] = {
-    if(as.size > 0) {
-      Future.sequence(as.grouped(1000).map(group => {
-        val ids = db.run(createQuery(group.map(_.makeSavingId)))
-        ids.map(is => zipWithNewIds(group, is))
-      }).toSeq).map(_.flatten)
-    } else
-      Future.apply(as)
-  }
+  def createMany(as: Seq[ScalaClass]): Future[Seq[ScalaClass]]
 
   def byIds(ids: Seq[IDType]): Future[Seq[ScalaClass]] =
     db.run(byIdsQuery(ids)).map(_.map(a => reify(a)))
@@ -62,6 +50,16 @@ trait SlickDbObject[ScalaClass <: HasIntId[ScalaClass], TupleSignature, SlickTab
 
   //HELPER QUERY STATEMENTS
 
+  def createMany(as: Seq[ScalaClass]): Future[Seq[ScalaClass]] = {
+    if(as.size > 0) {
+      Future.sequence(as.grouped(1000).map(group => {
+        val ids = db.run(createQuery(group.map(_.makeSavingId)))
+        ids.map(is => zipWithNewIds(group, is))
+      }).toSeq).map(_.flatten)
+    } else
+      Future.apply(as)
+  }
+
   def createQuery(as: Seq[ScalaClass]) =
     (table returning table.map(_.id)) ++= as.map(classToTuple)
 
@@ -78,11 +76,19 @@ trait SlickDbObject[ScalaClass <: HasIntId[ScalaClass], TupleSignature, SlickTab
 
 trait SlickUUIDObject[ScalaClass <: HasUUID[ScalaClass], TupleSignature, SlickTable <: Table[TupleSignature] with HasIdColumn[String]] extends SlickObject[String, ScalaClass, TupleSignature, SlickTable] {
 
-  def createQuery(as: Seq[ScalaClass]) =
-    (table returning table.map(_.id)) ++= as.map(classToTuple)
+  def createMany(as: Seq[ScalaClass]): Future[Seq[ScalaClass]] = {
+    if(as.size > 0) {
+      Future.sequence(as.grouped(1000).map(group => {
+        val toCreate = group.map(_.makeSavingId)
+        val ids = db.run(createQuery(toCreate))
+        ids.map(_ => toCreate)
+      }).toSeq).map(_.flatten)
+    } else
+      Future.apply(as)
+  }
 
-  def zipWithNewIds(as: Seq[ScalaClass], ids: Seq[String]) =
-    as
+  def createQuery(as: Seq[ScalaClass]) =
+    table ++= as.map(classToTuple)
 
   def deleteQuery(ids: Seq[String]) =
     table.filter(_.id inSet ids).delete
