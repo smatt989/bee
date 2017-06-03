@@ -9,6 +9,7 @@ import com.example.app.{AuthenticationSupport, SlickRoutes}
 trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
 
   post("/tasks/save") {
+    contentType = formats("json")
     authenticate()
 
     val userId = user.id
@@ -18,12 +19,13 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
     val toSave = inputTask.task(userId)
 
     if(!(toSave.existsInDb && !Task.authorizedToEditTask(userId, toSave.id)))
-      Task.saveWithParticipantCreation(userId, toSave).toJson
+      Task.saveWithParticipantCreation(userId, toSave).toJson(user.id)
     else
       throw new Exception("Not authorized to edit this task")
   }
 
   get("/tasks/:task-id/view") {
+    contentType = formats("json")
     authenticate()
 
     val taskId = {params("task-id")}.toInt
@@ -31,24 +33,27 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
     val taskAuthorization = Task.authorizedToViewTaskDetails(user.id, taskId)
 
     if(taskAuthorization)
-      Task.byId(taskId).map(_.toJson)
+      Task.byId(taskId).map(_.toJson(user.id))
     else
       throw new Exception("Not authorized to view this task")
   }
 
   get("/tasks/created") {
+    contentType = formats("json")
     authenticate()
 
-    Task.tasksCreatedByUser(user.id).map(_.map(_.toJson))
+    Task.tasksCreatedByUser(user.id).map(_.map(_.toJson(user.id)))
   }
 
   get("/tasks/participating") {
+    contentType = formats("json")
     authenticate()
 
-    Task.tasksParticipatingIn(user.id).map(_.map(_.toJson))
+    Task.tasksParticipatingIn(user.id).map(_.map(_.toJson(user.id)))
   }
 
   get("/tasks/:task-id/participants") {
+    contentType = formats("json")
     authenticate()
 
     val taskId = {params("task-id")}.toInt
@@ -62,6 +67,7 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
   }
 
   get("/tasks/:task-id/participant-link") {
+    contentType = formats("json")
     authenticate()
 
     val taskId = {params("task-id")}.toInt
@@ -75,6 +81,7 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
   }
 
   post("/tasks/:task-id/ontology/create") {
+    contentType = formats("json")
     authenticate()
 
     val userId = user.id
@@ -92,6 +99,7 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
   }
 
   get("/tasks/:task-id/ontology") {
+    contentType = formats("json")
     authenticate()
 
     val taskId = {params("task-id")}.toInt
@@ -104,7 +112,14 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
       throw new Exception("Not authorized to view this task's ontology")
   }
 
+  get("/ontologies/types") {
+    contentType = formats("json")
+
+    OntologyVersion.ontologyTypes
+  }
+
   get("/tasks/:task-id/image-sources") {
+    contentType = formats("json")
     authenticate()
 
     val taskId = {params("task-id")}.toInt

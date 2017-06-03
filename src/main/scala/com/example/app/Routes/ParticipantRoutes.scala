@@ -9,6 +9,7 @@ import com.example.app.{AuthenticationSupport, SlickRoutes}
 trait ParticipantRoutes extends SlickRoutes with AuthenticationSupport {
 
   post("/participants/:participant-id/deactivate") {
+    contentType = formats("json")
     authenticate()
 
     val userId = user.id
@@ -18,13 +19,14 @@ trait ParticipantRoutes extends SlickRoutes with AuthenticationSupport {
     val participantAuthorization = Task.authorizedToEditParticipant(userId, participantId)
 
     if(participantAuthorization)
-      Participant.setParticipantActivation(participantId, false)
+      Participant.setParticipantActivation(participantId, false).map(_.toJson)
     else
       throw new Exception("Not authorized to edit participant")
 
   }
 
   post("/participants/:participant-id/activate") {
+    contentType = formats("json")
     authenticate()
 
     val userId = user.id
@@ -34,7 +36,7 @@ trait ParticipantRoutes extends SlickRoutes with AuthenticationSupport {
     val participantAuthorization = Task.authorizedToEditParticipant(userId, participantId)
 
     if(participantAuthorization)
-      Participant.setParticipantActivation(participantId, true)
+      Participant.setParticipantActivation(participantId, true).map(_.toJson)
     else
       throw new Exception("Not authorized to edit participant")
   }

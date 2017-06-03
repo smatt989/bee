@@ -26,4 +26,8 @@ object ImageSource extends UpdatableDBObject[ImageSource, (Int, Int, String, Str
   def byTask(taskId: Int) = {
     db.run(table.filter(_.taskId === taskId).result).map(_.map(reify))
   }
+
+  val imageSourceTypes = Seq(ImageSourceType("AMAZON_S3"))
 }
+
+case class ImageSourceType(name: String)

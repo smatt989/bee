@@ -133,9 +133,9 @@ object Tables {
     def participantId = column[Int]("PARTICIPANT_ID")
     def imageId = column[String]("IMAGE_ID")
     def ontologyVersionId = column[Int]("ONTOLOGY_VERSION_ID")
-    def classification = column[String]("CLASSIFICATION")
-    def classificationType = column[String]("CLASSIFICATION_TYPE")
-    def classificationValue = column[Double]("CLASSIFICATION_VALUE")
+    def ontology = column[String]("ONTOLOGY")
+    def ontologyType = column[String]("ONTOLOGY_TYPE")
+    def labelValue = column[Double]("LABEL_VALUE")
     def xCoordinate = column[Option[Double]]("X_COORDINATE")
     def yCoordinate = column[Option[Double]]("Y_COORDINATE")
     def width = column[Option[Double]]("WIDTH")
@@ -146,7 +146,7 @@ object Tables {
     def point2y = column[Option[Double]]("POINT_2_Y")
     def createdMillis = column[Long]("CREATED_MILLIS")
 
-    def * = (id, participantId, imageId, ontologyVersionId, classification, classificationType, classificationValue, xCoordinate, yCoordinate, width, height, point1x, point1y, point2x, point2y, createdMillis)
+    def * = (id, participantId, imageId, ontologyVersionId, ontology, ontologyType, labelValue, xCoordinate, yCoordinate, width, height, point1x, point1y, point2x, point2y, createdMillis)
 
     def participant = foreignKey("LABEL_TO_PARTICIPANTS_FK", participantId, participants)(_.id)
     def image = foreignKey("LABEL_TO_IMAGES_FK", imageId, images)(_.id)

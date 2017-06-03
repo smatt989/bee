@@ -13,6 +13,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 case class ImageView(id: String = null, participantId: Int, imageId: String, ontologyVersionId: Int, createdMillis: Long) extends HasUUID[ImageView] {
   def updateId(id: String) = this.copy(id = id)
+
+  def toJson(taskId: Int) =
+    CreateImageView(taskId, imageId, ontologyVersionId)
 }
 
 case class CreateImageView(taskId: Int, imageId: String, ontologyVersionId: Int)

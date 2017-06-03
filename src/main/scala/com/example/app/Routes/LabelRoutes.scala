@@ -12,6 +12,7 @@ import scala.concurrent.duration.Duration
 trait LabelRoutes extends SlickRoutes with AuthenticationSupport {
 
   post("/labels/save") {
+    contentType = formats("json")
     authenticate()
 
     val saveLabels = parsedBody.extract[SaveLabels]
@@ -19,12 +20,13 @@ trait LabelRoutes extends SlickRoutes with AuthenticationSupport {
     val authorizedParticipation = Task.authorizedToParticipateInTask(user.id, saveLabels.taskId)
 
     if(authorizedParticipation)
-      Label.saveLabels(user.id, saveLabels)
+      Label.saveLabels(user.id, saveLabels).map(_.map(_.toJson))
     else
       throw new Exception("Not authorized to label this image")
   }
 
-  get("/labels") {
+  post("/labels") {
+    contentType = formats("json")
     authenticate()
 
     val labelRequest = parsedBody.extract[LabelRequest]
@@ -34,7 +36,7 @@ trait LabelRoutes extends SlickRoutes with AuthenticationSupport {
     val participant = Await.result(Participant.participantByUserAndTask(user.id, labelRequest.taskId), Duration.Inf)
 
     if(authorizedParticipant)
-      Label.labelsByParticipantAndImage(participant.get.id, labelRequest.imageId)
+      Label.labelsByParticipantAndImage(participant.get.id, labelRequest.imageId).map(_.map(_.toJson))
     else
       throw new Exception("Not authorized to view labels for this image")
   }

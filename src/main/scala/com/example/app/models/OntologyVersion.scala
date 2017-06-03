@@ -29,7 +29,7 @@ case class OntologyVersion(id: Int,
     OntologyVersionJson(name, versionString, ontologyType, minValue, maxValue, isAreaLabel, isLengthLabel, labelLimit)
 }
 
-case class OntologyVersionJson(name: String, versionString: String, ontologyType: String, minValue: Option[Double] = None, maxValue: Option[Double] = None, isAreaLabel: Boolean = false, isLengthLabel: Boolean, labelLimit: Int = 1) {
+case class OntologyVersionJson(name: String, versionString: String = "1.0.0", ontologyType: String, minValue: Option[Double] = None, maxValue: Option[Double] = None, isAreaLabel: Boolean = false, isLengthLabel: Boolean = false, labelLimit: Int = 1) {
   def toModel(order: Int, taskId: Int) =
     OntologyVersion(0, name, versionString, order, taskId, ontologyType, minValue, maxValue, isAreaLabel, isLengthLabel, labelLimit, new DateTime().getMillis)
 }
@@ -51,4 +51,8 @@ object OntologyVersion extends SlickDbObject[OntologyVersion, (Int, String, Stri
       table.filter(_.taskId === taskId).sortBy(_.order).result
     ).map(_.headOption.map(reify))
   }
+
+  val ontologyTypes = Seq(OntologyType("BINARY"), OntologyType("INTEGER_RANGE"), OntologyType("FLOAT_RANGE"))
 }
+
+case class OntologyType(name: String)
