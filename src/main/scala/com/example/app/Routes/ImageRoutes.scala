@@ -9,6 +9,7 @@ import com.example.app.{AuthenticationSupport, SlickRoutes}
 trait ImageRoutes extends SlickRoutes with AuthenticationSupport {
 
   post("/images/seen") {
+    contentType = formats("json")
     authenticate()
 
     val imageView = parsedBody.extract[CreateImageView]
@@ -16,12 +17,13 @@ trait ImageRoutes extends SlickRoutes with AuthenticationSupport {
     val participantAuthorization = Task.authorizedToParticipateInTask(user.id, imageView.taskId)
 
     if(participantAuthorization)
-      ImageView.createNewImageView(user.id, imageView)
+      ImageView.createNewImageView(user.id, imageView).map(_.toJson(imageView.taskId))
     else
       throw new Exception("Not authorized to view this image")
   }
 
   post("/images/next") {
+    contentType = formats("json")
     authenticate()
 
     val imageRequest = parsedBody.extract[RequestImage]

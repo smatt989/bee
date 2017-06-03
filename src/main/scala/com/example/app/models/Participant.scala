@@ -47,7 +47,8 @@ object Participant extends UpdatableDBObject[Participant, (Int, Int, Int, Boolea
     val futureParticipant = byId(participantId)
     futureParticipant.flatMap(participant => {
       val updated = participant.copy(isActive = activation)
-      save(updated)
+      val user = Await.result(User.byId(participantId), Duration.Inf).toJson
+      save(updated).map(_.richParticipant(user))
     })
   }
 

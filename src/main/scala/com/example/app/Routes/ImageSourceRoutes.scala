@@ -12,6 +12,7 @@ import scala.concurrent.duration.Duration
 trait ImageSourceRoutes extends SlickRoutes with AuthenticationSupport {
 
   post("/image-sources/save") {
+    contentType = formats("json")
     authenticate()
 
     val imageSource = parsedBody.extract[ImageSource]
@@ -25,6 +26,7 @@ trait ImageSourceRoutes extends SlickRoutes with AuthenticationSupport {
   }
 
   post("/image-sources/:image-source-id/delete") {
+    contentType = formats("json")
     authenticate()
 
     val imageSourceId = {params("image-source-id")}.toInt
@@ -35,7 +37,14 @@ trait ImageSourceRoutes extends SlickRoutes with AuthenticationSupport {
 
     if(taskAuthorization) {
       ImageSource.delete(imageSource.id)
+      "200"
     } else
       throw new Exception("Not authorized to edit this task")
+  }
+
+  get("/image-sources/types") {
+    contentType = formats("json")
+
+    ImageSource.imageSourceTypes
   }
 }

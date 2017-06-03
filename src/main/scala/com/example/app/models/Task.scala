@@ -14,11 +14,11 @@ import scala.concurrent.duration.Duration
 case class Task(id: Int, name: String, creatorUserId: Int, createdMillis: Long) extends HasIntId[Task]{
   def updateId(id: Int) = this.copy(id = id)
 
-  def toJson =
-    InputTask(id, name, createdMillis)
+  def toJson(userId: Int) =
+    InputTask(id, name, userId == creatorUserId, createdMillis)
 }
 
-case class InputTask(id: Int = 0, name: String, createdMillis: Long = new DateTime().getMillis) {
+case class InputTask(id: Int = 0, name: String, isCreator: Boolean = false, createdMillis: Long = new DateTime().getMillis) {
   def task(userId: Int) = Task(id, name, userId, createdMillis)
 }
 

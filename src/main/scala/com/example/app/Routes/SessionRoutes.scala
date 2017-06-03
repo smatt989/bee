@@ -7,6 +7,7 @@ import org.scalatra.Ok
 trait SessionRoutes extends SlickRoutes with AuthenticationSupport{
 
   get("/sessions") {
+    contentType = formats("json")
     UserSession.getAll
   }
 

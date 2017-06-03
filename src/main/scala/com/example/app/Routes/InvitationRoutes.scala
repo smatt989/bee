@@ -9,11 +9,12 @@ import com.example.app.{AuthenticationSupport, SlickRoutes}
 trait InvitationRoutes extends SlickRoutes with AuthenticationSupport {
 
   post("/invitation/:invitation/accept") {
+    contentType = formats("json")
     authenticate()
 
     val userId = user.id
     val invitation = {params("invitation")}
 
-    Invitation.acceptInvitation(userId, invitation)
+    Invitation.acceptInvitation(userId, invitation).map(_.richParticipant(user.toJson).toJson)
   }
 }

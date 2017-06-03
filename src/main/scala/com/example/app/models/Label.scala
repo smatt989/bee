@@ -14,9 +14,9 @@ case class Label(id: String,
                  participantId: Int,
                  imageId: String,
                  ontologyVersionId: Int,
-                 classification: String,
-                 classificationType: String,
-                 classificationValue: Double,
+                 ontology: String,
+                 ontologyType: String,
+                 labelValue: Double,
                  xCoordinate: Option[Double],
                  yCoordinate: Option[Double],
                  width: Option[Double],
@@ -28,13 +28,30 @@ case class Label(id: String,
                  createdMillis: Long
                 ) extends HasUUID[Label] {
   def updateId(id: String) = this.copy(id = id)
+  def toJson =
+    LabelView(ontologyVersionId, ontology, ontologyType, labelValue, xCoordinate, yCoordinate, width, height, point1x, point1y, point2x, point2y, createdMillis)
 }
 
 case class SaveLabels(labels: Seq[JsonLabel], taskId: Int, imageId: String, ontologyVersionId: Int)
 
 case class LabelRequest(taskId: Int, imageId: String)
 
-case class JsonLabel(classificationValue: Double,
+case class LabelView(ontologyVersionId: Int,
+                     ontology: String,
+                     ontologyType: String,
+                     labelValue: Double,
+                     xCoordinate: Option[Double],
+                     yCoordinate: Option[Double],
+                     width: Option[Double],
+                     height: Option[Double],
+                     point1x: Option[Double],
+                     point1y: Option[Double],
+                     point2x: Option[Double],
+                     point2y: Option[Double],
+                     createdMillis: Long
+                    )
+
+case class JsonLabel(labelValue: Double,
                      xCoordinate: Option[Double],
                      yCoordinate: Option[Double],
                      width: Option[Double],
@@ -44,15 +61,15 @@ case class JsonLabel(classificationValue: Double,
                      point2x: Option[Double],
                      point2y: Option[Double]
                     ) {
-  def toModel(participantId: Int, imageId: String, ontologyVersionId: Int, classification: String, classificationType: String, createdMillis: Long) =
+  def toModel(participantId: Int, imageId: String, ontologyVersionId: Int, ontology: String, ontologyType: String, createdMillis: Long) =
     Label(
       null,
       participantId,
       imageId,
       ontologyVersionId,
-      classification,
-      classificationType,
-      classificationValue,
+      ontology,
+      ontologyType,
+      labelValue,
       xCoordinate,
       yCoordinate,
       width,

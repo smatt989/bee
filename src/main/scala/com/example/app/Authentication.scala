@@ -9,7 +9,7 @@ import org.scalatra.ScalatraBase
 import org.scalatra.auth.{ScentryConfig, ScentryStrategy, ScentrySupport}
 
 object SessionTokenStrategy {
-  val HeaderKey = "Rekki-Session-Key"
+  val HeaderKey = "Bee-Session-Key"
   val Email = "email"
   val Password = "password"
 }
