@@ -49,7 +49,7 @@ object OntologyVersion extends SlickDbObject[OntologyVersion, (Int, String, Stri
   def latestVersionByTask(taskId: Int) = {
     db.run(
       table.filter(_.taskId === taskId).sortBy(_.order).result
-    ).map(_.headOption.map(reify))
+    ).map(_.reverse.headOption.map(reify))
   }
 
   val ontologyTypes = Seq(OntologyType("BINARY"), OntologyType("INTEGER_RANGE"), OntologyType("FLOAT_RANGE"))

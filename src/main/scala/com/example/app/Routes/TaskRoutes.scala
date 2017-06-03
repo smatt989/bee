@@ -19,21 +19,27 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
     val toSave = inputTask.task(userId)
 
     if(!(toSave.existsInDb && !Task.authorizedToEditTask(userId, toSave.id)))
-      Task.saveWithParticipantCreation(userId, toSave).toJson(user.id)
+      Task.saveWithParticipantCreation(userId, toSave).toJson(userId)
     else
       throw new Exception("Not authorized to edit this task")
   }
 
-  get("/tasks/:task-id/view") {
+  get("/tasks") {
+    Task.getAll
+  }
+
+  get("/tasks/:id/view") {
     contentType = formats("json")
     authenticate()
 
-    val taskId = {params("task-id")}.toInt
+    val taskId = {params("id")}.toInt
 
-    val taskAuthorization = Task.authorizedToViewTaskDetails(user.id, taskId)
+    val userId = user.id
+
+    val taskAuthorization = Task.authorizedToViewTaskDetails(userId, taskId)
 
     if(taskAuthorization)
-      Task.byId(taskId).map(_.toJson(user.id))
+      Task.byId(taskId).map(_.toJson(userId))
     else
       throw new Exception("Not authorized to view this task")
   }
@@ -42,37 +48,45 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
     contentType = formats("json")
     authenticate()
 
-    Task.tasksCreatedByUser(user.id).map(_.map(_.toJson(user.id)))
+    val userId = user.id
+
+    Task.tasksCreatedByUser(userId).map(_.map(_.toJson(userId)))
   }
 
   get("/tasks/participating") {
     contentType = formats("json")
     authenticate()
 
-    Task.tasksParticipatingIn(user.id).map(_.map(_.toJson(user.id)))
+    val userId = user.id
+
+    Task.tasksParticipatingIn(userId).map(_.map(_.toJson(userId)))
   }
 
-  get("/tasks/:task-id/participants") {
+  get("/tasks/:id/participants") {
     contentType = formats("json")
     authenticate()
 
-    val taskId = {params("task-id")}.toInt
+    val taskId = {params("id")}.toInt
 
-    val taskAuthorization = Task.authorizedToViewTaskDetails(user.id, taskId)
+    val userId = user.id
+
+    val taskAuthorization = Task.authorizedToViewTaskDetails(userId, taskId)
 
     if(taskAuthorization)
-      Participant.participantsByTask(taskId)
+      Participant.participantsByTask(taskId).map(_.map(_.toJson))
     else
       throw new Exception("Not authorized to view this task's participants")
   }
 
-  get("/tasks/:task-id/participant-link") {
+  post("/tasks/:id/participant-link") {
     contentType = formats("json")
     authenticate()
 
-    val taskId = {params("task-id")}.toInt
+    val taskId = {params("id")}.toInt
 
-    val taskAuthorization = Task.authorizedToEditTask(user.id, taskId)
+    val userId = user.id
+
+    val taskAuthorization = Task.authorizedToEditTask(userId, taskId)
 
     if(taskAuthorization)
       Invitation.generateLink(taskId)
@@ -80,13 +94,13 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
       throw new Exception("Not authorized to create participant link")
   }
 
-  post("/tasks/:task-id/ontology/create") {
+  post("/tasks/:id/ontology/create") {
     contentType = formats("json")
     authenticate()
 
     val userId = user.id
 
-    val taskId = {params("task-id")}.toInt
+    val taskId = {params("id")}.toInt
 
     val taskAuthorization = Task.authorizedToEditTask(userId, taskId)
 
@@ -98,13 +112,15 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
       throw new Exception("Not authorized to edit this task")
   }
 
-  get("/tasks/:task-id/ontology") {
+  get("/tasks/:id/ontology") {
     contentType = formats("json")
     authenticate()
 
-    val taskId = {params("task-id")}.toInt
+    val taskId = {params("id")}.toInt
 
-    val ontologyAuthorization = Task.authorizedToParticipateInTask(user.id, taskId) || Task.authorizedToEditTask(user.id, taskId)
+    val userId = user.id
+
+    val ontologyAuthorization = Task.authorizedToParticipateInTask(userId, taskId) || Task.authorizedToEditTask(userId, taskId)
 
     if(ontologyAuthorization)
       OntologyVersion.latestVersionByTask(taskId).map(_.map(_.toJson))
@@ -118,13 +134,15 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
     OntologyVersion.ontologyTypes
   }
 
-  get("/tasks/:task-id/image-sources") {
+  get("/tasks/:id/image-sources") {
     contentType = formats("json")
     authenticate()
 
-    val taskId = {params("task-id")}.toInt
+    val taskId = {params("id")}.toInt
 
-    val taskAuthorization = Task.authorizedToViewTaskDetails(user.id, taskId)
+    val userId = user.id
+
+    val taskAuthorization = Task.authorizedToViewTaskDetails(userId, taskId)
 
     if(taskAuthorization)
       ImageSource.byTask(taskId)

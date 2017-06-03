@@ -13,6 +13,8 @@ case class Invitation(id: String = null, taskId: Int, createdMillis: Long) exten
   def updateId(id: String) = this.copy(id = id)
 }
 
+case class InvitationLink(link: String)
+
 object Invitation extends SlickUUIDObject[Invitation, (String, Int, Long), Tables.Invitations] {
   lazy val table = Tables.invitations
 
@@ -24,7 +26,10 @@ object Invitation extends SlickUUIDObject[Invitation, (String, Int, Long), Table
 
     val created = create(toCreate)
 
-    created.map(c => "/?inv="+c.id)
+    created.map(c => {
+      println("huh?")
+      InvitationLink("/?inv="+c.id)
+    })
   }
 
   def acceptInvitation(userId: Int, invitationString: String) = {
