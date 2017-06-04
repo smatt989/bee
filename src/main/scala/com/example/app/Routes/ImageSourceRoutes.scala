@@ -25,11 +25,11 @@ trait ImageSourceRoutes extends SlickRoutes with AuthenticationSupport {
       throw new Exception("Not authorized to edit this task")
   }
 
-  post("/image-sources/:image-source-id/delete") {
+  post("/image-sources/:id/delete") {
     contentType = formats("json")
     authenticate()
 
-    val imageSourceId = {params("image-source-id")}.toInt
+    val imageSourceId = {params("id")}.toInt
 
     val imageSource = Await.result(ImageSource.byId(imageSourceId), Duration.Inf)
 
