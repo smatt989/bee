@@ -7,7 +7,8 @@ import reducer from './reducer';
 import {setState, loadTriggerElementSubTypes, loadTriggerElementSubTypesSuccess, loadTriggerElementSubTypesError, cleanState} from './action_creators';
 import promise from 'redux-promise';
 import App from './components/App';
-import {AppGridContainer} from './components/AppGrid';
+import Home from './components/Home';
+import Register from './components/Register';
 
 const createStoreWithMiddleware = applyMiddleware(
   promise
@@ -21,7 +22,8 @@ store.dispatch(loadTriggerElementSubTypes()).then((response) => {
            });
 
 const routes = <Route component={App}>
-  <Route path="/" component={AppGridContainer} />
+  <Route path="/" component={Home} />
+  <Route path="/register" component={Register} />
 </Route>;
 
 ReactDOM.render(
