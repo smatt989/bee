@@ -20,7 +20,9 @@ trait ImageSourceRoutes extends SlickRoutes with AuthenticationSupport {
     val taskAuthorization = Task.authorizedToEditTask(user.id, imageSource.taskId)
 
     if(taskAuthorization) {
-      ImageSource.save(imageSource)
+      val savedImageSource = Await.result(ImageSource.save(imageSource), Duration.Inf)
+      ImageSource.updateImageSourceImages(savedImageSource)
+      savedImageSource
     } else
       throw new Exception("Not authorized to edit this task")
   }

@@ -5,11 +5,11 @@ import com.example.app.{HasUUID, SlickUUIDObject, Tables}
 /**
   * Created by matt on 5/31/17.
   */
-case class ImageToTaskRelation(id: String, imageId: String, taskId: Int) extends HasUUID[ImageToTaskRelation] {
+case class ImageToImageSourceRelation(id: String, imageId: String, imageSourceId: Int) extends HasUUID[ImageToImageSourceRelation] {
   def updateId(id: String) = this.copy(id = id)
 }
 
-object ImageToTaskRelation extends SlickUUIDObject[ImageToTaskRelation, (String, String, Int), Tables.ImageToTaskRelations]{
+object ImageToImageSourceRelation extends SlickUUIDObject[ImageToImageSourceRelation, (String, String, Int), Tables.ImageToImageSourceRelations]{
   lazy val table = Tables.imageToTaskRelations
 
   def reify(tuple: (String, String, Int)) =

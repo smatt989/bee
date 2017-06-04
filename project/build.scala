@@ -44,7 +44,8 @@ object TestappBuild extends Build {
         "org.mindrot" % "jbcrypt" % "0.3m",
         "io.netty" % "netty-tcnative-boringssl-static" % "1.1.33.Fork24",
         "org.eclipse.jetty.alpn" % "alpn-api" % "1.1.3.v20160715",
-        "com.relayrides" % "pushy" % "0.9.2"
+        "com.relayrides" % "pushy" % "0.9.2",
+        "com.amazonaws" % "aws-java-sdk" % "1.11.46"
       ),
       scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
         Seq(
