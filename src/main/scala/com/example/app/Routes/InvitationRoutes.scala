@@ -12,9 +12,11 @@ trait InvitationRoutes extends SlickRoutes with AuthenticationSupport {
     contentType = formats("json")
     authenticate()
 
-    val userId = user.id
+    val u = user
+    val userId = u.id
+
     val invitation = {params("invitation")}
 
-    Invitation.acceptInvitation(userId, invitation).map(_.richParticipant(user.toJson).toJson)
+    Invitation.acceptInvitation(userId, invitation).map(_.richParticipant(u.toJson).toJson)
   }
 }
