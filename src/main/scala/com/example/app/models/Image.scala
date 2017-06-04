@@ -33,6 +33,12 @@ object Image extends UpdatableUUIDObject[Image, (String, String, String), Tables
     val labeledImages = labels.map(_.imageId)
     val seenImages = views.map(_.imageId)
 
-    util.Random.shuffle(Await.result(db.run(table.filterNot(_.id inSet (labeledImages ++ seenImages)).result), Duration.Inf)).headOption.map(reify)
+    util.Random.shuffle(Await.result(db.run(
+      (for {
+        imageSources <- ImageSource.table if imageSources.taskId === taskId
+        relations <- ImageToImageSourceRelation.table if imageSources.id === relations.imageSourceId
+        images <- table.filterNot(_.id inSet (labeledImages ++ seenImages)) if images.id === relations.imageId
+      } yield (images)).result
+    ), Duration.Inf)).headOption.map(reify)
   }
 }

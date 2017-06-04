@@ -105,15 +105,16 @@ object Tables {
     def * = (id, externalId, location)
   }
 
-  class ImageToTaskRelations(tag: Tag) extends Table[(String, String, Int)](tag, "IMAGE_TO_TASK_RELATIONS") with HasIdColumn[String] {
+  //TODO: OMFG NEED TO CHANGE THE NAME OF THE ID AND THE TABLE
+  class ImageToImageSourceRelations(tag: Tag) extends Table[(String, String, Int)](tag, "IMAGE_TO_TASK_RELATIONS") with HasIdColumn[String] {
     def id = column[String]("IMAGE_TO_TASK_RELATION_ID", O.PrimaryKey)
     def imageId = column[String]("IMAGE_ID")
-    def taskId = column[Int]("TASK_ID")
+    def imageSourceId = column[Int]("IMAGE_SOURCE_ID")
 
-    def * = (id, imageId, taskId)
+    def * = (id, imageId, imageSourceId)
 
     def image = foreignKey("IMAGE_TO_TASK_RELATION_TO_IMAGES_FK", imageId, images)(_.id)
-    def task = foreignKey("IMAGE_TO_TASK_RELATION_TO_TASKS_FK", taskId, tasks)(_.id)
+    def imageSource = foreignKey("IMAGE_TO_TASK_RELATION_TO_IMAGE_SOURCE_FK", imageSourceId, tasks)(_.id)
   }
 
   class ImageSources(tag: Tag) extends Table[(Int, Int, String, String, String)](tag, "IMAGE_SOURCES") with HasIdColumn[Int] {
@@ -178,7 +179,7 @@ object Tables {
   val participants = TableQuery[Participants]
   val invitations = TableQuery[Invitations]
   val images = TableQuery[Images]
-  val imageToTaskRelations = TableQuery[ImageToTaskRelations]
+  val imageToTaskRelations = TableQuery[ImageToImageSourceRelations]
   val imageSources = TableQuery[ImageSources]
   val labels = TableQuery[Labels]
   val imageViews = TableQuery[ImageViews]
