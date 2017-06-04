@@ -8,13 +8,13 @@ import com.example.app.{AuthenticationSupport, SlickRoutes}
   */
 trait ParticipantRoutes extends SlickRoutes with AuthenticationSupport {
 
-  post("/participants/:participant-id/deactivate") {
+  post("/participants/:id/deactivate") {
     contentType = formats("json")
     authenticate()
 
     val userId = user.id
 
-    val participantId = {params("participant-id")}.toInt
+    val participantId = {params("id")}.toInt
 
     val participantAuthorization = Task.authorizedToEditParticipant(userId, participantId)
 
@@ -25,13 +25,13 @@ trait ParticipantRoutes extends SlickRoutes with AuthenticationSupport {
 
   }
 
-  post("/participants/:participant-id/activate") {
+  post("/participants/:id/activate") {
     contentType = formats("json")
     authenticate()
 
     val userId = user.id
 
-    val participantId = {params("participant-id")}.toInt
+    val participantId = {params("id")}.toInt
 
     val participantAuthorization = Task.authorizedToEditParticipant(userId, participantId)
 
