@@ -68,6 +68,12 @@ object Task extends UpdatableDBObject[Task, (Int, String, Int, Long), Tables.Tas
     authorizedToEditTask(userId, taskId)
   }
 
+  def authorizedToEditImageSource(userId: Int, imageSourceId: Int) = {
+    val imageSource = Await.result(ImageSource.byId(imageSourceId), Duration.Inf)
+    val taskId = imageSource.taskId
+    authorizedToEditTask(userId, taskId)
+  }
+
   def saveWithParticipantCreation(userId: Int, task: Task) = {
     val saved = Await.result(save(task), Duration.Inf)
     if(!Participant.isParticipantInTask(userId, saved.id))

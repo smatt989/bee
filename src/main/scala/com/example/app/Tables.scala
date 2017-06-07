@@ -105,16 +105,15 @@ object Tables {
     def * = (id, externalId, location)
   }
 
-  //TODO: OMFG NEED TO CHANGE THE NAME OF THE ID AND THE TABLE
-  class ImageToImageSourceRelations(tag: Tag) extends Table[(String, String, Int)](tag, "IMAGE_TO_TASK_RELATIONS") with HasIdColumn[String] {
-    def id = column[String]("IMAGE_TO_TASK_RELATION_ID", O.PrimaryKey)
+  class ImageToImageSourceRelations(tag: Tag) extends Table[(String, String, Int)](tag, "IMAGE_TO_IMAGE_SOURCE_RELATIONS") with HasIdColumn[String] {
+    def id = column[String]("IMAGE_TO_IMAGE_SOURCE_RELATION_ID", O.PrimaryKey)
     def imageId = column[String]("IMAGE_ID")
     def imageSourceId = column[Int]("IMAGE_SOURCE_ID")
 
     def * = (id, imageId, imageSourceId)
 
-    def image = foreignKey("IMAGE_TO_TASK_RELATION_TO_IMAGES_FK", imageId, images)(_.id)
-    def imageSource = foreignKey("IMAGE_TO_TASK_RELATION_TO_IMAGE_SOURCE_FK", imageSourceId, tasks)(_.id)
+    def image = foreignKey("IMAGE_TO_IMAGE_SOURCE_RELATION_TO_IMAGES_FK", imageId, images)(_.id)
+    def imageSource = foreignKey("IMAGE_TO_IMAGE_SOURCE_RELATION_TO_IMAGE_SOURCE_FK", imageSourceId, tasks)(_.id)
   }
 
   class ImageSources(tag: Tag) extends Table[(Int, Int, String, String, String)](tag, "IMAGE_SOURCES") with HasIdColumn[Int] {
@@ -122,9 +121,9 @@ object Tables {
     def taskId = column[Int]("TASK_ID")
     def name = column[String]("IMAGE_SOURCE_NAME")
     def imageSourceType = column[String]("IMAGE_SOURCE_TYPE")
-    def address = column[String]("IMAGE_SOURCE_ADDRESS")
+    def configs = column[String]("IMAGE_SOURCE_CONFIGS")
 
-    def * = (id, taskId, name, imageSourceType, address)
+    def * = (id, taskId, name, imageSourceType, configs)
 
     def task = foreignKey("IMAGE_SOURCE_TO_TASK_FK", taskId, tasks)(_.id)
   }

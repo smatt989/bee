@@ -1,6 +1,6 @@
 package com.example.app.Routes
 
-import com.example.app.models.{ImageSource, Task}
+import com.example.app.models.{ImageSource, ImageSourceRequest, Task}
 import com.example.app.{AuthenticationSupport, SlickRoutes}
 
 import scala.concurrent.Await
@@ -15,16 +15,39 @@ trait ImageSourceRoutes extends SlickRoutes with AuthenticationSupport {
     contentType = formats("json")
     authenticate()
 
-    val imageSource = parsedBody.extract[ImageSource]
+    val imageSource = parsedBody.extract[ImageSourceRequest]
 
-    val taskAuthorization = Task.authorizedToEditTask(user.id, imageSource.taskId)
+    val taskAuthorization = if(imageSource.id != null && imageSource.id > 0)
+      Task.authorizedToEditImageSource(user.id, imageSource.id)
+    else
+      Task.authorizedToEditTask(user.id, imageSource.taskId)
 
     if(taskAuthorization) {
-      val savedImageSource = Await.result(ImageSource.save(imageSource), Duration.Inf)
+      val savedImageSource = Await.result(ImageSource.save(imageSource.getSerialized), Duration.Inf)
       ImageSource.updateImageSourceImages(savedImageSource)
-      savedImageSource
+      savedImageSource.makeHeaderMap
+      savedImageSource.toJson
     } else
       throw new Exception("Not authorized to edit this task")
+  }
+
+  get("/image-sources/:id/view") {
+    contentType = formats("json")
+    authenticate()
+
+    val imageSourceId = {params("id")}.toInt
+
+    val userId = user.id
+
+    val taskAuthorization =
+      Task.authorizedToEditImageSource(user.id, imageSourceId)
+
+    if(taskAuthorization) {
+      val imageSource = Await.result(ImageSource.byId(imageSourceId), Duration.Inf)
+      imageSource.makeHeaderMap
+      imageSource.toJson
+    } else
+      throw new Exception("Not authorized to view this image source")
   }
 
   post("/image-sources/:id/delete") {
