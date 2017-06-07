@@ -14,11 +14,11 @@ export default class NavBar extends React.Component {
             </Navbar.Header>
             <Navbar.Collapse>
               <Nav>
-                <LinkContainer to="#"><NavItem eventKey={1}>Tasks</NavItem></LinkContainer>
-                <LinkContainer to="#"><NavItem eventKey={2}>Images</NavItem></LinkContainer>
+                <LinkContainer to="/tasks"><NavItem eventKey={1}>Tasks</NavItem></LinkContainer>
+                <LinkContainer to="/images"><NavItem eventKey={2}>Images</NavItem></LinkContainer>
               </Nav>
               <Nav pullRight>
-                <LinkContainer to="#"><NavItem eventKey={1}>Log In</NavItem></LinkContainer>
+                <LinkContainer to="/login"><NavItem eventKey={1}>Log In</NavItem></LinkContainer>
                 <LinkContainer to="/register"><NavItem eventKey={2}>Sign Up</NavItem></LinkContainer>
               </Nav>
             </Navbar.Collapse>
