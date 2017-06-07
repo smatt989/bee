@@ -5,7 +5,7 @@ import {Provider} from 'react-redux';
 import reducer from './reducer';
 import {SET_USER} from './actions';
 import promise from 'redux-promise';
-import App from './components/App';
+import App from './components/App.jsx';
 
 const initialState = {
   userId: null
