@@ -5,10 +5,10 @@ import {
   Switch
 } from 'react-router-dom';
 import { Grid, Row, Col } from 'react-bootstrap';
-import NavBar from './NavBar';
-import Home from './Home';
-import Register from './Register';
-import Err from './Error';
+import NavBar from './NavBar.jsx';
+import Home from './Home.jsx';
+import Register from './Register.jsx';
+import Err from './Error.jsx';
 
 export default class App extends React.Component {
   render() {
