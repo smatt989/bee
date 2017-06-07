@@ -145,7 +145,7 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
     val taskAuthorization = Task.authorizedToViewTaskDetails(userId, taskId)
 
     if(taskAuthorization)
-      ImageSource.byTask(taskId)
+      ImageSource.byTask(taskId).map(_.map(_.toJson))
     else
       throw new Exception("Not authorized to view this information for this task")
   }

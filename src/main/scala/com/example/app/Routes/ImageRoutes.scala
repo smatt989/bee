@@ -2,6 +2,8 @@ package com.example.app.Routes
 
 import com.example.app.models._
 import com.example.app.{AuthenticationSupport, SlickRoutes}
+import org.json4s.jackson.JsonMethods
+import org.json4s.jackson.Serialization
 
 /**
   * Created by matt on 6/2/17.
@@ -30,9 +32,20 @@ trait ImageRoutes extends SlickRoutes with AuthenticationSupport {
 
     val participantAuthorization = Task.authorizedToParticipateInTask(user.id, imageRequest.taskId)
 
-    if(participantAuthorization)
-      Image.nextImage(user.id, imageRequest.taskId)
-    else
+    if(participantAuthorization) {
+      val imageWithAccess = Image.nextImage(user.id, imageRequest.taskId)
+
+      if(imageWithAccess.isDefined) {
+        response.addHeader("image-request-headers", Serialization.write(imageWithAccess.get.accessConfigs))
+      }
+      imageWithAccess
+    } else
       throw new Exception("Not authorized to view this task's images")
+  }
+
+  get("/images") {
+    contentType = formats("json")
+
+    Image.getAll
   }
 }
