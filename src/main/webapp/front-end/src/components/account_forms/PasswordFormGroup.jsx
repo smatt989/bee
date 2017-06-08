@@ -4,7 +4,7 @@ import AccountFormGroupBase from './AccountFormGroupBase.jsx'
 export default class PasswordFormGroup extends React.Component {
   constructor(props) {
     super(props);
-    this.getValidationState = (state) => {
+    this.validation = (state) => {
       if (state.focused || !state.hasFocused) {
         return null;
       }
@@ -18,11 +18,12 @@ export default class PasswordFormGroup extends React.Component {
   }
 
   render() {
+    const { isSignup, placeholder } = this.props.pwInputProps;
     const baseProps = {
       type: "password",
-      getValidationState: this.getValidationState,
+      validation: isSignup ? this.validation : null,
       label: "Password",
-      placeholder: "Choose a password"
+      placeholder: placeholder
     }
 
     return <AccountFormGroupBase baseProps={baseProps} />

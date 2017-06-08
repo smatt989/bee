@@ -20,7 +20,8 @@ export default class AccountFormGroupBase extends React.Component {
   }
 
   render() {
-    const { type, label, getValidationState, placeholder } = this.props.baseProps;
+    const { type, label, validation, placeholder } = this.props.baseProps;
+    const getValidationState = validation != null ? validation : () => { return null };
     return <FormGroup controlId={type} validationState={getValidationState(this.state)}>
       <ControlLabel>{label}</ControlLabel>
       <FormControl 
