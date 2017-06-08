@@ -1,8 +1,9 @@
 import React from 'react';
-import { 
-  Button,
+import {
+  Grid, 
   Row, 
-  Col
+  Col,
+  Button  
 } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import EmailFormGroup from './account_forms/EmailFormGroup.jsx'
