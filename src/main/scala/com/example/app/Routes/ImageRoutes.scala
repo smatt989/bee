@@ -38,7 +38,7 @@ trait ImageRoutes extends SlickRoutes with AuthenticationSupport {
       if(imageWithAccess.isDefined) {
         response.addHeader("Image-Request-Headers", Serialization.write(imageWithAccess.get.accessConfigs))
       }
-      
+
       imageWithAccess.map(_.image)
     } else
       throw new Exception("Not authorized to view this task's images")

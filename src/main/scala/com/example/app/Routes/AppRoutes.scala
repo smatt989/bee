@@ -8,17 +8,15 @@ trait AppRoutes extends SlickRoutes with AuthenticationSupport{
 
 
   get("/") {
-      <html>
-        <head>
-          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css" />
-            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
-            <link rel="stylesheet" href="/front-end/dist/app.css" />
-          </head>
-          <body>
-            <div id="app"></div>
-            <script src="/front-end/dist/bundle.js"></script>
-          </body>
-        </html>
+    <html>
+      <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css" />
+        </head>
+        <body>
+          <div id="app"></div>
+          <script src="/front-end/dist/bundle.js"></script>
+        </body>
+      </html>
   }
 
 }
