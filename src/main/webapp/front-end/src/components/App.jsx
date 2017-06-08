@@ -30,7 +30,8 @@ export default class App extends React.Component {
               <Route exact path="/register" component={Register}/>
               <Route exact path="/tasks" component={Tasks}/>
               <Route exact path="/images" component={Images}/>
-              <Route path="/" component={Err}/>
+              <Route exact path="/recover" component={Images}/>
+              <Route component={Err}/>
             </Switch>
           </Col>
         </Row>
