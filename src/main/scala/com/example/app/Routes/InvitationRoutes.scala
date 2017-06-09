@@ -1,7 +1,10 @@
 package com.example.app.Routes
 
-import com.example.app.models.Invitation
+import com.example.app.models.{Invitation, Task}
 import com.example.app.{AuthenticationSupport, SlickRoutes}
+
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 /**
   * Created by matt on 6/2/17.
@@ -17,6 +20,8 @@ trait InvitationRoutes extends SlickRoutes with AuthenticationSupport {
 
     val invitation = {params("invitation")}
 
-    Invitation.acceptInvitation(userId, invitation).map(_.richParticipant(u.toJson).toJson)
+    val participant = Await.result(Invitation.acceptInvitation(userId, invitation), Duration.Inf)
+
+    Task.byId(participant.taskId).map(_.toJson(userId))
   }
 }
