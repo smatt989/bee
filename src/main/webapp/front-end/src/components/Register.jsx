@@ -15,7 +15,7 @@ export default class Register extends React.Component {
     const pwInputProps = { isSignup: true, placeholder: "Choose a password" };
 
     // TODO onSubmit validation, prevent submission if error
-    return <div>
+    return <Grid>
         <Row>
           <h1>Register</h1>
         </Row>
@@ -31,6 +31,6 @@ export default class Register extends React.Component {
             <span className="altAuthMsg">Have an account? <Link to={{ pathname: "/login" }}>Log in</Link>.</span>
           </Row>
         </form>
-      </div>
+      </Grid>
   }
 }
