@@ -4,7 +4,7 @@ import {
   PageHeader,
   Button,
 } from 'react-bootstrap';
-import TaskListGroup from './TasksListGroup.jsx';
+import TaskTable from './TasksTable.jsx';
 
 export default class Tasks extends React.Component {
   constructor(props) {
@@ -19,14 +19,14 @@ export default class Tasks extends React.Component {
       <PageHeader>
         Tasks
         <Button
-          className="pull-right new-lgi-btn"
+          className="pull-right new-tbl-item-btn"
           bsStyle="primary"
           type="button"
           onClick={this.onClick}>
           New Task
         </Button>
       </PageHeader>
-      <TaskListGroup />
+      <TaskTable />
     </Grid>;
   }
 }
