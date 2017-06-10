@@ -1,8 +1,7 @@
 import React from 'react';
 import {
   Grid, 
-  Row, 
-  Col,
+  PageHeader,
   Button  
 } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
@@ -16,20 +15,16 @@ export default class Register extends React.Component {
 
     // TODO onSubmit validation, prevent submission if error
     return <Grid>
-        <Row>
-          <h1>Register</h1>
-        </Row>
+        <PageHeader>Register</PageHeader>
         <form role="form" action="/auth/signup" method="post">
-          <Row><EmailFormGroup emailInputProps={emailInputProps}/></Row>
-          <Row><PasswordFormGroup pwInputProps={pwInputProps}/></Row>
-          <Row>
-            <Button
-              bsStyle="primary"
-              type="submit">
-              Register
-            </Button>
-            <span className="altAuthMsg">Have an account? <Link to={{ pathname: "/login" }}>Log in</Link>.</span>
-          </Row>
+          <EmailFormGroup emailInputProps={emailInputProps}/>
+          <PasswordFormGroup pwInputProps={pwInputProps}/>
+          <Button
+            bsStyle="primary"
+            type="submit">
+            Register
+          </Button>
+          <span className="altAuthMsg">Have an account? <Link to={{ pathname: "/login" }}>Log in</Link>.</span>
         </form>
       </Grid>
   }

@@ -37,7 +37,7 @@ export default class Tasks extends React.Component {
     return <Grid>
       <PageHeader>
         Tasks
-        <Button 
+        <Button
           id="new-task-btn"
           className="pull-right"
           bsStyle="primary"
@@ -45,7 +45,7 @@ export default class Tasks extends React.Component {
           onClick={this.onClick}>
           New Task
         </Button>
-        </PageHeader>
+      </PageHeader>
       <TaskListGroup />
     </Grid>;
   }
