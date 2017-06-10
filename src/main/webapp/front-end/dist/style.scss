@@ -2,13 +2,20 @@
   margin-left: 10px;
 }
 
-/* List Group Items */
+/* Tasks */
 
-.new-lgi-btn {
+.new-tbl-item-btn {
   margin-top: 2px;
 }
 
-.lgi-name {
-  font-size: 18px;
-  line-height: 34px;
+#task-tbl {
+  th:first-child,
+  td:first-child {
+    width: 10%;
+  }
+
+  th:nth-child(2),
+  th:nth-child(2) {
+    width: 60%;
+  }
 }
