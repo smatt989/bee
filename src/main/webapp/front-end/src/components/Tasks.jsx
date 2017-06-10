@@ -3,27 +3,8 @@ import {
   Grid, 
   PageHeader,
   Button,
-  ListGroup, 
-  ListGroupItem
 } from 'react-bootstrap';
-
-class TaskListGroup extends React.Component {
-  constructor(props) {
-    super(props);
-    this.onClick = () => console.log("clicked");
-  }
-
-  render() {
-    return <ListGroup>
-      <ListGroupItem onClick={this.onClick}>
-        Task 1
-      </ListGroupItem>
-      <ListGroupItem onClick={this.onClick}>
-        Task 2
-      </ListGroupItem>
-    </ListGroup>
-  }
-}
+import TaskListGroup from './TasksListGroup.jsx';
 
 export default class Tasks extends React.Component {
   constructor(props) {
@@ -38,8 +19,7 @@ export default class Tasks extends React.Component {
       <PageHeader>
         Tasks
         <Button
-          id="new-task-btn"
-          className="pull-right"
+          className="pull-right new-lgi-btn"
           bsStyle="primary"
           type="button"
           onClick={this.onClick}>
