@@ -1,5 +1,11 @@
 import React from 'react';
-import { Grid, ListGroup, ListGroupItem } from 'react-bootstrap';
+import { 
+  Grid, 
+  PageHeader,
+  Button,
+  ListGroup, 
+  ListGroupItem
+} from 'react-bootstrap';
 
 class TaskListGroup extends React.Component {
   constructor(props) {
@@ -20,9 +26,26 @@ class TaskListGroup extends React.Component {
 }
 
 export default class Tasks extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onClick = () => {
+      // TODO 
+    }
+  }
+
   render() {
     return <Grid>
-      <h1>Tasks</h1>
+      <PageHeader>
+        Tasks
+        <Button 
+          id="new-task-btn"
+          className="pull-right"
+          bsStyle="primary"
+          type="button"
+          onClick={this.onClick}>
+          New Task
+        </Button>
+        </PageHeader>
       <TaskListGroup />
     </Grid>;
   }
