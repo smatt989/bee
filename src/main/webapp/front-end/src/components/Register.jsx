@@ -6,7 +6,7 @@ import {
 } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { signupEmailChanged, signupPasswordChanged } from '../actions.js'
+import { signupEmailChanged, signupPasswordChanged, createUser } from '../actions.js'
 import EmailFormGroupContainer from './account_forms/EmailFormGroup.jsx'
 import PasswordFormGroup from './account_forms/PasswordFormGroup.jsx'
 
@@ -74,9 +74,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         // TODO onSubmit validation, prevent submission if error
-        onSubmit: (email, password) => {
-          console.log(email, password);
-        }
+        onSubmit: (email, password) => dispatch(createUser(email, password))
     }
 }
 

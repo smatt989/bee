@@ -31,7 +31,8 @@ export function createUser(email, password) {
             'email': email,
             'password': password
         }
-    });
+    })
+    .catch(error => console.log(error));
 
     return {
         type: 'CREATE_USER',
@@ -61,7 +62,12 @@ export function login(email, password) {
             'email': email,
             'password': password
         }
-    });
+    })
+    .then(response => {
+        // console.log("hello", response);
+        // loginSuccess();
+    })
+    .catch(error => console.log(error));
 
     return {
         type: 'LOGIN',

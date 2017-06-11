@@ -33,7 +33,7 @@ function cleanState() {
         currentImage: Map({image: null, loadConfigs: null, markedSeen: false, error: null, loading: false}),
         savingLabels: Map({error: null, loading: false}),
         currentLabels: Map({labels: List.of(), error: null, loading: false}),
-        signupEmailChanged: Map({email: ''}),
+        signupEmailChanged: Map({ email: ''}),
         signupPasswordChanged: Map({ password: ''}),
         loginEmailChanged: Map({ email: '' }),
         loginPasswordChanged: Map({ password: '' })
@@ -43,7 +43,9 @@ function cleanState() {
 }
 
 function createUser(state) {
-    return state.set('createUser', Map({loading: true, error: null}));
+    return Object.assign({}, state, {
+        signup: Object.assign({}, state.signup, {loading: true, error: null})
+    });
 }
 
 function createUserSuccess(state, user) {
@@ -54,7 +56,7 @@ function createUserError(state, error) {
     return state.set('createUser', Map({loading: false, error: Immutable.fromJS(error)}));
 }
 
-function login(state){
+function login(state) {
     return Object.assign({}, state, {
         login: Object.assign({}, state.login, {session: null, error: null, loading: true})
     })
