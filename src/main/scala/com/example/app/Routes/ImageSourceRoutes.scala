@@ -1,7 +1,7 @@
 package com.example.app.Routes
 
 import com.example.app.models.{ImageSource, ImageSourceRequest, Task}
-import com.example.app.{AuthenticationSupport, SessionTokenStrategy, SlickRoutes}
+import com.example.app.{AuthenticationSupport, SlickRoutes}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -10,11 +10,6 @@ import scala.concurrent.duration.Duration
   * Created by matt on 6/1/17.
   */
 trait ImageSourceRoutes extends SlickRoutes with AuthenticationSupport {
-
-  before() {
-    val imageSourceTypeFieldHeaders = ImageSource.imageSourceTypes.flatMap(_.fields)
-    response.setHeader("Access-Control-Expose-Headers", (Seq(SessionTokenStrategy.HeaderKey) ++ imageSourceTypeFieldHeaders).mkString(", "))
-  }
 
   post("/image-sources/save") {
     contentType = formats("json")

@@ -1,7 +1,7 @@
 package com.example.app.Routes
 
 import com.example.app.models._
-import com.example.app.{AuthenticationSupport, SessionTokenStrategy, SlickRoutes}
+import com.example.app.{AuthenticationSupport, SlickRoutes}
 import org.json4s.jackson.JsonMethods
 import org.json4s.jackson.Serialization
 
@@ -9,11 +9,6 @@ import org.json4s.jackson.Serialization
   * Created by matt on 6/2/17.
   */
 trait ImageRoutes extends SlickRoutes with AuthenticationSupport {
-
-  before() {
-    val imageSourceTypeFieldHeaders = ImageSource.imageSourceTypes.flatMap(_.fields)
-    response.setHeader("Access-Control-Expose-Headers", (Seq(SessionTokenStrategy.HeaderKey, Image.configsHeader).mkString(", ")))
-  }
 
   post("/images/seen") {
     contentType = formats("json")
