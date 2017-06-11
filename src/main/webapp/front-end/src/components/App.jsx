@@ -7,8 +7,8 @@ import {
 import { Grid, Row, Col } from 'react-bootstrap';
 import NavBar from './NavBar.jsx';
 import Home from './Home.jsx';
-import Login from './Login.jsx';
-import Register from './Register.jsx';
+import LoginContainer from './Login.jsx';
+import RegisterContainer from './Register.jsx';
 import Tasks from './Tasks.jsx';
 import Images from './Images.jsx';
 import Err from './Error.jsx';
@@ -26,8 +26,8 @@ export default class App extends React.Component {
           <Col>
             <Switch>
               <Route exact path="/" component={Home}/>
-              <Route exact path="/login" component={Login}/>
-              <Route exact path="/register" component={Register}/>
+              <Route exact path="/login" component={LoginContainer}/>
+              <Route exact path="/register" component={RegisterContainer}/>
               <Route exact path="/tasks" component={Tasks}/>
               <Route exact path="/images" component={Images}/>
               <Route exact path="/recover" component={Images}/>

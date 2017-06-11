@@ -8,7 +8,9 @@ import App from './components/App.jsx';
 
 const initialState = {
   email: "",
-  password: ""
+  password: "",
+  email_login: "",
+  password_login: ""
 }
 
 const createStoreWithMiddleware = applyMiddleware(
