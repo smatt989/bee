@@ -7,7 +7,8 @@ import promise from 'redux-promise';
 import App from './components/App.jsx';
 
 const initialState = {
-  userId: null
+  email: "",
+  password: ""
 }
 
 const createStoreWithMiddleware = applyMiddleware(
