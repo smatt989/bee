@@ -7,12 +7,14 @@ import promise from 'redux-promise';
 import App from './components/App.jsx';
 
 const initialState = {
-  login: {
-    email: "",
-    password: ""
+  signup: {
+    email: '',
+    password: ''
   },
-  email: "",
-  password: ""
+  login: {
+    email: '',
+    password: ''
+  }
 }
 
 const createStoreWithMiddleware = applyMiddleware(

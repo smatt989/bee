@@ -32,7 +32,11 @@ function cleanState() {
         markingImageSeen: Map({error: null, loading: false}),
         currentImage: Map({image: null, loadConfigs: null, markedSeen: false, error: null, loading: false}),
         savingLabels: Map({error: null, loading: false}),
-        currentLabels: Map({labels: List.of(), error: null, loading: false})
+        currentLabels: Map({labels: List.of(), error: null, loading: false}),
+        signupEmailChanged: Map({email: ''}),
+        signupPasswordChanged: Map({ password: ''}),
+        loginEmailChanged: Map({ email: '' }),
+        loginPasswordChanged: Map({ password: '' })
     });
 
     return cleanState
@@ -345,6 +349,18 @@ function viewParticipantImageLabelsError(state, error) {
     return state.set('currentLabels', Map({labels: List.of(), error: Immutable.fromJS(error), loading: false}))
 }
 
+function signupEmailChanged(state, email) {
+    return Object.assign({}, state, {
+        signup: Object.assign({}, state.signup, { email: email })
+    });
+}
+
+function signupPasswordChanged(state, password) {
+    return Object.assign({}, state, {
+        signup: Object.assign({}, state.signup, { password: password })
+    });
+}
+
 function loginEmailChanged(state, email) {
     return Object.assign({}, state, {
         login: Object.assign({}, state.login, { email: email })
@@ -506,13 +522,9 @@ export default function reducer(state = Map(), action) {
     case 'VIEW_PARTICIPANT_IMAGE_LABELS_ERROR':
         return viewParticipantImageLabelsError(state, action.error);
     case SIGNUP_EMAIL_CHANGED:
-        return Object.assign({}, state, {
-            email: action.email
-        });
+        return signupEmailChanged(state, action.email);
     case SIGNUP_PASSWORD_CHANGED:
-        return Object.assign({}, state, {
-            password: action.password
-        });
+        return signupPasswordChanged(state, action.password);
     case LOGIN_EMAIL_CHANGED:
         return loginEmailChanged(state, action.email);
     case LOGIN_PASSWORD_CHANGED:

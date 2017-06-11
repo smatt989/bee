@@ -66,8 +66,8 @@ class Register extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        email: state.email,
-        password: state.password
+        email: state.signup.email,
+        password: state.signup.password
     }
 }
 
