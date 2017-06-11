@@ -2,12 +2,6 @@ import {Map, List} from 'immutable';
 import Immutable from 'immutable';
 import {setSession} from './utilities';
 
-import { SET_USER } from './actions.js'
-
-function setUser(state, userId) {
-    return state.setIn(['user', 'id'], userId)
-}
-
 function cleanState() {
     const cleanState = Map({
         createUser: Map({loading: false, error: null}),
@@ -349,8 +343,6 @@ function viewParticipantImageLabelsError(state, error) {
 
 export default function reducer(state = Map(), action) {
   switch (action.type) {
-    case SET_USER:
-        return setUser(state, action.userId);
     case 'CLEAN_STATE':
         return cleanState();
     case 'CREATE_USER':

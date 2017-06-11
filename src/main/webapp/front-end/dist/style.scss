@@ -1,3 +1,21 @@
 .altAuthMsg {
   margin-left: 10px;
 }
+
+/* Tasks */
+
+.new-tbl-item-btn {
+  margin-top: 2px;
+}
+
+#task-tbl {
+  th:first-child,
+  td:first-child {
+    width: 10%;
+  }
+
+  th:nth-child(2),
+  th:nth-child(2) {
+    width: 60%;
+  }
+}

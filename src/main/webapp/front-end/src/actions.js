@@ -8,7 +8,7 @@ const domain = fullstack ? "" : "http://localhost:8080";
  * action types
  */
 
-export const SET_USER = 'SET_USER'
+// TODO use enums instead of cap strings to specify action types
 
 /*
  * action creators
@@ -690,12 +690,5 @@ export function viewParticipantImageLabelsError(error) {
         type: 'VIEW_PARTICIPANT_IMAGE_LABELS_ERROR',
         error: error
     }
-}
-
-export function setUser(userId) {
-    return {
-        type: SET_USER,
-        userId: userId
-    };
 }
 

@@ -1,8 +1,7 @@
 import React from 'react';
 import { 
   Grid,
-  Row, 
-  Col,
+  PageHeader,
   Button  
 } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
@@ -15,20 +14,16 @@ export default class Login extends React.Component {
     const pwInputProps = { isSignup: false, placeholder: "Enter your password" };
 
     return <Grid>
-        <Row>
-          <h1>Log in</h1>
-        </Row>
+        <PageHeader>Log in</PageHeader>
         <form role="form" action="/auth/login" method="post">
-          <Row><EmailFormGroup emailInputProps={emailInputProps} /></Row>
-          <Row><PasswordFormGroup pwInputProps={pwInputProps} /></Row>
-          <Row>
-            <Button
-              bsStyle="primary"
-              type="submit">
-              Log In
-            </Button>
-            <span className="altAuthMsg"><Link to={{ pathname: "/recover" }}>Forgot your password?</Link></span>
-          </Row>
+          <EmailFormGroup emailInputProps={emailInputProps} />
+          <PasswordFormGroup pwInputProps={pwInputProps} />
+          <Button
+            bsStyle="primary"
+            type="submit">
+            Log In
+          </Button>
+          <span className="altAuthMsg"><Link to={{ pathname: "/recover" }}>Forgot your password?</Link></span>
         </form>
       </Grid>
   }
