@@ -712,13 +712,13 @@ export function signupPasswordChanged(password) {
 export function loginEmailChanged(email) {
     return {
         type: LOGIN_EMAIL_CHANGED,
-        email_login: email
+        email: email
     }
 }
 
 export function loginPasswordChanged(password) {
     return {
         type: LOGIN_PASSWORD_CHANGED,
-        password_login: password
+        password: password
     }
 }

@@ -345,6 +345,18 @@ function viewParticipantImageLabelsError(state, error) {
     return state.set('currentLabels', Map({labels: List.of(), error: Immutable.fromJS(error), loading: false}))
 }
 
+function loginEmailChanged(state, email) {
+    return Object.assign({}, state, {
+        login: Object.assign({}, state.login, { email: email })
+    });
+}
+
+function loginPasswordChanged(state, password) {
+    return Object.assign({}, state, {
+        login: Object.assign({}, state.login, { password: password })
+    });
+}
+
 export default function reducer(state = Map(), action) {
   switch (action.type) {
     case 'CLEAN_STATE':
@@ -502,13 +514,9 @@ export default function reducer(state = Map(), action) {
             password: action.password
         });
     case LOGIN_EMAIL_CHANGED:
-        return Object.assign({}, state, {
-            email_login: action.email_login
-        });
+        return loginEmailChanged(state, action.email);
     case LOGIN_PASSWORD_CHANGED:
-        return Object.assign({}, state, {
-            password_login: action.password_login
-        });
+        return loginPasswordChanged(state, action.password);
     default:
       return state;
   }
