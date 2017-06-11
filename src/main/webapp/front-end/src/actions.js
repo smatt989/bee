@@ -8,7 +8,8 @@ const domain = fullstack ? "" : "http://localhost:8080";
  * action types
  */
 
-// TODO use enums instead of cap strings to specify action types
+export const SIGNUP_EMAIL_CHANGED = 'SIGNUP_EMAIL_CHANGED';
+export const SIGNUP_PASSWORD_CHANGED = 'SIGNUP_PASSWORD_CHANGED';
 
 /*
  * action creators
@@ -692,3 +693,16 @@ export function viewParticipantImageLabelsError(error) {
     }
 }
 
+export function signupEmailChanged(email) {
+    return {
+        type: SIGNUP_EMAIL_CHANGED,
+        email: email
+    }
+}
+
+export function signupPasswordChanged(password) {
+    return {
+        type: SIGNUP_PASSWORD_CHANGED,
+        password: password
+    }
+}

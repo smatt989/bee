@@ -2,22 +2,30 @@ import React from 'react';
 import {
   Grid, 
   PageHeader,
-  Button  
+  Button
 } from 'react-bootstrap';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import EmailFormGroup from './account_forms/EmailFormGroup.jsx'
+import EmailFormGroupContainer from './account_forms/EmailFormGroup.jsx'
 import PasswordFormGroup from './account_forms/PasswordFormGroup.jsx'
 
-export default class Register extends React.Component {
+class Register extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onSubmit = (e) => {
+      e.preventDefault();
+      this.props.onSubmit(this.props.email, this.props.password);
+    }
+  }
+
   render() {
     const emailInputProps = { isSignup: true, placeholder: "Enter your email" };
     const pwInputProps = { isSignup: true, placeholder: "Choose a password" };
 
-    // TODO onSubmit validation, prevent submission if error
     return <Grid>
         <PageHeader>Register</PageHeader>
-        <form role="form" action="/auth/signup" method="post">
-          <EmailFormGroup emailInputProps={emailInputProps}/>
+        <form role="form" onSubmit={e => this.onSubmit(e)}>
+          <EmailFormGroupContainer emailInputProps={emailInputProps}/>
           <PasswordFormGroup pwInputProps={pwInputProps}/>
           <Button
             bsStyle="primary"
@@ -29,3 +37,26 @@ export default class Register extends React.Component {
       </Grid>
   }
 }
+
+const mapStateToProps = state => {
+    return {
+        email: state.email,
+        password: state.password
+    }
+}
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+    return {
+        // TODO onSubmit validation, prevent submission if error
+        onSubmit: (email, password) => {
+          console.log(email, password);
+        }
+    }
+}
+
+const RegisterContainer = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Register)
+
+export default RegisterContainer;
