@@ -55,7 +55,9 @@ function createUserError(state, error) {
 }
 
 function login(state){
-    return state.set('login', Map({session: null, error: null, loading: true}));
+    return Object.assign({}, state, {
+        login: Object.assign({}, state.login, {session: null, error: null, loading: true})
+    })
 }
 
 function loginSuccess(state, session) {
