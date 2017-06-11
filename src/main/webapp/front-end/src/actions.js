@@ -63,11 +63,6 @@ export function login(email, password) {
             'password': password
         }
     })
-    .then(response => {
-        // console.log("hello", response);
-        // loginSuccess();
-    })
-    .catch(error => console.log(error));
 
     return {
         type: 'LOGIN',

@@ -6,7 +6,7 @@ import {
   Button  
 } from 'react-bootstrap';
 import { Link } from 'react-router-dom'
-import { loginEmailChanged, loginPasswordChanged, login } from '../actions.js'
+import { loginEmailChanged, loginPasswordChanged, login, loginSuccess, loginError } from '../actions.js'
 import EmailFormGroup from './account_forms/EmailFormGroup.jsx'
 import PasswordFormGroup from './account_forms/PasswordFormGroup.jsx'
 
@@ -49,7 +49,12 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         // TODO onSubmit validation, prevent submission if error
-        onSubmit: (email, password) => dispatch(login(email, password))
+        onSubmit: (email, password) => {
+          dispatch(login(email, password)).then(response => {
+            console.log(response.payload.headers)
+            !response.error ? dispatch(loginSuccess(response)) : dispatch(loginError(response.error));
+          })
+        }
     }
 }
 
