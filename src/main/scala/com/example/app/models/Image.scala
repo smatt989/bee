@@ -18,6 +18,9 @@ case class Image(id: String, externalId: String, location: String) extends HasUU
 case class ImageWithAccess(image: Image, accessConfigs: Map[String, String])
 
 object Image extends UpdatableUUIDObject[Image, (String, String, String), Tables.Images] {
+
+  val configsHeader = "Image-Request-Headers"
+
   def updateQuery(a: Image) = table.filter(_.id === a.id)
     .map(x => (x.location))
     .update((a.location))
