@@ -10,6 +10,8 @@ const domain = fullstack ? "" : "http://localhost:8080";
 
 export const SIGNUP_EMAIL_CHANGED = 'SIGNUP_EMAIL_CHANGED';
 export const SIGNUP_PASSWORD_CHANGED = 'SIGNUP_PASSWORD_CHANGED';
+export const LOGIN_EMAIL_CHANGED = 'LOGIN_EMAIL_CHANGED';
+export const LOGIN_PASSWORD_CHANGED = 'LOGIN_PASSWORD_CHANGED';
 
 /*
  * action creators
@@ -704,5 +706,19 @@ export function signupPasswordChanged(password) {
     return {
         type: SIGNUP_PASSWORD_CHANGED,
         password: password
+    }
+}
+
+export function loginEmailChanged(email) {
+    return {
+        type: LOGIN_EMAIL_CHANGED,
+        email_login: email
+    }
+}
+
+export function loginPasswordChanged(password) {
+    return {
+        type: LOGIN_PASSWORD_CHANGED,
+        password_login: password
     }
 }

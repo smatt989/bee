@@ -1,7 +1,10 @@
 import {Map, List} from 'immutable';
 import Immutable from 'immutable';
 import {setSession} from './utilities';
-import { SIGNUP_EMAIL_CHANGED, SIGNUP_PASSWORD_CHANGED } from './actions.js';
+import { 
+    SIGNUP_EMAIL_CHANGED, SIGNUP_PASSWORD_CHANGED, 
+    LOGIN_EMAIL_CHANGED, LOGIN_PASSWORD_CHANGED 
+} from './actions.js';
 
 function cleanState() {
     const cleanState = Map({
@@ -497,6 +500,14 @@ export default function reducer(state = Map(), action) {
     case SIGNUP_PASSWORD_CHANGED:
         return Object.assign({}, state, {
             password: action.password
+        });
+    case LOGIN_EMAIL_CHANGED:
+        return Object.assign({}, state, {
+            email_login: action.email_login
+        });
+    case LOGIN_PASSWORD_CHANGED:
+        return Object.assign({}, state, {
+            password_login: action.password_login
         });
     default:
       return state;

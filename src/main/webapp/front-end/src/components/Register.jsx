@@ -6,6 +6,7 @@ import {
 } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { signupEmailChanged, signupPasswordChanged } from '../actions.js'
 import EmailFormGroupContainer from './account_forms/EmailFormGroup.jsx'
 import PasswordFormGroup from './account_forms/PasswordFormGroup.jsx'
 
@@ -16,11 +17,36 @@ class Register extends React.Component {
       e.preventDefault();
       this.props.onSubmit(this.props.email, this.props.password);
     }
+
+    this.regexp = new RegExp(/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$/);
+    this.emailValidation = (state) => {
+      if (state.focused || !state.hasFocused) {
+        return null;
+      }
+
+      if (this.props.email.length > 0 && this.regexp.exec(this.props.email)) {
+        return 'success';
+      }
+
+      return 'error';
+    }
+
+    this.passwordValidation = (state) => {
+      if (state.focused || !state.hasFocused) {
+        return null;
+      }
+
+      if (this.props.password.length > 6) {
+        return 'success';
+      }
+
+      return 'error';
+    }
   }
 
   render() {
-    const emailInputProps = { isSignup: true, placeholder: "Enter your email" };
-    const pwInputProps = { isSignup: true, placeholder: "Choose a password" };
+    const emailInputProps = { value: this.props.email, validation: (email) => this.emailValidation(email), placeholder: "Enter your email", action: (email) => signupEmailChanged(email) };
+    const pwInputProps = { value: this.props.password, validation: (password) => this.passwordValidation(password), placeholder: "Choose a password", action: (password) => signupPasswordChanged(password) };
 
     return <Grid>
         <PageHeader>Register</PageHeader>

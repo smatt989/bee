@@ -1,21 +1,31 @@
-import React from 'react';
+import React from 'react'
+import { connect } from 'react-redux'
 import { 
   Grid,
   PageHeader,
   Button  
 } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
+import { loginEmailChanged, loginPasswordChanged } from '../actions.js'
 import EmailFormGroup from './account_forms/EmailFormGroup.jsx'
 import PasswordFormGroup from './account_forms/PasswordFormGroup.jsx'
 
-export default class Login extends React.Component {
+class Login extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onSubmit = (e) => {
+      e.preventDefault();
+      this.props.onSubmit(this.props.email, this.props.password);
+    }
+  }
+
   render() {
-    const emailInputProps = { isSignup: false, placeholder: "Enter your email" };
-    const pwInputProps = { isSignup: false, placeholder: "Enter your password" };
+    const emailInputProps = { value: this.props.email, validation: null, placeholder: "Enter your email", action: (email) => loginEmailChanged(email) };
+    const pwInputProps = { value: this.props.password, validation: null, placeholder: "Enter your password", action: (password) => loginPasswordChanged(password) };
 
     return <Grid>
         <PageHeader>Log in</PageHeader>
-        <form role="form" action="/auth/login" method="post">
+        <form role="form" onSubmit={this.onSubmit}>
           <EmailFormGroup emailInputProps={emailInputProps} />
           <PasswordFormGroup pwInputProps={pwInputProps} />
           <Button
@@ -28,3 +38,26 @@ export default class Login extends React.Component {
       </Grid>
   }
 }
+
+const mapStateToProps = state => {
+    return {
+        email: state.email_login,
+        password: state.password_login
+    }
+}
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+    return {
+        // TODO onSubmit validation, prevent submission if error
+        onSubmit: (email, password) => {
+          console.log(email, password);
+        }
+    }
+}
+
+const LoginContainer = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Login)
+
+export default LoginContainer;
