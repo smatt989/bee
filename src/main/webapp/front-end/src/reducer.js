@@ -64,7 +64,10 @@ function login(state) {
 
 function loginSuccess(state, session) {
     setSession(session)
-    return state.set('login', Map({session: session, error: null, loading: false}));
+    return Object.assign({}, state, {
+        login: Object.assign({}, state.login, {session: session, error: null, loading: false})
+    });
+    // return state.set('login', Map({session: session, error: null, loading: false}));
 }
 
 function loginError(state, error) {
