@@ -17,5 +17,8 @@ trait SlickRoutes extends ScalatraBase with FutureSupport with JacksonJsonSuppor
     response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"));
   }
 
+  before() {
+    response.setHeader("Access-Control-Expose-Headers", SessionTokenStrategy.HeaderKey)
+  }
 
 }
