@@ -6,7 +6,7 @@ import {
   Button  
 } from 'react-bootstrap';
 import { Link, Redirect } from 'react-router-dom'
-import { loginEmailChanged, loginPasswordChanged } from '../actions.js'
+import { loginEmailChanged, loginPasswordChanged, loginClearInputs } from '../actions.js'
 import { tryLogin } from '../utilities.js';
 import EmailFormGroup from './account_forms/EmailFormGroup.jsx'
 import PasswordFormGroup from './account_forms/PasswordFormGroup.jsx'
@@ -21,7 +21,10 @@ class Login extends React.Component {
     this.onSubmit = (e) => {
       e.preventDefault();
       this.props.onSubmit(this.props.email, this.props.password)
-        .then(response => this.setState({ redirectToReferrer: response }))
+        .then(response => {
+          this.setState({ redirectToReferrer: response });
+          this.props.clearInputs();
+        });
     }
   }
 
@@ -29,7 +32,7 @@ class Login extends React.Component {
     const emailInputProps = { value: this.props.email, placeholder: "Enter your email", action: (email) => loginEmailChanged(email) };
     const pwInputProps = { value: this.props.password, placeholder: "Enter your password", action: (password) => loginPasswordChanged(password) };
     const { from } = this.props.location.state || { from: { pathname: '/' } }
-    
+
     if (this.state.redirectToReferrer) {
       return <Redirect to={from} />
     }
@@ -62,7 +65,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     // TODO onSubmit validation, prevent submission if error
     onSubmit: (email, password) => {
       return tryLogin(email, password);
-    }
+    },
+    clearInputs: () => dispatch(loginClearInputs())
   }
 }
 
