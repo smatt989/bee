@@ -21,9 +21,11 @@ class Login extends React.Component {
     this.onSubmit = (e) => {
       e.preventDefault();
       this.props.onSubmit(this.props.email, this.props.password)
-        .then(response => {
-          this.setState({ redirectToReferrer: response });
-          this.props.clearInputs();
+        .then(isSuccess => {
+          this.setState({ redirectToReferrer: isSuccess });
+          if (isSuccess) {
+            this.props.clearInputs();
+          }
         });
     }
   }
@@ -56,7 +58,7 @@ class Login extends React.Component {
 const mapStateToProps = state => {
   return {
       email: state.getIn(['loginEmail', 'email']),
-      password: state.get(['loginPassword', 'password'])
+      password: state.getIn(['loginPassword', 'password'])
   }
 }
 
