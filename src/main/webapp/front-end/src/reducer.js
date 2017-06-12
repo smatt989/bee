@@ -350,11 +350,11 @@ function viewParticipantImageLabelsError(state, error) {
 }
 
 function signupEmailChanged(state, email) {
-    return state.set('signupEmail', Map({ email: Immutable.fromJS(email) }))
+    return state.set('signupEmail', Map({ email: email }))
 }
 
 function signupPasswordChanged(state, password) {
-    return state.set('signupPassword', Map({ password: Immutable.fromJS(password) }))
+    return state.set('signupPassword', Map({ password: password }))
 }
 
 function signupClearInputs(state) {
@@ -363,11 +363,11 @@ function signupClearInputs(state) {
 }
 
 function loginEmailChanged(state, email) {
-    return state.set('loginEmail', Map({ email: Immutable.fromJS(email) }))
+    return state.set('loginEmail', Map({ email: email }))
 }
 
 function loginPasswordChanged(state, password) {
-    return state.set('loginPassword', Map({ password: Immutable.fromJS(password) }))
+    return state.set('loginPassword', Map({ password: password }))
 }
 
 function loginClearInputs(state) {
