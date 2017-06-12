@@ -6,7 +6,6 @@ import { Navbar, NavItem, Nav } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 
 const NavRight = (props) => {
-  console.log(props);
   return props.session != null ? 
     <Nav pullRight>
       <NavItem eventKey={2} onClick={() => props.logout(props.session)}>Log Out</NavItem>

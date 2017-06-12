@@ -2,8 +2,8 @@ import {Map, List} from 'immutable';
 import Immutable from 'immutable';
 import {setSession} from './utilities';
 import { 
-    SIGNUP_EMAIL_CHANGED, SIGNUP_PASSWORD_CHANGED, 
-    LOGIN_EMAIL_CHANGED, LOGIN_PASSWORD_CHANGED 
+    SIGNUP_EMAIL_CHANGED, SIGNUP_PASSWORD_CHANGED, SIGNUP_CLEAR_INPUTS, 
+    LOGIN_EMAIL_CHANGED, LOGIN_PASSWORD_CHANGED, LOGIN_CLEAR_INPUTS
 } from './actions.js';
 
 function cleanState() {
@@ -357,12 +357,22 @@ function signupPasswordChanged(state, password) {
     return state.set('signupPassword', Map({ password: Immutable.fromJS(password) }))
 }
 
+function signupClearInputs(state) {
+    const newState = state.set('signupEmail', Map({ email: '' }));
+    return newState.set('signupPassword', Map({ password: '' }));
+}
+
 function loginEmailChanged(state, email) {
     return state.set('loginEmail', Map({ email: Immutable.fromJS(email) }))
 }
 
 function loginPasswordChanged(state, password) {
     return state.set('loginPassword', Map({ password: Immutable.fromJS(password) }))
+}
+
+function loginClearInputs(state) {
+    const newState = state.set('loginEmail', Map({ email: '' }));
+    return newState.set('loginPassword', Map({ password: '' }));
 }
 
 export default function reducer(state = Map(), action) {
@@ -517,10 +527,14 @@ export default function reducer(state = Map(), action) {
         return signupEmailChanged(state, action.email);
     case SIGNUP_PASSWORD_CHANGED:
         return signupPasswordChanged(state, action.password);
+    case SIGNUP_CLEAR_INPUTS:
+        return signupClearInputs(state);
     case LOGIN_EMAIL_CHANGED:
         return loginEmailChanged(state, action.email);
     case LOGIN_PASSWORD_CHANGED:
         return loginPasswordChanged(state, action.password);
+    case LOGIN_CLEAR_INPUTS:
+        return loginClearInputs(state);
     default:
       return state;
   }

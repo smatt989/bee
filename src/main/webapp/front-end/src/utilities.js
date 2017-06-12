@@ -1,5 +1,5 @@
 import store from './store.js';
-import { login, loginError, loginSuccess } from './actions.js';
+import { login, loginError, loginSuccess, loginClearInputs } from './actions.js';
 var _ = require('lodash');
 
 export var authenticatedSession = null;

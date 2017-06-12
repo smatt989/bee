@@ -6,7 +6,7 @@ import {
 } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
-import { signupEmailChanged, signupPasswordChanged, createUser, createUserSuccess, createUserError } from '../actions.js'
+import { signupEmailChanged, signupPasswordChanged, signupClearInputs, createUser, createUserSuccess, createUserError } from '../actions.js'
 import { tryLogin } from '../utilities.js';
 import EmailFormGroupContainer from './account_forms/EmailFormGroup.jsx'
 import PasswordFormGroup from './account_forms/PasswordFormGroup.jsx'
@@ -21,7 +21,10 @@ class Register extends React.Component {
     this.onSubmit = (e) => {
       e.preventDefault();
       this.props.onSubmit(this.props.email, this.props.password)
-        .then(response => this.setState({ redirectToReferrer: response }))
+        .then(response => {
+          this.setState({ redirectToReferrer: response })
+          this.props.clearInputs();
+        })
     }
   }
 
@@ -71,7 +74,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
               dispatch(createUserSuccess(response.payload.data));
               return tryLogin(email, password);
             })
-        }
+        },
+        clearInputs: () => dispatch(signupClearInputs())
     }
 }
 
