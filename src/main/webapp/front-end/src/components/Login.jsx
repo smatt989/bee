@@ -25,8 +25,8 @@ class Login extends React.Component {
   }
 
   render() {
-    const emailInputProps = { value: this.props.email, validation: null, placeholder: "Enter your email", action: (email) => loginEmailChanged(email) };
-    const pwInputProps = { value: this.props.password, validation: null, placeholder: "Enter your password", action: (password) => loginPasswordChanged(password) };
+    const emailInputProps = { value: this.props.email, placeholder: "Enter your email", action: (email) => loginEmailChanged(email) };
+    const pwInputProps = { value: this.props.password, placeholder: "Enter your password", action: (password) => loginPasswordChanged(password) };
     const { from } = this.props.location.state || { from: { pathname: '/' } }
     
     if (this.state.redirectToReferrer) {
