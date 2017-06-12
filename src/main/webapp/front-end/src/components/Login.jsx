@@ -50,9 +50,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         // TODO onSubmit validation, prevent submission if error
         onSubmit: (email, password) => {
-          dispatch(login(email, password)).then(response => {
-            console.log(response.payload.headers)
-            !response.error ? dispatch(loginSuccess(response)) : dispatch(loginError(response.error));
+          dispatch(login(email, password))
+          .then(response => {
+            const session = !response.error ? response.payload.headers["bee-session-key"] : null;
+            !response.error ? dispatch(loginSuccess(session)) : dispatch(loginError(response.payload.error));
           })
         }
     }
