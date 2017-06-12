@@ -5,23 +5,34 @@ import {
   Button
 } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { signupEmailChanged, signupPasswordChanged, createUser } from '../actions.js'
+import { Link, Redirect } from 'react-router-dom';
+import { signupEmailChanged, signupPasswordChanged, createUser, createUserSuccess, createUserError } from '../actions.js'
+import { tryLogin } from '../utilities.js';
 import EmailFormGroupContainer from './account_forms/EmailFormGroup.jsx'
 import PasswordFormGroup from './account_forms/PasswordFormGroup.jsx'
 
 class Register extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      redirectToReferrer: false
+    }
+
     this.onSubmit = (e) => {
       e.preventDefault();
-      this.props.onSubmit(this.props.email, this.props.password);
+      this.props.onSubmit(this.props.email, this.props.password)
+        .then(response => this.setState({ redirectToReferrer: response }))
     }
   }
 
   render() {
     const emailInputProps = { value: this.props.email, placeholder: "Enter your email", action: (email) => signupEmailChanged(email) };
     const pwInputProps = { value: this.props.password, placeholder: "Choose a password", action: (password) => signupPasswordChanged(password) };
+    const { from } = this.props.location.state || { from: { pathname: '/' } }
+    
+    if (this.state.redirectToReferrer) {
+      return <Redirect to={from} />
+    }
 
     return <Grid>
         <PageHeader>Register</PageHeader>
@@ -49,7 +60,18 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         // TODO onSubmit validation, prevent submission if error
-        onSubmit: (email, password) => dispatch(createUser(email, password))
+        onSubmit: (email, password) => {
+          return dispatch(createUser(email, password))
+            .then(response => {
+              if (response.error) {
+                dispatch(createUserError(response.error));
+                return false;
+              }
+
+              dispatch(createUserSuccess(response.payload.data));
+              return tryLogin(email, password);
+            })
+        }
     }
 }
 

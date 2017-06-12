@@ -350,11 +350,11 @@ function viewParticipantImageLabelsError(state, error) {
 }
 
 function signupEmailChanged(state, email) {
-    return state.set('signupPassword', Map({ email: Immutable.fromJS(email) }))
+    return state.set('signupEmail', Map({ email: Immutable.fromJS(email) }))
 }
 
 function signupPasswordChanged(state, password) {
-    return state.set('signupEmail', Map({ password: Immutable.fromJS(password) }))
+    return state.set('signupPassword', Map({ password: Immutable.fromJS(password) }))
 }
 
 function loginEmailChanged(state, email) {
@@ -372,7 +372,7 @@ export default function reducer(state = Map(), action) {
     case 'CREATE_USER':
         return createUser(state);
     case 'CREATE_USER_SUCCESS':
-        return createUserSuccess(state, action.payload);
+        return createUserSuccess(state, action.email);
     case 'CREATE_USER_ERROR':
         return createUserError(state, action.error);
     case 'LOGIN':
