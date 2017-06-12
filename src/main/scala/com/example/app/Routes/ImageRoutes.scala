@@ -36,7 +36,7 @@ trait ImageRoutes extends SlickRoutes with AuthenticationSupport {
       val imageWithAccess = Image.nextImage(user.id, imageRequest.taskId)
 
       if(imageWithAccess.isDefined) {
-        response.addHeader("Image-Request-Headers", Serialization.write(imageWithAccess.get.accessConfigs))
+        response.addHeader(Image.configsHeader, Serialization.write(imageWithAccess.get.accessConfigs))
       }
 
       imageWithAccess.map(_.image)
