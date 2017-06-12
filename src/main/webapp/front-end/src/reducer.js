@@ -33,10 +33,10 @@ function cleanState() {
         currentImage: Map({image: null, loadConfigs: null, markedSeen: false, error: null, loading: false}),
         savingLabels: Map({error: null, loading: false}),
         currentLabels: Map({labels: List.of(), error: null, loading: false}),
-        signupEmailChanged: Map({ email: '' }),
-        signupPasswordChanged: Map({ password: '' }),
-        loginEmailChanged: Map({ email: '' }),
-        loginPasswordChanged: Map({ password: '' })
+        signupEmail: Map({ email: '' }),
+        signupPassword: Map({ password: '' }),
+        loginEmail: Map({ email: '' }),
+        loginPassword: Map({ password: '' })
     });
 
     return cleanState
@@ -350,19 +350,19 @@ function viewParticipantImageLabelsError(state, error) {
 }
 
 function signupEmailChanged(state, email) {
-    return state.set('signupEmailChanged', Map({ email: Immutable.fromJS(email) }))
+    return state.set('signupPassword', Map({ email: Immutable.fromJS(email) }))
 }
 
 function signupPasswordChanged(state, password) {
-    return state.set('signupPasswordChanged', Map({ password: Immutable.fromJS(password) }))
+    return state.set('signupEmail', Map({ password: Immutable.fromJS(password) }))
 }
 
 function loginEmailChanged(state, email) {
-    return state.set('loginEmailChanged', Map({ email: Immutable.fromJS(email) }))
+    return state.set('loginEmail', Map({ email: Immutable.fromJS(email) }))
 }
 
 function loginPasswordChanged(state, password) {
-    return state.set('loginPasswordChanged', Map({ password: Immutable.fromJS(password) }))
+    return state.set('loginPassword', Map({ password: Immutable.fromJS(password) }))
 }
 
 export default function reducer(state = Map(), action) {
