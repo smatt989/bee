@@ -8,7 +8,12 @@ const domain = fullstack ? "" : "http://localhost:8080";
  * action types
  */
 
-// TODO use enums instead of cap strings to specify action types
+export const SIGNUP_EMAIL_CHANGED = 'SIGNUP_EMAIL_CHANGED';
+export const SIGNUP_PASSWORD_CHANGED = 'SIGNUP_PASSWORD_CHANGED';
+export const SIGNUP_CLEAR_INPUTS = 'SIGNUP_CLEAR_INPUTS';
+export const LOGIN_EMAIL_CHANGED = 'LOGIN_EMAIL_CHANGED';
+export const LOGIN_PASSWORD_CHANGED = 'LOGIN_PASSWORD_CHANGED';
+export const LOGIN_CLEAR_INPUTS = 'LOGIN_CLEAR_INPUTS';
 
 /*
  * action creators
@@ -28,7 +33,7 @@ export function createUser(email, password) {
             'email': email,
             'password': password
         }
-    });
+    })
 
     return {
         type: 'CREATE_USER',
@@ -58,7 +63,7 @@ export function login(email, password) {
             'email': email,
             'password': password
         }
-    });
+    })
 
     return {
         type: 'LOGIN',
@@ -692,3 +697,42 @@ export function viewParticipantImageLabelsError(error) {
     }
 }
 
+export function signupEmailChanged(email) {
+    return {
+        type: SIGNUP_EMAIL_CHANGED,
+        email: email
+    }
+}
+
+export function signupPasswordChanged(password) {
+    return {
+        type: SIGNUP_PASSWORD_CHANGED,
+        password: password
+    }
+}
+
+export function signupClearInputs() {
+    return {
+        type: SIGNUP_CLEAR_INPUTS
+    }
+}
+
+export function loginEmailChanged(email) {
+    return {
+        type: LOGIN_EMAIL_CHANGED,
+        email: email
+    }
+}
+
+export function loginPasswordChanged(password) {
+    return {
+        type: LOGIN_PASSWORD_CHANGED,
+        password: password
+    }
+}
+
+export function loginClearInputs() {
+    return {
+        type: LOGIN_CLEAR_INPUTS
+    }
+}

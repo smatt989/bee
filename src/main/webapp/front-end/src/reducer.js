@@ -1,6 +1,10 @@
 import {Map, List} from 'immutable';
 import Immutable from 'immutable';
 import {setSession} from './utilities';
+import { 
+    SIGNUP_EMAIL_CHANGED, SIGNUP_PASSWORD_CHANGED, SIGNUP_CLEAR_INPUTS, 
+    LOGIN_EMAIL_CHANGED, LOGIN_PASSWORD_CHANGED, LOGIN_CLEAR_INPUTS
+} from './actions.js';
 
 function cleanState() {
     const cleanState = Map({
@@ -28,7 +32,11 @@ function cleanState() {
         markingImageSeen: Map({error: null, loading: false}),
         currentImage: Map({image: null, loadConfigs: null, markedSeen: false, error: null, loading: false}),
         savingLabels: Map({error: null, loading: false}),
-        currentLabels: Map({labels: List.of(), error: null, loading: false})
+        currentLabels: Map({labels: List.of(), error: null, loading: false}),
+        signupEmail: Map({ email: '' }),
+        signupPassword: Map({ password: '' }),
+        loginEmail: Map({ email: '' }),
+        loginPassword: Map({ password: '' })
     });
 
     return cleanState
@@ -46,7 +54,7 @@ function createUserError(state, error) {
     return state.set('createUser', Map({loading: false, error: Immutable.fromJS(error)}));
 }
 
-function login(state){
+function login(state) {
     return state.set('login', Map({session: null, error: null, loading: true}));
 }
 
@@ -341,6 +349,32 @@ function viewParticipantImageLabelsError(state, error) {
     return state.set('currentLabels', Map({labels: List.of(), error: Immutable.fromJS(error), loading: false}))
 }
 
+function signupEmailChanged(state, email) {
+    return state.set('signupEmail', Map({ email: email }))
+}
+
+function signupPasswordChanged(state, password) {
+    return state.set('signupPassword', Map({ password: password }))
+}
+
+function signupClearInputs(state) {
+    const newState = state.set('signupEmail', Map({ email: '' }));
+    return newState.set('signupPassword', Map({ password: '' }));
+}
+
+function loginEmailChanged(state, email) {
+    return state.set('loginEmail', Map({ email: email }))
+}
+
+function loginPasswordChanged(state, password) {
+    return state.set('loginPassword', Map({ password: password }))
+}
+
+function loginClearInputs(state) {
+    const newState = state.set('loginEmail', Map({ email: '' }));
+    return newState.set('loginPassword', Map({ password: '' }));
+}
+
 export default function reducer(state = Map(), action) {
   switch (action.type) {
     case 'CLEAN_STATE':
@@ -348,7 +382,7 @@ export default function reducer(state = Map(), action) {
     case 'CREATE_USER':
         return createUser(state);
     case 'CREATE_USER_SUCCESS':
-        return createUserSuccess(state, action.payload);
+        return createUserSuccess(state, action.email);
     case 'CREATE_USER_ERROR':
         return createUserError(state, action.error);
     case 'LOGIN':
@@ -489,6 +523,18 @@ export default function reducer(state = Map(), action) {
         return viewParticipantImageLabelsSuccess(state, action.payload);
     case 'VIEW_PARTICIPANT_IMAGE_LABELS_ERROR':
         return viewParticipantImageLabelsError(state, action.error);
+    case SIGNUP_EMAIL_CHANGED:
+        return signupEmailChanged(state, action.email);
+    case SIGNUP_PASSWORD_CHANGED:
+        return signupPasswordChanged(state, action.password);
+    case SIGNUP_CLEAR_INPUTS:
+        return signupClearInputs(state);
+    case LOGIN_EMAIL_CHANGED:
+        return loginEmailChanged(state, action.email);
+    case LOGIN_PASSWORD_CHANGED:
+        return loginPasswordChanged(state, action.password);
+    case LOGIN_CLEAR_INPUTS:
+        return loginClearInputs(state);
     default:
       return state;
   }
