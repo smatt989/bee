@@ -33,8 +33,8 @@ function cleanState() {
         currentImage: Map({image: null, loadConfigs: null, markedSeen: false, error: null, loading: false}),
         savingLabels: Map({error: null, loading: false}),
         currentLabels: Map({labels: List.of(), error: null, loading: false}),
-        signupEmailChanged: Map({ email: ''}),
-        signupPasswordChanged: Map({ password: ''}),
+        signupEmailChanged: Map({ email: '' }),
+        signupPasswordChanged: Map({ password: '' }),
         loginEmailChanged: Map({ email: '' }),
         loginPasswordChanged: Map({ password: '' })
     });
@@ -43,9 +43,7 @@ function cleanState() {
 }
 
 function createUser(state) {
-    return Object.assign({}, state, {
-        signup: Object.assign({}, state.signup, {loading: true, error: null})
-    });
+    return state.set('createUser', Map({loading: true, error: null}));
 }
 
 function createUserSuccess(state, user) {
@@ -57,17 +55,12 @@ function createUserError(state, error) {
 }
 
 function login(state) {
-    return Object.assign({}, state, {
-        login: Object.assign({}, state.login, {session: null, error: null, loading: true})
-    })
+    return state.set('login', Map({session: null, error: null, loading: true}));
 }
 
 function loginSuccess(state, session) {
     setSession(session)
-    return Object.assign({}, state, {
-        login: Object.assign({}, state.login, {session: session, error: null, loading: false})
-    });
-    // return state.set('login', Map({session: session, error: null, loading: false}));
+    return state.set('login', Map({session: session, error: null, loading: false}));
 }
 
 function loginError(state, error) {
@@ -357,27 +350,19 @@ function viewParticipantImageLabelsError(state, error) {
 }
 
 function signupEmailChanged(state, email) {
-    return Object.assign({}, state, {
-        signup: Object.assign({}, state.signup, { email: email })
-    });
+    return state.set('signupEmailChanged', Map({ email: Immutable.fromJS(email) }))
 }
 
 function signupPasswordChanged(state, password) {
-    return Object.assign({}, state, {
-        signup: Object.assign({}, state.signup, { password: password })
-    });
+    return state.set('signupPasswordChanged', Map({ password: Immutable.fromJS(password) }))
 }
 
 function loginEmailChanged(state, email) {
-    return Object.assign({}, state, {
-        login: Object.assign({}, state.login, { email: email })
-    });
+    return state.set('loginEmailChanged', Map({ email: Immutable.fromJS(email) }))
 }
 
 function loginPasswordChanged(state, password) {
-    return Object.assign({}, state, {
-        login: Object.assign({}, state.login, { password: password })
-    });
+    return state.set('loginPasswordChanged', Map({ password: Immutable.fromJS(password) }))
 }
 
 export default function reducer(state = Map(), action) {
