@@ -5,7 +5,7 @@ import {
   Switch
 } from 'react-router-dom';
 import { Grid, Row, Col } from 'react-bootstrap';
-import NavBar from './NavBar.jsx';
+import NavBarContainer from './NavBar.jsx';
 import Home from './Home.jsx';
 import LoginContainer from './Login.jsx';
 import RegisterContainer from './Register.jsx';
@@ -19,7 +19,7 @@ export default class App extends React.Component {
       <Grid>
         <Row>
           <Col>
-            <NavBar />
+            <NavBarContainer />
           </Col>
         </Row>
         <Row className="show-grid">

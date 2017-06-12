@@ -32,7 +32,6 @@ export function createUser(email, password) {
             'password': password
         }
     })
-    .catch(error => console.log(error));
 
     return {
         type: 'CREATE_USER',

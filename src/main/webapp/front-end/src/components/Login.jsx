@@ -6,7 +6,8 @@ import {
   Button  
 } from 'react-bootstrap';
 import { Link, Redirect } from 'react-router-dom'
-import { loginEmailChanged, loginPasswordChanged, login, loginSuccess, loginError } from '../actions.js'
+import { loginEmailChanged, loginPasswordChanged } from '../actions.js'
+import { tryLogin } from '../utilities.js';
 import EmailFormGroup from './account_forms/EmailFormGroup.jsx'
 import PasswordFormGroup from './account_forms/PasswordFormGroup.jsx'
 
@@ -60,17 +61,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     // TODO onSubmit validation, prevent submission if error
     onSubmit: (email, password) => {
-      return dispatch(login(email, password))
-        .then(response => {
-          if (response.error) {
-            dispatch(loginError(response.error));
-            return false;
-          }
-
-          const session = response.payload.headers["bee-session-key"];
-          dispatch(loginSuccess(session));
-          return true;
-        })
+      return tryLogin(email, password);
     }
   }
 }
