@@ -5,14 +5,27 @@ import AccountFormGroupBase from './AccountFormGroupBase.jsx'
 class PasswordFormGroup extends React.Component {
   constructor(props) {
     super(props);
+    this.validation = (state) => {
+      if (state.focused || !state.hasFocused) {
+        return null;
+      }
+
+      const { value } = this.props.pwInputProps;
+      if (value.length > 6) {
+        return 'success';
+      }
+
+      return 'error';
+    }
+
     this.onChange = (e) => this.props.onChange(e.target.value, this.props.pwInputProps.action);
   }
 
   render() {
-    const { value, validation, placeholder } = this.props.pwInputProps;
+    const { value, placeholder } = this.props.pwInputProps;
     const baseProps = {
       type: "password",
-      validation: validation,
+      validation: this.validation,
       label: "Password",
       placeholder: placeholder,
       onChange: this.onChange,
