@@ -10,8 +10,9 @@ import Home from './Home.jsx';
 import LoginContainer from './Login.jsx';
 import RegisterContainer from './Register.jsx';
 import PrivateRouteContainer from './PrivateRoute.jsx';
-import Tasks from './Tasks.jsx';
 import Images from './Images.jsx';
+import Tasks from './tasks/Tasks.jsx';
+import NewTask from './tasks/NewTask.jsx';
 import Err from './Error.jsx';
 
 export default class App extends React.Component {
@@ -32,6 +33,7 @@ export default class App extends React.Component {
               <Route exact path="/recover" component={LoginContainer}/>
               <PrivateRouteContainer exact path="/images" component={Images}/>
               <PrivateRouteContainer exact path="/tasks" component={Tasks}/>
+              <PrivateRouteContainer exact path="/tasks/new" component={NewTask}/>
               <Route component={Err}/>
             </Switch>
           </Col>

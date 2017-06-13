@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import AccountFormGroupBase from './AccountFormGroupBase.jsx'
+import FormGroupBase from '../shared/FormGroupBase.jsx'
 
 class PasswordFormGroup extends React.Component {
   constructor(props) {
@@ -32,7 +32,7 @@ class PasswordFormGroup extends React.Component {
       value: value
     }
 
-    return <AccountFormGroupBase baseProps={baseProps} />
+    return <FormGroupBase baseProps={baseProps} />
   }
 }
 
