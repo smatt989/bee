@@ -38,7 +38,7 @@ class NavBar extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        session: state.get('login').get('session')
+      session: state.getIn(['login', 'session'])
     }
 }
 

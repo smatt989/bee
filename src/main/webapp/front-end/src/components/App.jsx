@@ -9,6 +9,7 @@ import NavBarContainer from './NavBar.jsx';
 import Home from './Home.jsx';
 import LoginContainer from './Login.jsx';
 import RegisterContainer from './Register.jsx';
+import PrivateRouteContainer from './PrivateRoute.jsx';
 import Tasks from './Tasks.jsx';
 import Images from './Images.jsx';
 import Err from './Error.jsx';
@@ -28,9 +29,9 @@ export default class App extends React.Component {
               <Route exact path="/" component={Home}/>
               <Route exact path="/login" component={LoginContainer}/>
               <Route exact path="/register" component={RegisterContainer}/>
-              <Route exact path="/tasks" component={Tasks}/>
-              <Route exact path="/images" component={Images}/>
-              <Route exact path="/recover" component={Images}/>
+              <Route exact path="/recover" component={LoginContainer}/>
+              <PrivateRouteContainer exact path="/images" component={Images}/>
+              <PrivateRouteContainer exact path="/tasks" component={Tasks}/>
               <Route component={Err}/>
             </Switch>
           </Col>
