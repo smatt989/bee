@@ -1,30 +1,30 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { 
   Grid, 
   PageHeader,
   Button,
 } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import TaskTable from './TasksTable.jsx';
 
 export default class Tasks extends React.Component {
   constructor(props) {
     super(props);
-    this.onClick = () => {
-      // TODO 
-    }
   }
 
   render() {
     return <Grid>
       <PageHeader>
         Tasks
-        <Button
-          className="pull-right new-tbl-item-btn"
-          bsStyle="primary"
-          type="button"
-          onClick={this.onClick}>
-          New Task
-        </Button>
+        <LinkContainer className="pull-right" to='/tasks/new'>
+          <Button
+            className="new-tbl-item-btn"
+            bsStyle="primary"
+            type="button">
+            New Task
+          </Button>
+        </LinkContainer>
       </PageHeader>
       <TaskTable />
     </Grid>;

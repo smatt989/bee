@@ -5,7 +5,7 @@ import {
   FormControl
 } from 'react-bootstrap';
 
-export default class AccountFormGroupBase extends React.Component {
+export default class FormGroupBase extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
