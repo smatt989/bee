@@ -116,7 +116,11 @@ export function saveTask(task){
     const request = axios({
         method: 'post',
         url: `${domain}/tasks/save`,
-        data: task.toJS(),
+        //TODO: SHOULD PROBABLY BE PASSING IN A WHOLE TASK OBJECT.
+        //IF IT HAPPENS TO BE AN IMMUTABLE JS OBJECT, CALL task.toJS()
+        //IF IT IS A PLAIN JS OBJECT JUST PASS IT IN
+        //data: task.toJS(),
+        data: {name: task},
         headers: authenticate()
     });
 
