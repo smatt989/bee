@@ -1,15 +1,18 @@
 import {Map, List} from 'immutable';
 import Immutable from 'immutable';
-import {setSession} from './utilities';
+import { getSession, setSession } from './utilities';
 import { 
     SIGNUP_EMAIL_CHANGED, SIGNUP_PASSWORD_CHANGED, SIGNUP_CLEAR_INPUTS, 
     LOGIN_EMAIL_CHANGED, LOGIN_PASSWORD_CHANGED, LOGIN_CLEAR_INPUTS
 } from './actions.js';
 
 function cleanState() {
+    const sessionKey = getSession();
+    setSession(sessionKey); // refresh session key
+
     const cleanState = Map({
         createUser: Map({loading: false, error: null}),
-        login: Map({session: null, error: null, loading: false}),
+        login: Map({session: sessionKey, error: null, loading: false}),
         user: Map({email: null, id: null}),
         logout: Map({error: null, loading: false}),
         savingTask: Map({error: null, loading: false}),
