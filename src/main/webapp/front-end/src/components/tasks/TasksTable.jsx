@@ -6,23 +6,9 @@ import {
   ButtonGroup
 } from 'react-bootstrap';
 import { tasksCreated, tasksCreatedSuccess, tasksCreatedError } from '../../actions.js';
+import TasksTableItemContainer from './TasksTableItem.jsx';
 
-const TaskTableItem = (props) => {
-  const { data } = props;
-  return <tr>
-    <td>{data.id}</td>
-    <td>{data.name}</td>
-    <td>
-      <ButtonGroup>
-        <Button>Left</Button>
-        <Button>Middle</Button>
-        <Button>Right</Button>
-      </ButtonGroup>
-    </td>
-  </tr>
-}
-
-class TaskTable extends React.Component {
+class TasksTable extends React.Component {
   constructor(props) {
     super(props);
 
@@ -33,7 +19,7 @@ class TaskTable extends React.Component {
           return null;
         }
       });
-      
+
     this.onClick = () => console.log("clicked");
   }
 
@@ -49,7 +35,7 @@ class TaskTable extends React.Component {
         </tr>
       </thead>
       <tbody>
-        { tasks ? tasks.map(o => <TaskTableItem key={o.id} data={o} />) : null }
+        { tasks ? tasks.map(o => <TasksTableItemContainer key={o.id} data={o} />) : null }
       </tbody>
     </Table>
   }
@@ -79,9 +65,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   }
 }
 
-const TaskTableContainer = connect(
+const TasksTableContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(TaskTable)
+)(TasksTable)
 
-export default TaskTableContainer;
+export default TasksTableContainer;
