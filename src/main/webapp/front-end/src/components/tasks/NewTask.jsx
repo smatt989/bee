@@ -74,6 +74,11 @@ class NewTask extends React.Component {
   }
 }
 
+const mapStateToProps = state => {
+  return {
+  }
+}
+
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     onSubmit: (name, label) => {
@@ -92,6 +97,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 }
 
 const NewTaskContainer = connect(
+  mapStateToProps,
   mapDispatchToProps
 )(NewTask)
 
