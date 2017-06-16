@@ -6,7 +6,7 @@ import {
   Button,
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import TaskTable from './TasksTable.jsx';
+import TaskTableContainer from './TasksTable.jsx';
 
 export default class Tasks extends React.Component {
   constructor(props) {
@@ -26,7 +26,7 @@ export default class Tasks extends React.Component {
           </Button>
         </LinkContainer>
       </PageHeader>
-      <TaskTable />
+      <TaskTableContainer />
     </Grid>;
   }
 }

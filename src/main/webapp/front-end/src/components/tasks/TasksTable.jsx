@@ -1,14 +1,17 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { 
   Table,
   Button,
   ButtonGroup
 } from 'react-bootstrap';
+import { tasksCreated, tasksCreatedSuccess, tasksCreatedError } from '../../actions.js';
 
 const TaskTableItem = (props) => {
+  const { data } = props;
   return <tr>
-    <td>{props.id}</td>
-    <td>{props.name}</td>
+    <td>{data.id}</td>
+    <td>{data.name}</td>
     <td>
       <ButtonGroup>
         <Button>Left</Button>
@@ -19,13 +22,24 @@ const TaskTableItem = (props) => {
   </tr>
 }
 
-export default class TaskTable extends React.Component {
+class TaskTable extends React.Component {
   constructor(props) {
     super(props);
+
+    this.props.getTasksCreated()
+      .then(isSuccess => {
+        if (!isSuccess) {
+          // TODO show error
+          return null;
+        }
+      });
+      
     this.onClick = () => console.log("clicked");
   }
 
   render() {
+    const { tasks } = this.props;
+
     return <Table id="task-tbl" responsive striped hover>
       <thead>
         <tr>
@@ -35,9 +49,39 @@ export default class TaskTable extends React.Component {
         </tr>
       </thead>
       <tbody>
-        <TaskTableItem id="1" name="Task 1" />
-        <TaskTableItem id="2" name="Task 2" />
+        { tasks ? tasks.map(o => <TaskTableItem key={o.id} data={o} />) : null }
       </tbody>
     </Table>
   }
 }
+
+const mapStateToProps = state => {
+  const tasksCreatedObj = state.get('tasksCreated').toJS();
+  return {
+    tasks: tasksCreatedObj ? tasksCreatedObj.tasks.data : null
+  }
+}
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {
+    getTasksCreated: () => {
+      return dispatch(tasksCreated())
+        .then(response => {
+          if (response.error) {
+            dispatch(tasksCreatedError(response.error));
+            return false;
+          }
+
+          dispatch(tasksCreatedSuccess(response.payload));
+          return true;
+        })
+    }
+  }
+}
+
+const TaskTableContainer = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TaskTable)
+
+export default TaskTableContainer;
