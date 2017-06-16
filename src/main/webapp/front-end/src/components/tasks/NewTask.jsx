@@ -26,12 +26,7 @@ class NewTask extends React.Component {
     this.onSubmit = (e) => {
       e.preventDefault();
       this.props.onSubmit(this.state.name, this.state.label)
-        .then(isSuccess => {
-            this.setState({ redirectToReferrer: isSuccess });
-            if (isSuccess) {
-              this.setState({ name: '', label: ''});
-            }
-          });
+        .then(isSuccess => this.setState({ redirectToReferrer: isSuccess }));
     }
   }
 
