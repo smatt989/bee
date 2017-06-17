@@ -6,26 +6,25 @@ import {
   ButtonGroup
 } from 'react-bootstrap';
 import { tasksCreated, tasksCreatedSuccess, tasksCreatedError } from '../../actions.js';
-import TasksTableItemContainer from './TasksTableItem.jsx';
+import TasksTableItem from './TasksTableItem.jsx';
 
 class TasksTable extends React.Component {
   constructor(props) {
     super(props);
 
-    this.props.getTasksCreated()
-      .then(isSuccess => {
-        if (!isSuccess) {
-          // TODO show error
-          return null;
-        }
-      });
-
-    this.onClick = () => console.log("clicked");
+    this.props.getTasksCreated();
   }
 
-  render() {
-    const { tasks } = this.props;
-    
+  buildContent() {
+    const { tasks, loading, error } = this.props;
+    if (error) {
+      return <div>Error</div>;
+    } else if (loading) {
+      return <div>Loading</div>;
+    } else if (!tasks) {
+      return null;
+    } 
+
     return <Table id="task-tbl" responsive striped hover>
       <thead>
         <tr>
@@ -35,16 +34,24 @@ class TasksTable extends React.Component {
         </tr>
       </thead>
       <tbody>
-        { tasks ? tasks.map(o => <TasksTableItemContainer key={o.id} data={o} {...this.props} />) : null }
+        { tasks ? tasks.map(o => 
+          <TasksTableItem key={o.id} data={o} {...this.props} />) : 
+          null }
       </tbody>
-    </Table>
+    </Table>;
+  }
+
+  render() {
+    return this.buildContent();
   }
 }
 
 const mapStateToProps = state => {
-  const tasksCreatedObj = state.get('tasksCreated').toJS();
+  const tasksCreated = state.getIn(['tasksCreated', 'tasks']);
   return {
-    tasks: tasksCreatedObj ? tasksCreatedObj.tasks.data : null
+    tasks: tasksCreated ? tasksCreated.toJS().data : null,
+    loading: state.getIn(['tasksCreated', 'loading']),
+    error: state.getIn(['tasksCreated', 'error'])
   }
 }
 

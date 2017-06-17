@@ -19,14 +19,14 @@ class ViewTask extends React.Component {
       return <div>Error</div>
     } else if (loading) {
       return <div>Loading</div>
-    } else if (task) {
-      return <div>
-        <div>Id: { task.id }</div>
-        <div>Name: { task.name }</div>
-      </div> 
-    } else {
+    } else if (!task) {
       return null;
     }
+
+    return <div>
+      <div>Id: { task.id }</div>
+      <div>Name: { task.name }</div>
+    </div> 
   }
 
   render() {
