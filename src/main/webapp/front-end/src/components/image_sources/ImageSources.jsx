@@ -25,7 +25,7 @@ const ImagesTable = () => {
     </Table>;
 }
 
-export default class Images extends React.Component {
+export default class ImageSources extends React.Component {
   render() {
     return <Grid>
       <PageHeader>

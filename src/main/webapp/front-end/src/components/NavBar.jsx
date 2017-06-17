@@ -28,7 +28,7 @@ class NavBar extends React.Component {
       <Navbar.Collapse>
         <Nav>
           <LinkContainer to="/tasks"><NavItem eventKey={1}>Tasks</NavItem></LinkContainer>
-          <LinkContainer to="/image-sources"><NavItem eventKey={2}>Images</NavItem></LinkContainer>
+          <LinkContainer to="/image-sources"><NavItem eventKey={2}>Image Sources</NavItem></LinkContainer>
         </Nav>
         <NavRight session={this.props.session} logout={this.props.logout}/>
       </Navbar.Collapse>
