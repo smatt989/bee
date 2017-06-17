@@ -7,8 +7,8 @@ import {
 import { Grid, Row, Col } from 'react-bootstrap';
 import NavBarContainer from './NavBar.jsx';
 import Home from './Home.jsx';
-import LoginContainer from './Login.jsx';
-import RegisterContainer from './Register.jsx';
+import LoginContainer from './account_forms/Login.jsx';
+import RegisterContainer from './account_forms/Register.jsx';
 import PrivateRouteContainer from './PrivateRoute.jsx';
 import Images from './Images.jsx';
 import Tasks from './tasks/Tasks.jsx';
