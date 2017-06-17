@@ -6,10 +6,10 @@ import {
   Button  
 } from 'react-bootstrap';
 import { Link, Redirect } from 'react-router-dom'
-import { loginEmailChanged, loginPasswordChanged, loginClearInputs } from '../actions.js'
-import { tryLogin } from '../utilities.js';
-import EmailFormGroup from './account_forms/EmailFormGroup.jsx'
-import PasswordFormGroup from './account_forms/PasswordFormGroup.jsx'
+import { loginEmailChanged, loginPasswordChanged, loginClearInputs } from '../../actions.js'
+import { tryLogin } from '../../utilities.js';
+import EmailFormGroup from './EmailFormGroup.jsx'
+import PasswordFormGroup from './PasswordFormGroup.jsx'
 
 class Login extends React.Component {
   constructor(props) {

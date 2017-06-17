@@ -6,10 +6,10 @@ import {
 } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
-import { signupEmailChanged, signupPasswordChanged, signupClearInputs, createUser, createUserSuccess, createUserError } from '../actions.js'
-import { tryLogin } from '../utilities.js';
-import EmailFormGroupContainer from './account_forms/EmailFormGroup.jsx'
-import PasswordFormGroup from './account_forms/PasswordFormGroup.jsx'
+import { signupEmailChanged, signupPasswordChanged, signupClearInputs, createUser, createUserSuccess, createUserError } from '../../actions.js'
+import { tryLogin } from '../../utilities.js';
+import EmailFormGroupContainer from './EmailFormGroup.jsx'
+import PasswordFormGroup from './PasswordFormGroup.jsx'
 
 class Register extends React.Component {
   constructor(props) {
