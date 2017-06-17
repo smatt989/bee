@@ -9,37 +9,42 @@ import { viewTask, viewTaskSuccess, viewTaskError } from '../../actions.js';
 class ViewTask extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      isLoading: true,
-      isError: false
-    };
 
-    this.props.getTask(this.props.match.params.id)
-      .then(isSuccess => this.setState({ isLoading: false, isError: isSuccess }));
+    this.props.getTask(this.props.match.params.id);
+  }
+
+  buildContent() {
+    const { task, loading, error } = this.props;
+    if (error) {
+      return <div>Error</div>
+    } else if (loading) {
+      return <div>Loading</div>
+    } else if (task) {
+      return <div>
+        <div>Id: { task.id }</div>
+        <div>Name: { task.name }</div>
+      </div> 
+    } else {
+      return null;
+    }
   }
 
   render() {
-    const { task } = this.props;
-    const body = this.state.isLoading ? 
-      <div>Loading</div> : 
-      <div>
-        <div>Id: { task.id }</div>
-        <div>Name: { task.name }</div>
-      </div>
-
     return <Grid>
       <PageHeader>
         View Task
       </PageHeader>
-      { body } 
+      { this.buildContent() } 
     </Grid>;
   }
 }
 
 const mapStateToProps = state => {
-  const currentTask = state.get('currentTask').toJS().task;
+  const currentTask = state.getIn(['currentTask', 'task']);
   return {
-    task: currentTask ? currentTask.data : null
+    task: currentTask ? currentTask.toJS().data : null,
+    error: state.getIn(['currentTask', 'error']),
+    loading: state.getIn(['currentTask', 'loading'])
   }
 }
 
