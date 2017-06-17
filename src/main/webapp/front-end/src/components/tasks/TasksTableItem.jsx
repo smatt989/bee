@@ -8,17 +8,17 @@ import { LinkContainer } from 'react-router-bootstrap';
 
 class TasksTableItem extends React.Component {
   render() {
-    const { data } = this.props;
+    const { data, match } = this.props;
     return <tr>
       <td>{data.id}</td>
       <td>{data.name}</td>
       <td>
         <ButtonGroup>
-          <Button>Left</Button>
-          <Button>Middle</Button>
-          <LinkContainer to={'/tasks/' + data.id + '/view'}>
-            <Button>View</Button>
+          <LinkContainer to={`${match.url}tasks/${data.id}/view`}>
+            <Button>Manage</Button>
           </LinkContainer>
+          <Button>Label</Button>
+          <Button>Leave</Button>
         </ButtonGroup>
       </td>
     </tr>

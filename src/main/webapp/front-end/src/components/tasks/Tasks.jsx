@@ -14,10 +14,11 @@ export default class Tasks extends React.Component {
   }
 
   render() {
+    const { match } = this.props;
     return <Grid>
       <PageHeader>
         Tasks
-        <LinkContainer className="pull-right" to='/tasks/new'>
+        <LinkContainer className="pull-right" to={`${match.url}tasks/new`}>
           <Button
             className="new-tbl-item-btn"
             bsStyle="primary"
@@ -26,7 +27,7 @@ export default class Tasks extends React.Component {
           </Button>
         </LinkContainer>
       </PageHeader>
-      <TasksTableContainer />
+      <TasksTableContainer {...this.props} />
     </Grid>;
   }
 }

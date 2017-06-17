@@ -25,7 +25,7 @@ class TasksTable extends React.Component {
 
   render() {
     const { tasks } = this.props;
-
+    
     return <Table id="task-tbl" responsive striped hover>
       <thead>
         <tr>
@@ -35,7 +35,7 @@ class TasksTable extends React.Component {
         </tr>
       </thead>
       <tbody>
-        { tasks ? tasks.map(o => <TasksTableItemContainer key={o.id} data={o} />) : null }
+        { tasks ? tasks.map(o => <TasksTableItemContainer key={o.id} data={o} {...this.props} />) : null }
       </tbody>
     </Table>
   }

@@ -1,10 +1,31 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { 
-  PageHeader,
+  Grid,
+  PageHeader
 } from 'react-bootstrap';
 
 const ViewTask = (props) => {
-  return <PageHeader>View Task</PageHeader>;
+  return <Grid>
+    <PageHeader>
+      Manage Task
+    </PageHeader>
+  </Grid>;
 }
 
-export default ViewTask;
+const mapStateToProps = state => {
+  return {
+  }
+}
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {
+  }
+}
+
+const ViewTaskContainer = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ViewTask)
+
+export default ViewTaskContainer;
