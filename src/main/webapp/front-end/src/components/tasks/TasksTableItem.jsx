@@ -14,7 +14,7 @@ class TasksTableItem extends React.Component {
       <td>{data.name}</td>
       <td>
         <ButtonGroup>
-          <LinkContainer to={`${match.url}tasks/${data.id}/view`}>
+          <LinkContainer to={`${match.url}/${data.id}/view`}>
             <Button>Manage</Button>
           </LinkContainer>
           <Button>Label</Button>
