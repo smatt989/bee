@@ -9,9 +9,7 @@ import { tasksCreated, tasksCreatedSuccess, tasksCreatedError } from '../../acti
 import TasksTableItem from './TasksTableItem.jsx';
 
 class TasksTable extends React.Component {
-  constructor(props) {
-    super(props);
-
+  componentDidMount() {
     this.props.getTasksCreated();
   }
 

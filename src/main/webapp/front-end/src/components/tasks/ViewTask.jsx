@@ -7,9 +7,7 @@ import {
 import { viewTask, viewTaskSuccess, viewTaskError } from '../../actions.js';
 
 class ViewTask extends React.Component {
-  constructor(props) {
-    super(props);
-
+  componentDidMount() {
     this.props.getTask(this.props.match.params.id);
   }
 
