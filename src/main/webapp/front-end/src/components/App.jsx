@@ -13,6 +13,7 @@ import PrivateRouteContainer from './PrivateRoute.jsx';
 import Images from './Images.jsx';
 import Tasks from './tasks/Tasks.jsx';
 import NewTask from './tasks/NewTask.jsx';
+import ViewTask from './tasks/ViewTask.jsx';
 import Err from './Error.jsx';
 
 export default class App extends React.Component {
@@ -34,6 +35,7 @@ export default class App extends React.Component {
               <PrivateRouteContainer exact path="/images" component={Images}/>
               <PrivateRouteContainer exact path="/tasks" component={Tasks}/>
               <PrivateRouteContainer exact path="/tasks/new" component={NewTask}/>
+              <PrivateRouteContainer path="/tasks/:id/view" component={ViewTask}/>
               <Route component={Err}/>
             </Switch>
           </Col>
