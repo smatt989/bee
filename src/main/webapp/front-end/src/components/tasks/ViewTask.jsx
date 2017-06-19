@@ -40,7 +40,7 @@ class ViewTask extends React.Component {
 const mapStateToProps = state => {
   const currentTask = state.getIn(['currentTask', 'task']);
   return {
-    task: currentTask ? currentTask.toJS().data : null,
+    task: currentTask ? currentTask.toJS() : null,
     error: state.getIn(['currentTask', 'error']),
     loading: state.getIn(['currentTask', 'loading'])
   }
@@ -56,7 +56,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
             return false;
           }
 
-          dispatch(viewTaskSuccess(response.payload));
+          dispatch(viewTaskSuccess(response.payload.data));
           return true;
         });
     }

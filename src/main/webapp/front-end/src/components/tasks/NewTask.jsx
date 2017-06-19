@@ -84,7 +84,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
             return false;
           }
 
-          dispatch(saveTaskSuccess(response.payload));
+          dispatch(saveTaskSuccess(response.payload.data));
           return true;
         })
     }
