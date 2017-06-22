@@ -43,6 +43,6 @@ export default class App extends React.Component {
           </Col>
         </Row>
       </Grid>
-    </Router>
+    </Router>;
   }
 }

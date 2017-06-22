@@ -11,26 +11,26 @@ class NewImageSource extends React.Component {
     this.state = {
       name: '',
       redirectToReferror: false
-    }
+    };
 
     this.onNameChange = (e) => this.setState({ name: e.target.value });
     this.onSubmit = (e) => {
       e.preventDefault();
       this.props.onSubmit(this.state.name)
         .then(isSuccess => this.setState({ redirectToReferrer: isSuccess }));
-    }
+    };
   }
 
   render() {
-    const { from } = this.props.location.state || { from: { pathname: '/image-sources' } }
+    const { from } = this.props.location.state || { from: { pathname: '/image-sources' } };
     if (this.state.redirectToReferrer) {
-      return <Redirect to={from} />
+      return <Redirect to={from} />;
     }
 
     const nameFormProps = {
-      type: "name",
-      label: "Name:",
-      placeholder: "Image Source Name",
+      type: 'name',
+      label: 'Name:',
+      placeholder: 'Image Source Name',
       onChange: this.onNameChange,
       value: this.state.name
     };
@@ -54,8 +54,8 @@ class NewImageSource extends React.Component {
 
 const mapStateToProps = state => {
   return {
-  }
-}
+  };
+};
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
@@ -69,14 +69,14 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
           dispatch(saveImageSourceSuccess(response.payload));
           return true;
-        })
+        });
     }
-  }
-}
+  };
+};
 
 const NewImageSourceContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(NewImageSource)
+)(NewImageSource);
 
 export default NewImageSourceContainer;

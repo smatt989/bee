@@ -32,7 +32,7 @@ class ViewTask extends React.Component {
       <PageHeader>
         View Task
       </PageHeader>
-      { this.buildContent() } 
+      { this.buildContent() };
     </Grid>;
   }
 }
@@ -43,8 +43,8 @@ const mapStateToProps = state => {
     task: currentTask ? currentTask.toJS() : null,
     error: state.getIn(['currentTask', 'error']),
     loading: state.getIn(['currentTask', 'loading'])
-  }
-}
+  };
+};
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
@@ -60,12 +60,12 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           return true;
         });
     }
-  }
-}
+  };
+};
 
 const ViewTaskContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(ViewTask)
+)(ViewTask);
 
 export default ViewTaskContainer;
