@@ -47,7 +47,7 @@ class TasksTable extends React.Component {
 const mapStateToProps = state => {
   const tasksCreated = state.getIn(['tasksCreated', 'tasks']);
   return {
-    tasks: tasksCreated ? tasksCreated.toJS().data : null,
+    tasks: tasksCreated ? tasksCreated.toJS() : null,
     loading: state.getIn(['tasksCreated', 'loading']),
     error: state.getIn(['tasksCreated', 'error'])
   }
@@ -63,7 +63,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
             return false;
           }
 
-          dispatch(tasksCreatedSuccess(response.payload));
+          dispatch(tasksCreatedSuccess(response.payload.data));
           return true;
         })
     }
