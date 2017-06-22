@@ -7,4 +7,4 @@ export default class Err extends React.Component {
       <h1>Error</h1>
     </Grid>;
   }
-}
+};

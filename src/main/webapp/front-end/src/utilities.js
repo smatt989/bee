@@ -3,8 +3,8 @@ import Cookies from 'js-cookie';
 import { login, loginError, loginSuccess, loginClearInputs } from './actions.js';
 var _ = require('lodash');
 
-export var authenticationHeader = 'bee-session-key'
-export var cookieName = 'BEE_SESS_KEY'
+export var authenticationHeader = 'bee-session-key';
+export var cookieName = 'BEE_SESS_KEY';
 
 export function getSession() {
   return Cookies.get(cookieName);
@@ -19,9 +19,9 @@ export function setSession(session) {
 }
 
 export function authenticate() {
-    var authentication = {}
-    authentication[authenticationHeader] = Cookies.get(cookieName)
-    return authentication
+  var authentication = {};
+  authentication[authenticationHeader] = Cookies.get(cookieName);
+  return authentication;
 }
 
 export const tryLogin = (email, password) => {
@@ -36,8 +36,8 @@ export const tryLogin = (email, password) => {
       if (!session) {
         return false;
       }
-      
+
       store.dispatch(loginSuccess(session));
       return true;
-    })
-}
+    });
+};

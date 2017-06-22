@@ -1,10 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { 
-  Table,
-  Button,
-  ButtonGroup
-} from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
 import { tasksCreated, tasksCreatedSuccess, tasksCreatedError } from '../../actions.js';
 import TasksTableItem from './TasksTableItem.jsx';
 
@@ -21,7 +17,7 @@ class TasksTable extends React.Component {
       return <div>Loading</div>;
     } else if (!tasks) {
       return null;
-    } 
+    };
 
     return <Table id="task-tbl" responsive striped hover>
       <thead>
@@ -32,9 +28,9 @@ class TasksTable extends React.Component {
         </tr>
       </thead>
       <tbody>
-        { tasks ? tasks.map(o => 
-          <TasksTableItem key={o.id} data={o} {...this.props} />) : 
-          null }
+        { tasks ? tasks.map(o =>
+          <TasksTableItem key={o.id} data={o} {...this.props} />)
+          : null }
       </tbody>
     </Table>;
   }
@@ -50,8 +46,8 @@ const mapStateToProps = state => {
     tasks: tasksCreated ? tasksCreated.toJS() : null,
     loading: state.getIn(['tasksCreated', 'loading']),
     error: state.getIn(['tasksCreated', 'error'])
-  }
-}
+  };
+};
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
@@ -65,14 +61,14 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
           dispatch(tasksCreatedSuccess(response.payload.data));
           return true;
-        })
+        });
     }
-  }
-}
+  };
+};
 
 const TasksTableContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(TasksTable)
+)(TasksTable);
 
 export default TasksTableContainer;

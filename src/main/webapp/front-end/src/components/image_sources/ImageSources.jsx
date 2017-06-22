@@ -3,7 +3,8 @@ import { Grid, PageHeader, Button, Table } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 
 const ImagesTable = () => {
-  return <Table id="imgsrc-tbl" responsive striped hover>
+  return (
+    <Table id="imgsrc-tbl" responsive striped hover>
       <thead>
         <tr>
           <th>#</th>
@@ -22,8 +23,9 @@ const ImagesTable = () => {
           <td><Button>Remove</Button></td>
         </tr>
       </tbody>
-    </Table>;
-}
+    </Table>
+  );
+};
 
 export default class ImageSources extends React.Component {
   render() {

@@ -1,12 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-import { 
-  Grid, 
+import {
+  Grid,
   PageHeader,
-  FormControl,
-  FormGroup,
-  ControlLabel,
   Button
 } from 'react-bootstrap';
 import { saveTask, saveTaskSuccess, saveTaskError } from '../../actions.js';
@@ -19,7 +16,7 @@ class NewTask extends React.Component {
       name: '',
       label: '',
       redirectToReferrer: false
-    }
+    };
 
     this.onNameChange = (e) => this.setState({ name: e.target.value });
     this.onLabelChange = (e) => this.setState({ label: e.target.value });
@@ -27,27 +24,27 @@ class NewTask extends React.Component {
       e.preventDefault();
       this.props.onSubmit(this.state.name, this.state.label)
         .then(isSuccess => this.setState({ redirectToReferrer: isSuccess }));
-    }
+    };
   }
 
   render() {
-    const { from } = this.props.location.state || { from: { pathname: '/tasks' } }
+    const { from } = this.props.location.state || { from: { pathname: '/tasks' } };
     if (this.state.redirectToReferrer) {
-      return <Redirect to={from} />
+      return <Redirect to={from} />;
     }
 
     const nameFormProps = {
-      type: "name",
-      label: "Name:",
-      placeholder: "Task Name",
+      type: 'name',
+      label: 'Name:',
+      placeholder: 'Task Name',
       onChange: this.onNameChange,
       value: this.state.name
     };
 
     const labelFormProps = {
-      type: "label",
-      label: "Label:",
-      placeholder: "Task Label",
+      type: 'label',
+      label: 'Label:',
+      placeholder: 'Task Label',
       onChange: this.onLabelChange,
       value: this.state.label
     };
@@ -71,8 +68,8 @@ class NewTask extends React.Component {
 
 const mapStateToProps = state => {
   return {
-  }
-}
+  };
+};
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
@@ -86,14 +83,14 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
           dispatch(saveTaskSuccess(response.payload.data));
           return true;
-        })
+        });
     }
-  }
-}
+  };
+};
 
 const NewTaskContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(NewTask)
+)(NewTask);
 
 export default NewTaskContainer;

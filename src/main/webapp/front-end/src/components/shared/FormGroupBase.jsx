@@ -1,5 +1,5 @@
 import React from 'react';
-import { 
+import {
   FormGroup,
   ControlLabel,
   FormControl
@@ -11,7 +11,7 @@ export default class FormGroupBase extends React.Component {
     this.state = {
       focused: false,
       hasFocused: false
-    }
+    };
 
     this.onFocus = () => this.setState({ focused: true });
     this.onBlur = () => this.setState({ focused: false, hasFocused: true });
@@ -19,17 +19,19 @@ export default class FormGroupBase extends React.Component {
 
   render() {
     const { type, label, validation, placeholder, value, onChange } = this.props.baseProps;
-    const getValidationState = validation != null ? validation : () => { return null };
-    return <FormGroup controlId={type} validationState={getValidationState(this.state)}>
-      <ControlLabel>{label}</ControlLabel>
-      <FormControl 
-        type={type}
-        value={value}
-        placeholder={placeholder}
-        onChange={onChange}
-        onFocus={this.onFocus}
-        onBlur={this.onBlur} />
-      <FormControl.Feedback />
-    </FormGroup>
+    const getValidationState = validation != null ? validation : () => { return null; };
+    return (
+      <FormGroup controlId={type} validationState={getValidationState(this.state)}>
+        <ControlLabel>{label}</ControlLabel>
+        <FormControl
+          type={type}
+          value={value}
+          placeholder={placeholder}
+          onChange={onChange}
+          onFocus={this.onFocus}
+          onBlur={this.onBlur} />
+        <FormControl.Feedback />
+      </FormGroup>
+    );
   }
 }
