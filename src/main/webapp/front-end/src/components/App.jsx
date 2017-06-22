@@ -7,10 +7,11 @@ import {
 import { Grid, Row, Col } from 'react-bootstrap';
 import NavBarContainer from './NavBar.jsx';
 import Home from './Home.jsx';
-import LoginContainer from './Login.jsx';
-import RegisterContainer from './Register.jsx';
+import LoginContainer from './account_forms/Login.jsx';
+import RegisterContainer from './account_forms/Register.jsx';
 import PrivateRouteContainer from './PrivateRoute.jsx';
-import Images from './Images.jsx';
+import ImageSources from './image_sources/ImageSources.jsx';
+import NewImageSource from './image_sources/NewImageSource.jsx';
 import Tasks from './tasks/Tasks.jsx';
 import NewTask from './tasks/NewTask.jsx';
 import ViewTask from './tasks/ViewTask.jsx';
@@ -32,7 +33,8 @@ export default class App extends React.Component {
               <Route exact path="/login" component={LoginContainer}/>
               <Route exact path="/register" component={RegisterContainer}/>
               <Route exact path="/recover" component={LoginContainer}/>
-              <PrivateRouteContainer exact path="/images" component={Images}/>
+              <PrivateRouteContainer exact path="/image-sources" component={ImageSources}/>
+              <PrivateRouteContainer exact path="/image-sources/new" component={NewImageSource}/>
               <PrivateRouteContainer exact path="/tasks" component={Tasks}/>
               <PrivateRouteContainer exact path="/tasks/new" component={NewTask}/>
               <PrivateRouteContainer path="/tasks/:id/view" component={ViewTask}/>
@@ -41,6 +43,6 @@ export default class App extends React.Component {
           </Col>
         </Row>
       </Grid>
-    </Router>
+    </Router>;
   }
 }

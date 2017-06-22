@@ -1,34 +1,28 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-import {
-  Grid,
-  PageHeader,
-  Button
-} from 'react-bootstrap';
-import { saveTask, saveTaskSuccess, saveTaskError } from '../../actions.js';
+import { Grid, PageHeader, Button } from 'react-bootstrap';
+import { saveImageSource, saveImageSourceError, saveImageSourceSuccess } from '../../actions.js';
 import FormGroupBase from '../shared/FormGroupBase.jsx';
 
-class NewTask extends React.Component {
+class NewImageSource extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       name: '',
-      label: '',
-      redirectToReferrer: false
+      redirectToReferror: false
     };
 
     this.onNameChange = (e) => this.setState({ name: e.target.value });
-    this.onLabelChange = (e) => this.setState({ label: e.target.value });
     this.onSubmit = (e) => {
       e.preventDefault();
-      this.props.onSubmit(this.state.name, this.state.label)
+      this.props.onSubmit(this.state.name)
         .then(isSuccess => this.setState({ redirectToReferrer: isSuccess }));
     };
   }
 
   render() {
-    const { from } = this.props.location.state || { from: { pathname: '/tasks' } };
+    const { from } = this.props.location.state || { from: { pathname: '/image-sources' } };
     if (this.state.redirectToReferrer) {
       return <Redirect to={from} />;
     }
@@ -36,30 +30,22 @@ class NewTask extends React.Component {
     const nameFormProps = {
       type: 'name',
       label: 'Name:',
-      placeholder: 'Task Name',
+      placeholder: 'Image Source Name',
       onChange: this.onNameChange,
       value: this.state.name
     };
 
-    const labelFormProps = {
-      type: 'label',
-      label: 'Label:',
-      placeholder: 'Task Label',
-      onChange: this.onLabelChange,
-      value: this.state.label
-    };
-
     return <Grid>
       <PageHeader>
-        New Task
+        New Image Source
       </PageHeader>
+
       <form role="form" onSubmit={this.onSubmit}>
         <FormGroupBase baseProps={nameFormProps}/>
-        <FormGroupBase baseProps={labelFormProps}/>
         <Button
           bsStyle="primary"
           type="submit">
-          Create Task
+          Add Image Source
         </Button>
       </form>
     </Grid>;
@@ -73,24 +59,24 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    onSubmit: (name, label) => {
-      return dispatch(saveTask(name))
+    onSubmit: (name) => {
+      return dispatch(saveImageSource(name))
         .then(response => {
           if (response.error) {
-            dispatch(saveTaskError(response.error));
+            dispatch(saveImageSourceError(response.error));
             return false;
           }
 
-          dispatch(saveTaskSuccess(response.payload.data));
+          dispatch(saveImageSourceSuccess(response.payload));
           return true;
         });
     }
   };
 };
 
-const NewTaskContainer = connect(
+const NewImageSourceContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(NewTask);
+)(NewImageSource);
 
-export default NewTaskContainer;
+export default NewImageSourceContainer;

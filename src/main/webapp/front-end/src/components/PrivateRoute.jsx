@@ -12,17 +12,17 @@ const PrivateRoute = ({ component: Component, isAuthenticated, path }) => {
         state: { from: props.location }
       }}/>
     )
-  )}/>
-}
+  )}/>;
+};
 
 const mapStateToProps = state => {
-    return {
-        isAuthenticated: state.getIn(['login', 'session']) != null
-    }
-}
+  return {
+    isAuthenticated: state.getIn(['login', 'session']) != null
+  };
+};
 
 const PrivateRouteContainer = connect(
   mapStateToProps
-)(PrivateRoute)
+)(PrivateRoute);
 
 export default PrivateRouteContainer;
