@@ -6,15 +6,17 @@ import { Navbar, NavItem, Nav } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 
 const NavRight = (props) => {
-  return props.session != null ? 
+  return props.session != null ? (
     <Nav pullRight>
       <NavItem eventKey={2} onClick={() => props.logout(props.session)}>Log Out</NavItem>
-    </Nav> : 
+    </Nav>
+  ) : (
     <Nav pullRight>
       <LinkContainer to="/login"><NavItem eventKey={1}>Log In</NavItem></LinkContainer>
       <LinkContainer to="/register"><NavItem eventKey={2}>Sign Up</NavItem></LinkContainer>
     </Nav>
-}
+  );
+};
 
 class NavBar extends React.Component {
   render() {
@@ -28,7 +30,7 @@ class NavBar extends React.Component {
       <Navbar.Collapse>
         <Nav>
           <LinkContainer to="/tasks"><NavItem eventKey={1}>Tasks</NavItem></LinkContainer>
-          <LinkContainer to="/images"><NavItem eventKey={2}>Images</NavItem></LinkContainer>
+          <LinkContainer to="/image-sources"><NavItem eventKey={2}>Image Sources</NavItem></LinkContainer>
         </Nav>
         <NavRight session={this.props.session} logout={this.props.logout}/>
       </Navbar.Collapse>
@@ -37,31 +39,31 @@ class NavBar extends React.Component {
 }
 
 const mapStateToProps = state => {
-    return {
-      session: state.getIn(['login', 'session'])
-    }
-}
+  return {
+    session: state.getIn(['login', 'session'])
+  };
+};
 
 const mapDispatchToProps = (dispatch, ownProps) => {
-    return {
-        logout: (session) => {
-          return dispatch(logout(session))
-            .then(response => {
-              if (response.error) {
-                dispatch(logoutError(response.error));
-                return false;
-              }
+  return {
+    logout: (session) => {
+      return dispatch(logout(session))
+        .then(response => {
+          if (response.error) {
+            dispatch(logoutError(response.error));
+            return false;
+          }
 
-              dispatch(logoutSuccess(response.payload));
-              return true;
-            })
-        }
+          dispatch(logoutSuccess(response.payload));
+          return true;
+        });
     }
-}
+  };
+};
 
 const NavBarContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(NavBar)
+)(NavBar);
 
 export default NavBarContainer;

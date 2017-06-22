@@ -1,6 +1,6 @@
 import React from 'react';
-import { connect } from 'react-redux'
-import FormGroupBase from '../shared/FormGroupBase.jsx'
+import { connect } from 'react-redux';
+import FormGroupBase from '../shared/FormGroupBase.jsx';
 
 class EmailFormGroup extends React.Component {
   constructor(props) {
@@ -17,7 +17,7 @@ class EmailFormGroup extends React.Component {
       }
 
       return 'error';
-    }
+    };
 
     this.onChange = (e) => this.props.onChange(e.target.value, this.props.emailInputProps.action);
   }
@@ -25,9 +25,9 @@ class EmailFormGroup extends React.Component {
   render() {
     const { value, placeholder } = this.props.emailInputProps;
     const baseProps = {
-      type: "email",
+      type: 'email',
       validation: this.validation,
-      label: "Email Address",
+      label: 'Email Address',
       placeholder: placeholder,
       onChange: this.onChange,
       value: value
@@ -37,16 +37,16 @@ class EmailFormGroup extends React.Component {
   }
 }
 
-const mapStateToProps = state => { return {} }
+const mapStateToProps = state => { return {}; };
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     onChange: (email, action) => dispatch(action(email))
-  }
-}
+  };
+};
 
 const EmailFormGroupContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(EmailFormGroup)
+)(EmailFormGroup);
 
 export default EmailFormGroupContainer;

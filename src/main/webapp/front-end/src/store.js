@@ -1,5 +1,5 @@
-import {createStore, applyMiddleware, compose} from 'redux';
-import { cleanState } from './actions'
+import {createStore, applyMiddleware} from 'redux';
+import { cleanState } from './actions';
 import reducer from './reducer';
 import promise from 'redux-promise';
 
