@@ -30,7 +30,6 @@ class NewOntology extends React.Component {
     }
 
     stateToOntologyObject() {
-        console.log(this.state)
         return Map({
             name: this.state.label,
             ontologyType: this.state.type,
@@ -50,7 +49,8 @@ class NewOntology extends React.Component {
             target: this.targetFromFlags(obj.get('isAreaLabel', false), obj.get('isLengthLabel', false)),
             min: obj.get('minValue', ''),
             max: obj.get('maxValue', ''),
-            limit: obj.get('labelLimit', '1')
+            limit: obj.get('labelLimit', '1'),
+            redirectToReferrer: false
         }
     }
 
@@ -81,8 +81,6 @@ class NewOntology extends React.Component {
   }
 
   render() {
-
-    console.log(this.stateToOntologyObject())
 
     const labelFormProps = {
       type: 'label',

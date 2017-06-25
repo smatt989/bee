@@ -390,7 +390,7 @@ export function viewTaskOntologyError(error) {
 export function saveImageSource(imageSource, configs) {
   var headers = authenticate()
   //TODO: CAN PROBABLY DO THIS BETTER
-  for(var key in configs.toJS()){
+  for(var key in configs){
       headers[key] = configs[key];
   }
 
