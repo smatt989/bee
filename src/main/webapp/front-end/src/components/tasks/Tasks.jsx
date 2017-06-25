@@ -6,7 +6,7 @@ import {
   Button,
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import TasksTableContainer from './TasksTable.jsx';
+import {TasksCreatedTableContainer, TasksParticipatingTableContainer} from './TasksTable.jsx';
 
 const Tasks = (props) => {
   return <Grid>
@@ -21,7 +21,8 @@ const Tasks = (props) => {
         </Button>
       </LinkContainer>
     </PageHeader>
-    <TasksTableContainer {...props} />
+    <TasksCreatedTableContainer {...props} />
+    <TasksParticipatingTableContainer {...props} />
   </Grid>;
 }
 
