@@ -1,9 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { 
-  Grid, 
+import {
+  Grid,
   PageHeader,
-  Button,
+  Button
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import {TasksCreatedTableContainer, TasksParticipatingTableContainer} from './TasksTable.jsx';
@@ -24,6 +23,6 @@ const Tasks = (props) => {
     <TasksCreatedTableContainer {...props} />
     <TasksParticipatingTableContainer {...props} />
   </Grid>;
-}
+};
 
 export default Tasks;

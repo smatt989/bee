@@ -3,7 +3,7 @@ var webpack = require('webpack');
 
 module.exports = {
   devtool: 'eval',
-  entry: [ 
+  entry: [
     './src/index.jsx',
     './dist/style.scss'
   ],

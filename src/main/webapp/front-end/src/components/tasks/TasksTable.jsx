@@ -21,7 +21,7 @@ class TasksTable extends React.Component {
       return <div>Loading</div>;
     } else if (!tasks) {
       return null;
-    } 
+    };
 
     return <Table id="task-tbl" responsive striped hover>
       <thead>
@@ -32,9 +32,9 @@ class TasksTable extends React.Component {
         </tr>
       </thead>
       <tbody>
-        { tasks ? tasks.map(o => 
-          <TasksTableItem key={o.id} data={o} {...this.props} />) : 
-          null }
+        { tasks ? tasks.map(o =>
+          <TasksTableItem key={o.id} data={o} {...this.props} />)
+          : null }
       </tbody>
     </Table>;
   }
@@ -50,8 +50,8 @@ const mapStateToPropsCreated = state => {
     tasks: tasksCreated ? tasksCreated.toJS() : null,
     loading: state.getIn(['tasksCreated', 'loading']),
     error: state.getIn(['tasksCreated', 'error'])
-  }
-}
+  };
+};
 
 const mapDispatchToPropsCreated = (dispatch, ownProps) => {
   return {
@@ -65,10 +65,10 @@ const mapDispatchToPropsCreated = (dispatch, ownProps) => {
 
           dispatch(tasksCreatedSuccess(response.payload.data));
           return true;
-        })
+        });
     }
-  }
-}
+  };
+};
 
 export const TasksCreatedTableContainer = connect(
   mapStateToPropsCreated,
