@@ -1,8 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-import { Grid, PageHeader, Button } from 'react-bootstrap';
-import { saveImageSource, saveImageSourceError, saveImageSourceSuccess } from '../../actions.js';
+import { Map, List } from 'immutable';
+import {
+  Grid,
+  PageHeader,
+  Button,
+  FormGroup,
+  FormControl,
+  ControlLabel
+} from 'react-bootstrap';
+import { saveImageSource, saveImageSourceSuccess, saveImageSourceError } from '../../actions.js';
 import FormGroupBase from '../shared/FormGroupBase.jsx';
 
 class NewImageSource extends React.Component {
@@ -10,19 +18,43 @@ class NewImageSource extends React.Component {
     super(props);
     this.state = {
       name: '',
-      redirectToReferror: false
+      type: null,
+      typeFields: [],
+      redirectToReferrer: false
     };
 
     this.onNameChange = (e) => this.setState({ name: e.target.value });
+    this.onTypeChange = (e) => this.setState({ type: e.target.value, typeFields:  this.fieldsByType(e.target.value)});
+
+    this.changeState = (field) => (e) => {
+        var obj = {}
+        obj[field] = e.target.value
+        this.setState(obj)
+    }
+
     this.onSubmit = (e) => {
       e.preventDefault();
-      this.props.onSubmit(this.state.name)
+      const taskId = this.props.currentTask.getIn(['task', 'id'], null);
+      //TODO: DEAL WITH SAVING OVER OLD IMAGE SOURCE
+      const imageSource = Map({name: this.state.name, taskId: taskId, imageSourceType: this.state.type})
+      var configs = {}
+      this.state.typeFields.map(f =>
+        configs[f] = this.state[f]
+      )
+      this.props.onSubmit(imageSource, configs)
         .then(isSuccess => this.setState({ redirectToReferrer: isSuccess }));
     };
   }
 
+  fieldsByType(type) {
+    return this.props.imageSourceTypes.get('types').find(function(a){return a.get('name') == type}).get('fields').toJS()
+  }
+
   render() {
-    const { from } = this.props.location.state || { from: { pathname: '/image-sources' } };
+
+    console.log(this.state)
+
+    const { from } = this.props.location.state || { from: { pathname: '/tasks' } };
     if (this.state.redirectToReferrer) {
       return <Redirect to={from} />;
     }
@@ -30,22 +62,41 @@ class NewImageSource extends React.Component {
     const nameFormProps = {
       type: 'name',
       label: 'Name:',
-      placeholder: 'Image Source Name',
+      placeholder: 'Task Name',
       onChange: this.onNameChange,
       value: this.state.name
     };
 
+    const imageSourceTypes = this.props.imageSourceTypes.get('types', null);
+
     return <Grid>
       <PageHeader>
-        New Image Source
+        Add Image Source
       </PageHeader>
-
       <form role="form" onSubmit={this.onSubmit}>
         <FormGroupBase baseProps={nameFormProps}/>
+
+        <FormGroup>
+          <ControlLabel>Label Type</ControlLabel>
+          <FormControl onChange={this.onTypeChange} componentClass="select" placeholder="select">
+            <option key="yo" value="ek">select...</option>
+            { imageSourceTypes ? imageSourceTypes.map(o =>
+                      <option key={o.get('name')} value={o.get('name')}>{o.get('name')}</option>)
+                      : null }
+          </FormControl>
+        </FormGroup>
+
+        {this.state.typeFields.map(f =>
+            <FormGroup>
+                <ControlLabel>{f}</ControlLabel>
+                <FormControl onChange={ this.changeState(f) } placeholder={f} />
+            </FormGroup>
+        )}
+
         <Button
           bsStyle="primary"
           type="submit">
-          Add Image Source
+          Save Image Source
         </Button>
       </form>
     </Grid>;
@@ -54,20 +105,25 @@ class NewImageSource extends React.Component {
 
 const mapStateToProps = state => {
   return {
+    imageSourceTypes: state.get('imageSourceTypes'),
+    currentTask: state.get('currentTask')
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    onSubmit: (name) => {
-      return dispatch(saveImageSource(name))
+    onSubmit: (imageSource, configs) => {
+      return dispatch(saveImageSource(imageSource, configs))
         .then(response => {
           if (response.error) {
             dispatch(saveImageSourceError(response.error));
             return false;
           }
 
-          dispatch(saveImageSourceSuccess(response.payload));
+           //TODO: NEED TO GET CONFIGS OUT OF HEADERS
+
+
+          dispatch(saveImageSourceSuccess(response.payload.data, response.payload.headers));
           return true;
         });
     }

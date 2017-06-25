@@ -38,7 +38,7 @@ export default class App extends React.Component {
               <PrivateRouteContainer exact path="/image-sources/new" component={NewImageSource}/>
               <PrivateRouteContainer exact path="/tasks" component={Tasks}/>
               <PrivateRouteContainer exact path="/tasks/new" component={NewTask}/>
-              <PrivateRouteContainer exact path="/quack" component={NewOntology}/>
+              <PrivateRouteContainer exact path="/labels/new" component={NewOntology}/>
               <PrivateRouteContainer path="/tasks/:id/view" component={ViewTask}/>
               <Route component={Err}/>
             </Switch>
