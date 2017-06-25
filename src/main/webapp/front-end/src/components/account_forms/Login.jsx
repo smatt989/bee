@@ -1,22 +1,22 @@
-import React from 'react'
-import { connect } from 'react-redux'
-import { 
+import React from 'react';
+import { connect } from 'react-redux';
+import {
   Grid,
   PageHeader,
-  Button  
+  Button
 } from 'react-bootstrap';
-import { Link, Redirect } from 'react-router-dom'
-import { loginEmailChanged, loginPasswordChanged, loginClearInputs } from '../actions.js'
-import { tryLogin } from '../utilities.js';
-import EmailFormGroup from './account_forms/EmailFormGroup.jsx'
-import PasswordFormGroup from './account_forms/PasswordFormGroup.jsx'
+import { Link, Redirect } from 'react-router-dom';
+import { loginEmailChanged, loginPasswordChanged, loginClearInputs } from '../../actions.js';
+import { tryLogin } from '../../utilities.js';
+import EmailFormGroup from './EmailFormGroup.jsx';
+import PasswordFormGroup from './PasswordFormGroup.jsx';
 
 class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       redirectToReferrer: false
-    }
+    };
 
     this.onSubmit = (e) => {
       e.preventDefault();
@@ -27,19 +27,20 @@ class Login extends React.Component {
             this.props.clearInputs();
           }
         });
-    }
+    };
   }
 
   render() {
-    const emailInputProps = { value: this.props.email, placeholder: "Enter your email", action: (email) => loginEmailChanged(email) };
-    const pwInputProps = { value: this.props.password, placeholder: "Enter your password", action: (password) => loginPasswordChanged(password) };
-    const { from } = this.props.location.state || { from: { pathname: '/' } }
+    const emailInputProps = { value: this.props.email, placeholder: 'Enter your email', action: (email) => loginEmailChanged(email) };
+    const pwInputProps = { value: this.props.password, placeholder: 'Enter your password', action: (password) => loginPasswordChanged(password) };
+    const { from } = this.props.location.state || { from: { pathname: '/' } };
 
     if (this.state.redirectToReferrer) {
-      return <Redirect to={from} />
+      return <Redirect to={from} />;
     }
 
-    return <Grid>
+    return (
+      <Grid>
         <PageHeader>Log in</PageHeader>
         <form role="form" onSubmit={this.onSubmit}>
           <EmailFormGroup emailInputProps={emailInputProps} />
@@ -52,15 +53,16 @@ class Login extends React.Component {
           <span className="altAuthMsg"><Link to={{ pathname: "/recover" }}>Forgot your password?</Link></span>
         </form>
       </Grid>
+    );
   }
 }
 
 const mapStateToProps = state => {
   return {
-      email: state.getIn(['loginEmail', 'email']),
-      password: state.getIn(['loginPassword', 'password'])
-  }
-}
+    email: state.getIn(['loginEmail', 'email']),
+    password: state.getIn(['loginPassword', 'password'])
+  };
+};
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
@@ -69,12 +71,12 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       return tryLogin(email, password);
     },
     clearInputs: () => dispatch(loginClearInputs())
-  }
-}
+  };
+};
 
 const LoginContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(Login)
+)(Login);
 
 export default LoginContainer;
