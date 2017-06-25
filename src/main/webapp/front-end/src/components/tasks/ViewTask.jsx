@@ -1,39 +1,43 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { 
+import {
   Grid,
   PageHeader
 } from 'react-bootstrap';
-import { viewTask, viewTaskSuccess, viewTaskError } from '../../actions.js';
+import { viewTask } from '../../actions.js';
 
 class ViewTask extends React.Component {
   componentDidMount() {
-    this.props.getTask(this.props.match.params.id);
+    this.props.getTask();
   }
 
   buildContent() {
     const { task, loading, error } = this.props;
     if (error) {
-      return <div>Error</div>
+      return <div>Error</div>;
     } else if (loading) {
-      return <div>Loading</div>
+      return <div>Loading</div>;
     } else if (!task) {
       return null;
     }
 
-    return <div>
-      <div>Id: { task.id }</div>
-      <div>Name: { task.name }</div>
-    </div> 
+    return (
+      <div>
+        <div>Id: { task.id }</div>
+        <div>Name: { task.name }</div>
+      </div>
+    );
   }
 
   render() {
-    return <Grid>
-      <PageHeader>
-        View Task
-      </PageHeader>
-      { this.buildContent() };
-    </Grid>;
+    return (
+      <Grid>
+        <PageHeader>
+          View Task
+        </PageHeader>
+        { this.buildContent() }
+      </Grid>
+    );
   }
 }
 
@@ -48,18 +52,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    getTask: (id) => {
-      return dispatch(viewTask(id))
-        .then(response => {
-          if (response.error) {
-            dispatch(viewTaskError(response.error));
-            return false;
-          }
-
-          dispatch(viewTaskSuccess(response.payload.data));
-          return true;
-        });
-    }
+    getTask: viewTask(ownProps.match.params.id)
   };
 };
 

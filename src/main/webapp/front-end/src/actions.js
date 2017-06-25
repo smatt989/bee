@@ -1,5 +1,7 @@
 import axios from 'axios';
 import {authenticatedSession, authenticationHeader, authenticate} from './utilities';
+import thunk from 'redux-thunk';
+import store from './store';
 
 const fullstack = false;
 const domain = fullstack ? '' : 'http://localhost:8080';
@@ -144,32 +146,34 @@ export function saveTaskError(error) {
   }
 }
 
-export function viewTask(taskId) {
-  const request = axios({
-    method: 'get',
-    url: `${domain}/tasks/${taskId}/view`,
-    headers: authenticate()
-  });
+export const viewTask = (taskId) => {
+  return () => {
+    store.dispatch(viewTaskRequested());
 
-  return {
-    type: 'VIEW_TASK',
-    payload: request
-  }
-}
+    axios.get(
+      `${domain}/tasks/${taskId}/view`,
+      { headers: authenticate() }
+    ).then(response => {
+      store.dispatch(viewTaskSuccess(response.data));
+    }).catch(error => {
+      store.dispatch(viewTaskError(error));
+    });
+  };
+};
 
-export function viewTaskSuccess(loaded) {
-  return {
-    type: 'VIEW_TASK_SUCCESS',
-    payload: loaded
-  }
-}
+export const viewTaskRequested = () => ({
+  type: 'VIEW_TASK_REQUESTED'
+});
 
-export function viewTaskError(error) {
-  return {
-    type: 'VIEW_TASK_ERROR',
-    error: error
-  }
-}
+export const viewTaskSuccess = (loaded) => ({
+  type: 'VIEW_TASK_SUCCESS',
+  payload: loaded
+});
+
+export const viewTaskError = (error) => ({
+  type: 'VIEW_TASK_ERROR',
+  error: error
+});
 
 export function tasksCreated() {
   const request = axios({

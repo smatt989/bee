@@ -98,7 +98,7 @@ function saveTaskError(state, error) {
   return state.set('savingTask', Map({error: Immutable.fromJS(error), loading: false}));
 }
 
-function viewTask(state) {
+function viewTaskRequested(state) {
   return state.set('currentTask', Map({task: null, error: null, loading: true}));
 }
 
@@ -406,8 +406,8 @@ export default function reducer(state = Map(), action) {
       return saveTaskSuccess(state, action.payload);
     case 'SAVE_TASK_ERROR':
       return saveTaskError(state, action.error);
-    case 'VIEW_TASK':
-      return viewTask(state);
+    case 'VIEW_TASK_REQUESTED':
+      return viewTaskRequested(state);
     case 'VIEW_TASK_SUCCESS':
       return viewTaskSuccess(state, action.payload);
     case 'VIEW_TASK_ERROR':
