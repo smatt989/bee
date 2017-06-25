@@ -15,6 +15,7 @@ import NewImageSource from './image_sources/NewImageSource.jsx';
 import Tasks from './tasks/Tasks.jsx';
 import NewTask from './tasks/NewTask.jsx';
 import ViewTask from './tasks/ViewTask.jsx';
+import NewOntology from './tasks/NewOntology.jsx';
 import Err from './Error.jsx';
 
 export default class App extends React.Component {
@@ -37,6 +38,7 @@ export default class App extends React.Component {
               <PrivateRouteContainer exact path="/image-sources/new" component={NewImageSource}/>
               <PrivateRouteContainer exact path="/tasks" component={Tasks}/>
               <PrivateRouteContainer exact path="/tasks/new" component={NewTask}/>
+              <PrivateRouteContainer exact path="/quack" component={NewOntology}/>
               <PrivateRouteContainer path="/tasks/:id/view" component={ViewTask}/>
               <Route component={Err}/>
             </Switch>
