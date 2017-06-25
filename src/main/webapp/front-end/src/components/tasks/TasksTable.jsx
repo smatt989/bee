@@ -5,7 +5,7 @@ import {
   Button,
   ButtonGroup
 } from 'react-bootstrap';
-import { tasksCreated, tasksCreatedSuccess, tasksCreatedError } from '../../actions.js';
+import { tasksCreated, tasksCreatedSuccess, tasksCreatedError, tasksParticipating, tasksParticipatingSuccess, tasksParticipatingError } from '../../actions.js';
 import TasksTableItem from './TasksTableItem.jsx';
 
 class TasksTable extends React.Component {
@@ -44,7 +44,7 @@ class TasksTable extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToPropsCreated = state => {
   const tasksCreated = state.getIn(['tasksCreated', 'tasks']);
   return {
     tasks: tasksCreated ? tasksCreated.toJS() : null,
@@ -53,7 +53,7 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => {
+const mapDispatchToPropsCreated = (dispatch, ownProps) => {
   return {
     getTasksCreated: () => {
       return dispatch(tasksCreated())
@@ -70,9 +70,38 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   }
 }
 
-const TasksTableContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
+export const TasksCreatedTableContainer = connect(
+  mapStateToPropsCreated,
+  mapDispatchToPropsCreated
 )(TasksTable)
 
-export default TasksTableContainer;
+const mapStateToPropsParticipating = state => {
+  const tasksCreated = state.getIn(['tasksParticipating', 'tasks']);
+  return {
+    tasks: tasksCreated ? tasksCreated.toJS() : null,
+    loading: state.getIn(['tasksParticipating', 'loading']),
+    error: state.getIn(['tasksParticipating', 'error'])
+  }
+}
+
+const mapDispatchToPropsParticipating = (dispatch, ownProps) => {
+  return {
+    getTasksCreated: () => {
+      return dispatch(tasksParticipating())
+        .then(response => {
+          if (response.error) {
+            dispatch(tasksParticipatingError(response.error));
+            return false;
+          }
+
+          dispatch(tasksParticipatingSuccess(response.payload.data));
+          return true;
+        })
+    }
+  }
+}
+
+export const TasksParticipatingTableContainer = connect(
+  mapStateToPropsParticipating,
+  mapDispatchToPropsParticipating
+)(TasksTable)
