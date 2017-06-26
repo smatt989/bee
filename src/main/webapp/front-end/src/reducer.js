@@ -91,7 +91,8 @@ function saveTask(state) {
 // TODO: NOT USING TASK HERE...
 // TODO: SHOULD UPDATE TASKS CREATED HERE, and maybe CURRENT TASK
 function saveTaskSuccess(state, task) {
-  return state.set('savingTask', Map({error: null, loading: false}));
+  const newState = viewTaskSuccess(state, task);
+  return newState.set('savingTask', Map({error: null, loading: false}));
 }
 
 function saveTaskError(state, error) {

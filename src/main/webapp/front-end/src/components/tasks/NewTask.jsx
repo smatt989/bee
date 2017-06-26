@@ -30,7 +30,7 @@ class NewTask extends React.Component {
   render() {
     const { from } = this.props.location.state || { from: { pathname: '/tasks' } };
     if (this.state.redirectToReferrer) {
-      return <Redirect to={from} />;
+      return <Redirect to="/labels/new" />;
     }
 
     const nameFormProps = {
