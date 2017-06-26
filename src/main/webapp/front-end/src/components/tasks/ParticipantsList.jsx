@@ -6,7 +6,7 @@ import {
   ButtonGroup
 } from 'react-bootstrap';
 import { Map, List } from 'immutable';
-import { taskParticipants, taskParticipantsSuccess, taskParticipantsError } from '../../actions.js';
+import { taskParticipants, taskParticipantsSuccess, taskParticipantsError, activateParticipant, activateParticipantSuccess, activateParticipantError, deactivateParticipant, deactivateParticipantSuccess, deactivateParticipantError } from '../../actions.js';
 import ParticipantTableItem from './ParticipantTableItem.jsx';
 
 class ParticipantsList extends React.Component {
@@ -65,6 +65,30 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                 dispatch(taskParticipantsSuccess(response.payload.data));
                 return true;
             });
+    },
+    activate: (participantId) => {
+        return dispatch(activateParticipant(participantId))
+            .then(response => {
+                if(response.error) {
+                    dispatch(activateParticipantError(response.error));
+                    return false;
+                }
+
+                dispatch(activateParticipantSuccess(response.payload.data));
+                return true;
+            })
+    },
+    deactivate: (participantId) => {
+        return dispatch(deactivateParticipant(participantId))
+            .then(response => {
+                if(response.error) {
+                    dispatch(deactivateParticipantError(response.error));
+                    return false;
+                }
+
+                dispatch(deactivateParticipantSuccess(response.payload.data));
+                return true;
+            })
     }
   };
 };

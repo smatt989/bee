@@ -43,7 +43,6 @@ class NewOntology extends React.Component {
 
     ontologyObjectToState() {
         const obj = this.props.currentOntology.get('ontology') ? this.props.currentOntology.get('ontology') : Map({})
-        console.log(obj)
         return {
             label: obj.get('name', ''),
             type: obj.get('ontologyType', this.defaultOntologyType()),
