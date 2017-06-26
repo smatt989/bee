@@ -5,6 +5,7 @@ import {
   PageHeader
 } from 'react-bootstrap';
 import { viewTask, viewTaskSuccess, viewTaskError } from '../../actions.js';
+import ImageSourcesInfoContainer from './ImageSourcesInfo.jsx';
 import { ParticipantsListContainer } from './ParticipantsList.jsx';
 
 class ViewTask extends React.Component {
@@ -38,6 +39,7 @@ class ViewTask extends React.Component {
         View Task
       </PageHeader>
       { this.buildContent() }
+      <ImageSourcesInfoContainer {...this.props} />
       <ParticipantsListContainer {...this.props} />
     </Grid>;
   }
