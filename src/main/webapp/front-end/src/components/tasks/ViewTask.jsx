@@ -5,10 +5,15 @@ import {
   PageHeader
 } from 'react-bootstrap';
 import { viewTask, viewTaskSuccess, viewTaskError } from '../../actions.js';
+import { ParticipantsListContainer } from './ParticipantsList.jsx';
 
 class ViewTask extends React.Component {
   componentDidMount() {
-    this.props.getTask(this.props.match.params.id);
+    this.props.getTask(this.taskId());
+  }
+
+  taskId() {
+    return this.props.match.params.id
   }
 
   buildContent() {
@@ -33,6 +38,7 @@ class ViewTask extends React.Component {
         View Task
       </PageHeader>
       { this.buildContent() }
+      <ParticipantsListContainer {...this.props} />
     </Grid>;
   }
 }
