@@ -22,7 +22,7 @@ class NewOntology extends React.Component {
     }
 
     defaultOntologyType() {
-        return this.props.ontologyTypes.get('types').size == 0 ? '' : this.props.ontologyTypes.get('types')[0].get('name')
+        return this.props.ontologyTypes.get('types').size == 0 ? '' : this.props.ontologyTypes.getIn(['types', 0]).get('name')
     }
 
     targetFromFlags(isAreaLabel, isLengthLabel) {
@@ -43,6 +43,7 @@ class NewOntology extends React.Component {
 
     ontologyObjectToState() {
         const obj = this.props.currentOntology.get('ontology') ? this.props.currentOntology.get('ontology') : Map({})
+        console.log(obj)
         return {
             label: obj.get('name', ''),
             type: obj.get('ontologyType', this.defaultOntologyType()),
@@ -81,6 +82,10 @@ class NewOntology extends React.Component {
   }
 
   render() {
+
+    if (this.state.redirectToReferrer) {
+      return <Redirect to="/image-sources/new" />;
+    }
 
     const labelFormProps = {
       type: 'label',

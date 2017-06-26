@@ -52,11 +52,9 @@ class NewImageSource extends React.Component {
 
   render() {
 
-    console.log(this.state)
-
     const { from } = this.props.location.state || { from: { pathname: '/tasks' } };
     if (this.state.redirectToReferrer) {
-      return <Redirect to={from} />;
+      return <Redirect to="/participant-link/new" />;
     }
 
     const nameFormProps = {
