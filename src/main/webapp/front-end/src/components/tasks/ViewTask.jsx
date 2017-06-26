@@ -32,7 +32,7 @@ class ViewTask extends React.Component {
       <PageHeader>
         View Task
       </PageHeader>
-      { this.buildContent() };
+      { this.buildContent() }
     </Grid>;
   }
 }

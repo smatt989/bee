@@ -21,7 +21,7 @@ function cleanState() {
     tasksParticipating: Map({tasks: List.of(), error: null, loading: false}),
     taskParticipants: Map({participants: List.of(), error: null, loading: false}),
     participantLink: Map({link: null, error: null, loading: false}),
-    acceptInvitation: Map({error: null, loading: false}),
+    acceptInvitation: Map({task: null, error: null, loading: false}),
     createOntology: Map({ontology: null, error: null, loading: false}),
     ontologyTypes: Map({types: List.of(), error: null, loading: false}),
     currentTaskOntology: Map({ontology: null, error: null, loading: false}),
@@ -160,17 +160,17 @@ function participantLinkError(state, error) {
 }
 
 function acceptInvitation(state) {
-  return state.set('acceptInvitation', Map({error: null, loading: true}));
+  return state.set('acceptInvitation', Map({task: null, error: null, loading: true}));
 }
 
 // TODO: NOT USING TASK
 // TODO: SHOULD UPDATE TASKS PARTICIPATING
 function acceptInvitationSuccess(state, task) {
-  return state.set('acceptInvitation', Map({error: null, loading: false}));
+  return state.set('acceptInvitation', Map({task: Immutable.fromJS(task), error: null, loading: false}));
 }
 
 function acceptInvitationError(state, error) {
-  return state.set('acceptInvitation', Map({error: Immutable.fromJS(error), loading: false}));
+  return state.set('acceptInvitation', Map({task: null, error: Immutable.fromJS(error), loading: false}));
 }
 
 function createOntology(state) {
