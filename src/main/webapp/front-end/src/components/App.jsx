@@ -16,6 +16,8 @@ import Tasks from './tasks/Tasks.jsx';
 import NewTask from './tasks/NewTask.jsx';
 import ViewTask from './tasks/ViewTask.jsx';
 import NewOntology from './tasks/NewOntology.jsx';
+import ShareTask from './tasks/ShareTask.jsx';
+import AcceptTaskInvitation from './tasks/AcceptTaskInvitation.jsx';
 import Err from './Error.jsx';
 
 export default class App extends React.Component {
@@ -39,7 +41,9 @@ export default class App extends React.Component {
               <PrivateRouteContainer exact path="/tasks" component={Tasks}/>
               <PrivateRouteContainer exact path="/tasks/new" component={NewTask}/>
               <PrivateRouteContainer exact path="/labels/new" component={NewOntology}/>
+              <PrivateRouteContainer exact path="/participant-link/new" component={ShareTask}/>
               <PrivateRouteContainer path="/tasks/:id/view" component={ViewTask}/>
+              <PrivateRouteContainer path="/invitation/:invitation" component={AcceptTaskInvitation}/>
               <Route component={Err}/>
             </Switch>
           </Col>

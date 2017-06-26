@@ -27,8 +27,7 @@ object Invitation extends SlickUUIDObject[Invitation, (String, Int, Long), Table
     val created = create(toCreate)
 
     created.map(c => {
-      println("huh?")
-      InvitationLink("/?inv="+c.id)
+      InvitationLink(c.id)
     })
   }
 
