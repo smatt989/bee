@@ -40,7 +40,7 @@ object Task extends UpdatableDBObject[Task, (Int, String, Int, Long), Tables.Tas
   def tasksParticipatingIn(userId: Int) = {
     db.run(
       (for {
-        participants <- Participant.table if participants.userId === userId
+        participants <- Participant.table if participants.userId === userId && participants.isActive
         tasks <- table if tasks.id === participants.taskId
       } yield (tasks)).result
     ).map(_.map(reify))

@@ -294,9 +294,16 @@ function deactivateParticipant(state) {
   return state.set('deactivatingParticipant', Map({error: null, loading: true}));
 }
 
-// TODO: SHOULD UPDATE TASK PARTICIPANTS
+function updateParticipantStatus(state, participantId, isActive) {
+    const indexOfParticipant = state.getIn(['taskParticipants', 'participants']).findIndex(function(o){return o.get('participantId') == participantId})
+    return state.setIn(['taskParticipants', 'participants'], state.getIn(['taskParticipants', 'participants']).update(indexOfParticipant, function(o){return o.set('isActive', isActive)}))
+}
+
+//TODO: IF SELF, MUST REMOVE FROM "TASKS PARTICIPATING"
 function deactivateParticipantSuccess(state, participant) {
-  return state.set('deactivatingParticipant', Map({error: null, loading: false}));
+  const newState = updateParticipantStatus(state, participant.participantId, participant.isActive)
+
+  return newState.set('deactivatingParticipant', Map({error: null, loading: false}));
 }
 
 function deactivateParticipantError(state, error) {
@@ -307,9 +314,10 @@ function activateParticipant(state) {
   return state.set('activatingParticipant', Map({error: null, loading: true}));
 }
 
-// TODO: SHOULD UPDATE TASK PARTICIPANTS
 function activateParticipantSuccess(state, participant) {
-  return state.set('activatingParticipant', Map({error: null, loading: false}));
+  const newState = updateParticipantStatus(state, participant.participantId, participant.isActive)
+
+  return newState.set('activatingParticipant', Map({error: null, loading: false}));
 }
 
 function activateParticipantError(state, error) {
