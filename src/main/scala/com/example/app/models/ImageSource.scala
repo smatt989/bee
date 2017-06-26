@@ -72,6 +72,11 @@ object ImageSource extends UpdatableDBObject[ImageSource, (Int, Int, String, Str
     ).map(_.map(Image.reify))
   }
 
+  def imageCountInSources(imageSourceIds: Seq[Int]) = {
+    //TODO: MAY WANT TO ADD SOME SORT OF DISTINCT THING HERE...
+    db.run(ImageToImageSourceRelation.table.filter(_.imageSourceId inSet imageSourceIds).length.result).map(ImageSourceDetails)
+  }
+
   def deleteImagesFromSource(imageSourceId: Int, images: Seq[Image]) = {
     db.run(ImageToImageSourceRelation.table.filter(a => a.imageSourceId === imageSourceId && a.imageId.inSet(images.map(_.id))).delete)
   }
@@ -120,3 +125,5 @@ object ImageSource extends UpdatableDBObject[ImageSource, (Int, Int, String, Str
 }
 
 case class ImageSourceType(name: String, fields: Seq[String])
+
+case class ImageSourceDetails(imageCount: Int)

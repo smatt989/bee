@@ -532,6 +532,33 @@ export function viewImageSourcesError(error) {
   }
 }
 
+export function viewImageSourcesDetails(taskId) {
+    const request = axios({
+        method: 'get',
+        url: `${domain}/tasks/${taskId}/image-sources/details`,
+        headers: authenticate()
+    });
+
+    return {
+        type: 'VIEW_IMAGE_SOURCES_DETAILS',
+        payload: request
+    }
+}
+
+export function viewImageSourcesDetailsSuccess(loaded) {
+    return {
+        type: 'VIEW_IMAGE_SOURCES_DETAILS_SUCCESS',
+        payload: loaded
+    }
+}
+
+export function viewImageSourcesDetailsError(error) {
+    return {
+        type: 'VIEW_IMAGE_SOURCES_DETAILS_ERROR',
+        error: error
+    }
+}
+
 export function deactivateParticipant(participantId) {
   const request = axios({
     method: 'post',

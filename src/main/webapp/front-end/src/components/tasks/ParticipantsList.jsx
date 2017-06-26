@@ -34,7 +34,7 @@ class ParticipantsList extends React.Component {
       </thead>
       <tbody>
         { participants.map(o =>
-          <ParticipantTableItem key={o.id} data={o} {...this.props} />)}
+          <ParticipantTableItem key={o.email} data={o} {...this.props} />)}
       </tbody>
     </Table>;
   }

@@ -3,6 +3,9 @@ package com.example.app.Routes
 import com.example.app.models._
 import com.example.app.{AuthenticationSupport, SlickRoutes}
 
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
+
 /**
   * Created by matt on 6/1/17.
   */
@@ -146,6 +149,23 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
 
     if(taskAuthorization)
       ImageSource.byTask(taskId).map(_.map(_.toJson))
+    else
+      throw new Exception("Not authorized to view this information for this task")
+  }
+
+  get("/tasks/:id/image-sources/details") {
+    contentType = formats("json")
+    authenticate()
+
+    val taskId = {params("id")}.toInt
+    val userId = user.id
+
+    val taskAuthorization = Task.authorizedToViewTaskDetails(userId, taskId)
+
+    if(taskAuthorization){
+      val imageSources = Await.result(ImageSource.byTask(taskId), Duration.Inf)
+      ImageSource.imageCountInSources(imageSources.map(_.id))
+    }
     else
       throw new Exception("Not authorized to view this information for this task")
   }

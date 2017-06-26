@@ -30,6 +30,7 @@ function cleanState() {
     imageSourceTypes: Map({types: List.of(), error: null, loading: false}),
     deletingImageSource: Map({error: null, loading: false}),
     currentImageSources: Map({imageSources: List.of(), error: null, loading: false}),
+    currentImageSourcesDetails: Map({details: null, error: null, loading: false}),
     deactivatingParticipant: Map({error: null, loading: false}),
     activatingParticipant: Map({error: null, loading: false}),
     markingImageSeen: Map({error: null, loading: false}),
@@ -235,6 +236,18 @@ function viewImageSourceSuccess(state, imageSource, configs) {
 
 function viewImageSourceError(state, error) {
   return state.set('currentImageSource', Map({imageSource: null, error: Immutable.fromJS(error), loading: false}));
+}
+
+function viewImageSourcesDetails(state) {
+  return state.set('currentImageSourcesDetails',  Map({details: null, error: null, loading: true}));
+}
+
+function viewImageSourcesDetailsSuccess(state, details) {
+  return state.set('currentImageSourcesDetails',  Map({details: Immutable.fromJS(details), error: null, loading: false}));
+}
+
+function viewImageSourcesDetailsError(state, error) {
+  return state.set('currentImageSourcesDetails',  Map({details: null, error: Immutable.fromJS(error), loading: false}));
 }
 
 function imageSourceTypes(state) {
@@ -491,6 +504,12 @@ export default function reducer(state = Map(), action) {
       return viewImageSourcesSuccess(state, action.payload);
     case 'VIEW_IMAGE_SOURCES_ERROR':
       return viewImageSourcesError(state, action.error);
+    case 'VIEW_IMAGE_SOURCES_DETAILS':
+      return viewImageSourcesDetails(state);
+    case 'VIEW_IMAGE_SOURCES_DETAILS_SUCCESS':
+      return viewImageSourcesDetailsSuccess(state, action.payload);
+    case 'VIEW_IMAGE_SOURCES_DETAILS_ERROR':
+      return viewImageSourcesDetailsError(state, action.error);
     case 'DEACTIVATE_PARTICIPANT':
       return deactivateParticipant(state);
     case 'DEACTIVATE_PARTICIPANT_SUCCESS':
