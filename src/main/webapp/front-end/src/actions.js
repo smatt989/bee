@@ -586,6 +586,33 @@ export function deactivateParticipantError(error) {
   }
 }
 
+export function leaveTask(taskId) {
+  const request = axios({
+    method: 'post',
+    url: `${domain}/tasks/${taskId}/leave`,
+    headers: authenticate()
+  });
+
+  return {
+    type: 'LEAVE_TASK',
+    payload: request
+  }
+}
+
+export function leaveTaskSuccess(loaded) {
+  return {
+    type: 'LEAVE_TASK_SUCCESS',
+    payload: loaded
+  }
+}
+
+export function leaveTaskError(error) {
+  return {
+     type: 'LEAVE_TASK_ERROR',
+     error: error
+  }
+}
+
 export function activateParticipant(participantId) {
   const request = axios({
     method: 'post',

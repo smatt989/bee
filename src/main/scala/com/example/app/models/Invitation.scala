@@ -34,8 +34,11 @@ object Invitation extends SlickUUIDObject[Invitation, (String, Int, Long), Table
   def acceptInvitation(userId: Int, invitationString: String) = {
     val invitation = Await.result(byId(invitationString), Duration.Inf)
     if(validInvitation(invitation)){
-      if(!Participant.isParticipantInTask(userId, invitation.taskId))
+      val participant = Await.result(Participant.participantByUserAndTask(userId, invitation.taskId), Duration.Inf)
+      if(participant.isEmpty)
         Participant.create(Participant(0, invitation.taskId, userId, true))
+      else if (!participant.get.isActive)
+        Participant.setParticipantActivation(participant.get.id, true).map(_.participant)
       else
         throw new Exception("Already participating in this task")
     } else

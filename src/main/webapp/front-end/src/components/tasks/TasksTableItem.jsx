@@ -5,12 +5,12 @@ import {
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 
-const TasksTableItem = ({ data, match }) => {
+const TasksTableItem = ({ data, match, leave }) => {
 
   var manageButton = null;
   var leaveButton = null;
   if(!data.isCreator) {
-    leaveButton = <Button>Leave</Button>
+    leaveButton = <Button onClick={() => leave(data.id)}>Leave</Button>
   } else {
     manageButton =   <LinkContainer to={`${match.url}/${data.id}/view`}>
                        <Button>Manage</Button>

@@ -33,6 +33,7 @@ function cleanState() {
     currentImageSourcesDetails: Map({details: null, error: null, loading: false}),
     deactivatingParticipant: Map({error: null, loading: false}),
     activatingParticipant: Map({error: null, loading: false}),
+    leavingTask: Map({error: null, loading: false}),
     markingImageSeen: Map({error: null, loading: false}),
     currentImage: Map({image: null, loadConfigs: null, markedSeen: false, error: null, loading: false}),
     savingLabels: Map({error: null, loading: false}),
@@ -310,6 +311,19 @@ function deactivateParticipantError(state, error) {
   return state.set('deactivatingParticipant', Map({error: Immutable.fromJS(error), loading: false}));
 }
 
+function leaveTask(state) {
+  return state.set('leavingTask', Map({error: null, loading: true}));
+}
+
+function leaveTaskSuccess(state, participant) {
+  const newState = state.setIn(['tasksParticipating', 'tasks'], state.getIn(['tasksParticipating', 'tasks']).filter(function(o){return o.get('id') != participant.taskId}));
+  return newState.set('leavingTask', Map({error: null, loading: false}));
+}
+
+function leaveTaskError(state, error) {
+  return state.set('leavingTask', Map({error: Immutable.fromJS(error), loading: false}));
+}
+
 function activateParticipant(state) {
   return state.set('activatingParticipant', Map({error: null, loading: true}));
 }
@@ -524,6 +538,12 @@ export default function reducer(state = Map(), action) {
       return deactivateParticipantSuccess(state, action.payload);
     case 'DEACTIVATE_PARTICIPANT_ERROR':
       return deactivateParticipantError(state, action.error);
+    case 'LEAVE_TASK':
+      return leaveTask(state);
+    case 'LEAVE_TASK_SUCCESS':
+      return leaveTaskSuccess(state, action.payload);
+    case 'LEAVE_TASK_ERROR':
+      return leaveTaskError(state, action.error);
     case 'ACTIVATE_PARTICIPANT':
       return activateParticipant(state);
     case 'ACTIVATE_PARTICIPANT_SUCCESS':

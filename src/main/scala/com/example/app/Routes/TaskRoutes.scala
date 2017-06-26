@@ -81,6 +81,20 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
       throw new Exception("Not authorized to view this task's participants")
   }
 
+  post("/tasks/:id/leave") {
+    contentType = formats("json")
+    authenticate()
+
+    val userId = user.id
+    val taskId = {params("id")}.toInt
+
+    val participant = Await.result(Participant.participantByUserAndTask(userId, taskId), Duration.Inf)
+    if(participant.isDefined)
+      Participant.setParticipantActivation(participant.get.id, false).map(_.toJson)
+    else
+      throw new Exception("Not able to leave a task you are not a participant in")
+  }
+
   post("/tasks/:id/participant-link") {
     contentType = formats("json")
     authenticate()

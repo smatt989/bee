@@ -5,7 +5,7 @@ import {
   Button,
   ButtonGroup
 } from 'react-bootstrap';
-import { tasksCreated, tasksCreatedSuccess, tasksCreatedError, tasksParticipating, tasksParticipatingSuccess, tasksParticipatingError } from '../../actions.js';
+import { tasksCreated, tasksCreatedSuccess, tasksCreatedError, tasksParticipating, tasksParticipatingSuccess, tasksParticipatingError, leaveTask, leaveTaskSuccess, leaveTaskError } from '../../actions.js';
 import TasksTableItem from './TasksTableItem.jsx';
 
 class TasksTable extends React.Component {
@@ -97,6 +97,18 @@ const mapDispatchToPropsParticipating = (dispatch, ownProps) => {
           dispatch(tasksParticipatingSuccess(response.payload.data));
           return true;
         })
+    },
+    leave: (taskId) => {
+        return dispatch(leaveTask(taskId))
+            .then(response => {
+                if(response.error) {
+                    dispatch(leaveTaskError(response.error));
+                    return false;
+                }
+
+                dispatch(leaveTaskSuccess(response.payload.data));
+                return true;
+            })
     }
   }
 }
