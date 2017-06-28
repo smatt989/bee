@@ -8,7 +8,7 @@ import { participantLink, participantLinkSuccess, participantLinkError } from '.
 
 class ShareTask extends React.Component {
     componentDidMount() {
-        this.props.getLink(this.props.task.id)
+        this.props.getLink(this.props.match.params.id)
     }
 
     invitationLink() {
@@ -21,12 +21,12 @@ class ShareTask extends React.Component {
     }
 
   buildContent() {
-    const { task, loading, error } = this.props;
-    if (error) {
+    const link = this.props.participantLink;
+    if (link.get('error')) {
       return <div>Error</div>
-    } else if (loading) {
+    } else if (link.get('loading')) {
       return <div>Loading</div>
-    } else if (!task) {
+    } else if (!link.get('link')) {
       return null;
     }
 
@@ -47,11 +47,7 @@ class ShareTask extends React.Component {
 }
 
 const mapStateToProps = state => {
-  const currentTask = state.getIn(['currentTask', 'task']);
   return {
-    task: currentTask ? currentTask.toJS() : null,
-    error: state.getIn(['currentTask', 'error']),
-    loading: state.getIn(['currentTask', 'loading']),
     participantLink: state.get('participantLink')
   };
 };

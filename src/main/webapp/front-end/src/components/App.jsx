@@ -37,13 +37,15 @@ export default class App extends React.Component {
               <Route exact path="/register" component={RegisterContainer}/>
               <Route exact path="/recover" component={LoginContainer}/>
               <PrivateRouteContainer exact path="/image-sources" component={ImageSources}/>
-              <PrivateRouteContainer exact path="/image-sources/new" component={NewImageSource}/>
               <PrivateRouteContainer exact path="/tasks" component={Tasks}/>
               <PrivateRouteContainer exact path="/tasks/new" component={NewTask}/>
-              <PrivateRouteContainer exact path="/labels/new" component={NewOntology}/>
-              <PrivateRouteContainer exact path="/participant-link/new" component={ShareTask}/>
               <PrivateRouteContainer path="/tasks/:id/view" component={ViewTask}/>
               <PrivateRouteContainer path="/invitation/:invitation" component={AcceptTaskInvitation}/>
+              <PrivateRouteContainer path="/tasks/:id/participant-link/new" component={ShareTask} />
+              <PrivateRouteContainer path="/tasks/:id/labels/new" component={NewOntology} />
+              <PrivateRouteContainer path="/tasks/:id/image-sources/new" component={NewImageSource} />
+              <PrivateRouteContainer path="/tasks/:id/image-sources" component={ImageSources} />
+
               <Route component={Err}/>
             </Switch>
           </Col>

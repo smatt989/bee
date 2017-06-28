@@ -144,6 +144,12 @@ export function saveTaskError(error) {
   }
 }
 
+export function cleanTaskState() {
+  return {
+    type: 'CLEAN_TASK_STATE'
+  }
+}
+
 export function viewTask(taskId) {
   const request = axios({
     method: 'get',

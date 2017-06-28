@@ -5,11 +5,12 @@ import {
   Button,
   ButtonGroup
 } from 'react-bootstrap';
-import { tasksCreated, tasksCreatedSuccess, tasksCreatedError, tasksParticipating, tasksParticipatingSuccess, tasksParticipatingError, leaveTask, leaveTaskSuccess, leaveTaskError } from '../../actions.js';
+import { tasksCreated, tasksCreatedSuccess, tasksCreatedError, tasksParticipating, tasksParticipatingSuccess, tasksParticipatingError, leaveTask, leaveTaskSuccess, leaveTaskError, cleanTaskState } from '../../actions.js';
 import TasksTableItem from './TasksTableItem.jsx';
 
 class TasksTable extends React.Component {
   componentDidMount() {
+    this.props.cleanTask();
     this.props.getTasksCreated();
   }
 
@@ -55,6 +56,9 @@ const mapStateToPropsCreated = state => {
 
 const mapDispatchToPropsCreated = (dispatch, ownProps) => {
   return {
+    cleanTask: () => {
+      dispatch(cleanTaskState())
+    },
     getTasksCreated: () => {
       return dispatch(tasksCreated())
         .then(response => {
@@ -86,6 +90,9 @@ const mapStateToPropsParticipating = state => {
 
 const mapDispatchToPropsParticipating = (dispatch, ownProps) => {
   return {
+    cleanTask: () => {
+        dispatch(cleanTaskState())
+    },
     getTasksCreated: () => {
       return dispatch(tasksParticipating())
         .then(response => {

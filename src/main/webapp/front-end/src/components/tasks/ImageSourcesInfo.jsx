@@ -14,21 +14,6 @@ class ImageSourcesInfo extends React.Component {
     this.props.getImageSourcesDetails(this.props.match.params.id);
   }
 
-/*  buildContent() {
-    const { currentImageSources, currentImageSourcesDetails } = this.props;
-    if (currentImageSources.get('error') || currentImageSourcesDetails.get('error')) {
-      return <div>Error</div>
-    } else if (currentImageSources.get('loading') || currentImageSourcesDetails.get('loading')) {
-      return <div>Loading</div>
-    }
-
-    return
-        <div>
-            <ImageSourcesCount data={this.props.currentImageSources} {...this.props} />
-            <ImageSourcesImageCount data={this.props.currentImageSourcesDetails} {...this.props} />
-        </div>
-  }*/
-
   render() {
     return <div>
                 <ImageSourcesCount data={this.props.currentImageSources} {...this.props} />
