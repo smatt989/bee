@@ -22,6 +22,7 @@ trait ImageSourceRoutes extends SlickRoutes with AuthenticationSupport {
     else
       Task.authorizedToEditTask(user.id, imageSource.taskId)
 
+    //TODO: NOT OBVIOUS THAT OVERLAPPING IMAGE SOURCE IMAGES ARE BEING CONSOLIDATED HERE
     if(taskAuthorization) {
       val savedImageSource = Await.result(ImageSource.save(imageSource.getSerialized), Duration.Inf)
       ImageSource.updateImageSourceImages(savedImageSource)

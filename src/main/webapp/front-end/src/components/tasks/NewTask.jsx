@@ -14,12 +14,10 @@ class NewTask extends React.Component {
     super(props);
     this.state = {
       name: '',
-      label: '',
       redirectToReferrer: false
     };
 
     this.onNameChange = (e) => this.setState({ name: e.target.value });
-    this.onLabelChange = (e) => this.setState({ label: e.target.value });
     this.onSubmit = (e) => {
       e.preventDefault();
       this.props.onSubmit(this.state.name, this.state.label)
@@ -29,8 +27,8 @@ class NewTask extends React.Component {
 
   render() {
     const { from } = this.props.location.state || { from: { pathname: '/tasks' } };
-    if (this.state.redirectToReferrer) {
-      return <Redirect to="/labels/new" />;
+    if (this.state.redirectToReferrer && this.props.currentTask.getIn(['task', 'id'])) {
+      return <Redirect to={"/tasks/"+ this.props.currentTask.getIn(['task', 'id']) +"/labels/new"} />;
     }
 
     const nameFormProps = {
@@ -41,21 +39,12 @@ class NewTask extends React.Component {
       value: this.state.name
     };
 
-    const labelFormProps = {
-      type: 'label',
-      label: 'Label:',
-      placeholder: 'Task Label',
-      onChange: this.onLabelChange,
-      value: this.state.label
-    };
-
     return <Grid>
       <PageHeader>
         New Task
       </PageHeader>
       <form role="form" onSubmit={this.onSubmit}>
         <FormGroupBase baseProps={nameFormProps}/>
-        <FormGroupBase baseProps={labelFormProps}/>
         <Button
           bsStyle="primary"
           type="submit">
@@ -68,6 +57,7 @@ class NewTask extends React.Component {
 
 const mapStateToProps = state => {
   return {
+    currentTask: state.get('currentTask')
   };
 };
 

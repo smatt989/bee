@@ -6,6 +6,13 @@ import {
   LOGIN_EMAIL_CHANGED, LOGIN_PASSWORD_CHANGED, LOGIN_CLEAR_INPUTS
 } from './actions.js';
 
+const cleanTask = Map({task: null, error: null, loading: false});
+const cleanOntology = Map({ontology: null, error: null, loading: false});
+const cleanImageSource = Map({imageSource: null, error: null, loading: false});
+const cleanImageSources = Map({imageSources: List.of(), error: null, loading: false});
+const cleanParticipants = Map({participants: List.of(), error: null, loading: false});
+const cleanImageSourcesDetails = Map({details: null, error: null, loading: false});
+
 function cleanState() {
   const sessionKey = getSession();
   setSession(sessionKey); // refresh session key
@@ -16,21 +23,21 @@ function cleanState() {
     user: Map({email: null, id: null}),
     logout: Map({error: null, loading: false}),
     savingTask: Map({error: null, loading: false}),
-    currentTask: Map({task: null, error: null, loading: false}),
+    currentTask: cleanTask,
     tasksCreated: Map({tasks: List.of(), error: null, loading: false}),
     tasksParticipating: Map({tasks: List.of(), error: null, loading: false}),
-    taskParticipants: Map({participants: List.of(), error: null, loading: false}),
+    taskParticipants: cleanParticipants,
     participantLink: Map({link: null, error: null, loading: false}),
     acceptInvitation: Map({task: null, error: null, loading: false}),
     createOntology: Map({ontology: null, error: null, loading: false}),
     ontologyTypes: Map({types: List.of(), error: null, loading: false}),
-    currentTaskOntology: Map({ontology: null, error: null, loading: false}),
+    currentTaskOntology: cleanOntology,
     savingImageSource: Map({error: null, loading: false}),
-    currentImageSource: Map({imageSource: null, error: null, loading: false}),
+    currentImageSource: cleanImageSource,
     imageSourceTypes: Map({types: List.of(), error: null, loading: false}),
     deletingImageSource: Map({error: null, loading: false}),
-    currentImageSources: Map({imageSources: List.of(), error: null, loading: false}),
-    currentImageSourcesDetails: Map({details: null, error: null, loading: false}),
+    currentImageSources: cleanImageSources,
+    currentImageSourcesDetails: cleanImageSourcesDetails,
     deactivatingParticipant: Map({error: null, loading: false}),
     activatingParticipant: Map({error: null, loading: false}),
     leavingTask: Map({error: null, loading: false}),
@@ -99,6 +106,17 @@ function saveTaskSuccess(state, task) {
 
 function saveTaskError(state, error) {
   return state.set('savingTask', Map({error: Immutable.fromJS(error), loading: false}));
+}
+
+function cleanTaskState(state) {
+  const newCurrentTask = state.set('currentTask', cleanTask);
+  const newCurrentOntology = newCurrentTask.set('currentTaskOntology', cleanOntology);
+  const newImageSource = newCurrentOntology.set('currentImageSource', cleanImageSource);
+  const newImageSources = newImageSource.set('currentImageSources', cleanImageSources);
+  const newParticipants = newImageSources.set('taskParticipants', cleanParticipants);
+  const newImageSourcesDetails = newParticipants.set('currentImageSourcesDetails', cleanImageSourcesDetails);
+
+  return newImageSourcesDetails
 }
 
 function viewTask(state) {
@@ -442,6 +460,8 @@ export default function reducer(state = Map(), action) {
       return saveTaskSuccess(state, action.payload);
     case 'SAVE_TASK_ERROR':
       return saveTaskError(state, action.error);
+    case 'CLEAN_TASK_STATE':
+      return cleanTaskState(state);
     case 'VIEW_TASK':
       return viewTask(state);
     case 'VIEW_TASK_SUCCESS':

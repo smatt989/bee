@@ -21,8 +21,12 @@ class NewOntology extends React.Component {
         }
     }
 
+    taskId() {
+        return this.props.match.params.id;
+    }
+
     defaultOntologyType() {
-        return this.props.ontologyTypes.get('types').size == 0 ? '' : this.props.ontologyTypes.getIn(['types', 0]).get('name')
+        return this.props.ontologyTypes.get('types').size == 0 ? BINARY : this.props.ontologyTypes.getIn(['types', 0]).get('name')
     }
 
     targetFromFlags(isAreaLabel, isLengthLabel) {
@@ -33,8 +37,8 @@ class NewOntology extends React.Component {
         return Map({
             name: this.state.label,
             ontologyType: this.state.type,
-            minValue: this.state.min == '' ? null : this.state.min,
-            maxValue: this.state.max == '' ? null : this.state.max,
+            minValue: this.state.min == '' ? null : Number(this.state.min),
+            maxValue: this.state.max == '' ? null : Number(this.state.max),
             isAreaLabel: this.state.target == "area",
             isLengthLabel: this.state.target == "length",
             labelLimit: Number(this.state.limit)
@@ -56,6 +60,9 @@ class NewOntology extends React.Component {
 
   constructor(props) {
     super(props);
+
+    const taskId = this.taskId();
+
     this.state = this.ontologyObjectToState();
 
     this.onLabelChange = (e) => this.setState({ label: e.target.value });
@@ -72,7 +79,6 @@ class NewOntology extends React.Component {
 
     this.onSubmit = (e) => {
       e.preventDefault();
-      const taskId = this.props.currentTask.getIn(['task', 'id'], null);
       if(taskId) {
         this.props.saveOntology(taskId, this.stateToOntologyObject())
             .then(isSuccess => this.setState({ redirectToReferrer: isSuccess }));
@@ -82,8 +88,10 @@ class NewOntology extends React.Component {
 
   render() {
 
+    const taskId = this.taskId();
+
     if (this.state.redirectToReferrer) {
-      return <Redirect to="/image-sources/new" />;
+      return <Redirect to={"/tasks/"+taskId+"/image-sources/new"} />;
     }
 
     const labelFormProps = {
@@ -112,6 +120,31 @@ class NewOntology extends React.Component {
 
     const ontologyTypes = this.props.ontologyTypes.get('types', null);
 
+    var limitSelector = null
+    var minInput = null
+    var maxInput = null
+
+    if(this.state.target != WHOLE_IMAGE){
+        limitSelector =         <FormGroup onChange={this.onLimitChange}>
+                                  <ControlLabel>Labels per Image</ControlLabel>
+                                  <br />
+                                  <Radio name="radioGroup" inline value="1" checked={this.state.limit == "1"}>
+                                    Limit 1
+                                  </Radio>
+                                  {' '}
+                                  <Radio name="radioGroup" inline value="99" checked={this.state.limit != "1"}>
+                                    Unlimited
+                                  </Radio>
+                                </FormGroup>
+    }
+
+    console.log(this.state.type)
+    if(this.state.type != BINARY) {
+        console.log('writing')
+        minInput = <FormGroupBase baseProps={minFormProps}/>
+        maxInput = <FormGroupBase baseProps={maxFormProps}/>
+    }
+
     return <Grid>
       <PageHeader>
         Add Label
@@ -128,8 +161,8 @@ class NewOntology extends React.Component {
           </FormControl>
         </FormGroup>
 
-        <FormGroupBase baseProps={minFormProps}/>
-        <FormGroupBase baseProps={maxFormProps}/>
+        {minInput}
+        {maxInput}
 
         <FormGroup>
           <ControlLabel>Label Target</ControlLabel>
@@ -140,17 +173,7 @@ class NewOntology extends React.Component {
           </FormControl>
         </FormGroup>
 
-        <FormGroup onChange={this.onLimitChange}>
-          <ControlLabel>Labels per Image</ControlLabel>
-          <br />
-          <Radio name="radioGroup" inline value="1" checked={this.state.limit == "1"}>
-            Limit 1
-          </Radio>
-          {' '}
-          <Radio name="radioGroup" inline value="99" checked={this.state.limit != "1"}>
-            Unlimited
-          </Radio>
-        </FormGroup>
+        {limitSelector}
 
         <Button
           bsStyle="primary"
@@ -166,11 +189,12 @@ const WHOLE_IMAGE = "image"
 const AREA = "area"
 const LENGTH = "length"
 
+const BINARY = "BINARY"
+
 const mapStateToProps = state => {
   return {
     ontologyTypes: state.get('ontologyTypes'),
-    currentOntology: state.get('currentTaskOntology'),
-    currentTask: state.get('currentTask')
+    currentOntology: state.get('currentTaskOntology')
   };
 };
 

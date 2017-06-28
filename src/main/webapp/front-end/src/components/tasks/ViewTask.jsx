@@ -4,12 +4,14 @@ import {
   Grid,
   PageHeader
 } from 'react-bootstrap';
-import { viewTask, viewTaskSuccess, viewTaskError } from '../../actions.js';
+import { viewTask, viewTaskSuccess, viewTaskError, cleanTaskState } from '../../actions.js';
 import ImageSourcesInfoContainer from './ImageSourcesInfo.jsx';
 import { ParticipantsListContainer } from './ParticipantsList.jsx';
+import OntologyInfoContainer from './OntologyInfo.jsx';
 
 class ViewTask extends React.Component {
   componentDidMount() {
+    this.props.cleanTask()
     this.props.getTask(this.taskId());
   }
 
@@ -41,6 +43,7 @@ class ViewTask extends React.Component {
       { this.buildContent() }
       <ImageSourcesInfoContainer {...this.props} />
       <ParticipantsListContainer {...this.props} />
+      <OntologyInfoContainer {...this.props} />
     </Grid>;
   }
 }
@@ -56,6 +59,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
+    cleanTask: () => {
+        dispatch(cleanTaskState())
+    },
     getTask: (id) => {
       return dispatch(viewTask(id))
         .then(response => {

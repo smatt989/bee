@@ -14,6 +14,11 @@ import { saveImageSource, saveImageSourceSuccess, saveImageSourceError } from '.
 import FormGroupBase from '../shared/FormGroupBase.jsx';
 
 class NewImageSource extends React.Component {
+
+  taskId() {
+    return Number(this.props.match.params.id);
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -34,7 +39,7 @@ class NewImageSource extends React.Component {
 
     this.onSubmit = (e) => {
       e.preventDefault();
-      const taskId = this.props.currentTask.getIn(['task', 'id'], null);
+      const taskId = this.taskId();
       //TODO: DEAL WITH SAVING OVER OLD IMAGE SOURCE
       const imageSource = Map({name: this.state.name, taskId: taskId, imageSourceType: this.state.type})
       var configs = {}
@@ -54,13 +59,13 @@ class NewImageSource extends React.Component {
 
     const { from } = this.props.location.state || { from: { pathname: '/tasks' } };
     if (this.state.redirectToReferrer) {
-      return <Redirect to="/participant-link/new" />;
+      return <Redirect to={"/tasks/"+this.taskId()+"/participant-link/new"} />;
     }
 
     const nameFormProps = {
       type: 'name',
       label: 'Name:',
-      placeholder: 'Task Name',
+      placeholder: 'Image Source Name',
       onChange: this.onNameChange,
       value: this.state.name
     };
@@ -103,8 +108,7 @@ class NewImageSource extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    imageSourceTypes: state.get('imageSourceTypes'),
-    currentTask: state.get('currentTask')
+    imageSourceTypes: state.get('imageSourceTypes')
   };
 };
 
