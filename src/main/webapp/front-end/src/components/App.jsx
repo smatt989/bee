@@ -40,6 +40,7 @@ export default class App extends React.Component {
               <PrivateRouteContainer exact path="/tasks" component={Tasks}/>
               <PrivateRouteContainer exact path="/tasks/new" component={NewTask}/>
               <PrivateRouteContainer path="/tasks/:id/view" component={ViewTask}/>
+              <PrivateRouteContainer path="/tasks/:id/edit" component={NewTask}/>
               <PrivateRouteContainer path="/invitation/:invitation" component={AcceptTaskInvitation}/>
               <PrivateRouteContainer path="/tasks/:id/participant-link/new" component={ShareTask} />
               <PrivateRouteContainer path="/tasks/:id/labels/new" component={NewOntology} />
