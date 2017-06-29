@@ -112,7 +112,7 @@ export function logoutError(error) {
   };
 }
 
-export function saveTask(task){
+export function saveTask(task, id){
   const request = axios({
     method: 'post',
     url: `${domain}/tasks/save`,
@@ -120,7 +120,7 @@ export function saveTask(task){
     //IF IT HAPPENS TO BE AN IMMUTABLE JS OBJECT, CALL task.toJS()
     //IF IT IS A PLAIN JS OBJECT JUST PASS IT IN
     //data: task.toJS(),
-    data: {name: task},
+    data: {name: task, id: id},
     headers: authenticate()
   });
 
