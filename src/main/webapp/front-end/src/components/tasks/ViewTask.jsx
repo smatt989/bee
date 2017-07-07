@@ -2,8 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { 
   Grid,
-  PageHeader
+  PageHeader,
+  Button
 } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import { viewTask, viewTaskSuccess, viewTaskError, cleanTaskState } from '../../actions.js';
 import ImageSourcesInfoContainer from './ImageSourcesInfo.jsx';
 import { ParticipantsListContainer } from './ParticipantsList.jsx';
@@ -31,8 +33,13 @@ class ViewTask extends React.Component {
 
     return <div>
       <div>Id: { task.id }</div>
-      <div>Name: { task.name }</div>
-    </div> 
+      <div>
+        Name: { task.name }
+        <LinkContainer to={'/tasks/'+task.id+'/edit'}>
+            <Button className="new-tbl-item-btn" bsStyle="primary" type="button">Edit</Button>
+        </LinkContainer>
+      </div>
+    </div>
   }
 
   render() {

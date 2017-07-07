@@ -2,8 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {
   Grid,
-  PageHeader
+  PageHeader,
+  Button
 } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import { viewTaskOntology, viewTaskOntologySuccess, viewTaskOntologyError } from '../../actions.js';
 import ImageSourcesCount from './ImageSourcesCount.jsx';
 import ImageSourcesImageCount from './ImageSourcesImageCount.jsx';
@@ -23,6 +25,9 @@ class OntologyInfo extends React.Component {
     return <div>
                 <div><b>Name: </b>{this.props.currentTaskOntology.getIn(['ontology', 'name'], 'error...')}</div>
                 <div><b>Type: </b>{this.props.currentTaskOntology.getIn(['ontology', 'ontologyType'], 'error...')} {rangeDisplay}</div>
+                <LinkContainer to={'/tasks/'+this.props.match.params.id+'/labels/new'}>
+                    <Button className="new-tbl-item-btn" bsStyle="primary" type="button">Edit</Button>
+                </LinkContainer>
             </div>
   }
 }
