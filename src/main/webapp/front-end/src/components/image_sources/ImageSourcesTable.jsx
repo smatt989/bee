@@ -5,6 +5,7 @@ import {
   Button,
   ButtonGroup
 } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import { viewImageSources, viewImageSourcesSuccess, viewImageSourcesError, deleteImageSource, deleteImageSourceSuccess, deleteImageSourceError } from '../../actions.js';
 
 class ImagesSourcesTable extends React.Component {
@@ -36,7 +37,9 @@ class ImagesSourcesTable extends React.Component {
                           <td>55 images</td>
                           <td>        <ButtonGroup>
                                         <Button onClick={() => deleteImageSource(o.get('id'))}>Remove</Button>
-                                        <Button>Edit</Button>
+                                        <LinkContainer to={'/tasks/'+o.get('taskId')+'/image-sources/'+o.get('id')}>
+                                            <Button className="new-tbl-item-btn" bsStyle="primary" type="button">Edit</Button>
+                                        </LinkContainer>
                                       </ButtonGroup></td>
                         </tr>)
                         : null }

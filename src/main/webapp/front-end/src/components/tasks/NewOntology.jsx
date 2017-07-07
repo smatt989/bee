@@ -244,7 +244,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                 }
 
                 dispatch(viewTaskOntologySuccess(response.payload.data));
-                console.log('gottit')
                 callback()
                 return true;
             })
