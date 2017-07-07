@@ -45,6 +45,7 @@ export default class App extends React.Component {
               <PrivateRouteContainer path="/tasks/:id/participant-link/new" component={ShareTask} />
               <PrivateRouteContainer path="/tasks/:id/labels/new" component={NewOntology} />
               <PrivateRouteContainer path="/tasks/:id/image-sources/new" component={NewImageSource} />
+              <PrivateRouteContainer path="/tasks/:id/image-sources/:isid" component={NewImageSource} />
               <PrivateRouteContainer path="/tasks/:id/image-sources" component={ImageSources} />
 
               <Route component={Err}/>
