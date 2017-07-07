@@ -2,8 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {
   Grid,
-  PageHeader
+  PageHeader,
+  Button
 } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import { viewImageSources, viewImageSourcesSuccess, viewImageSourcesError, viewImageSourcesDetails, viewImageSourcesDetailsSuccess, viewImageSourcesDetailsError } from '../../actions.js';
 import ImageSourcesCount from './ImageSourcesCount.jsx';
 import ImageSourcesImageCount from './ImageSourcesImageCount.jsx';
@@ -18,6 +20,9 @@ class ImageSourcesInfo extends React.Component {
     return <div>
                 <ImageSourcesCount data={this.props.currentImageSources} {...this.props} />
                 <ImageSourcesImageCount data={this.props.currentImageSourcesDetails} {...this.props} />
+                <LinkContainer to={'/tasks/'+this.props.match.params.id+'/image-sources'}>
+                    <Button className="new-tbl-item-btn" bsStyle="primary" type="button">Edit</Button>
+                </LinkContainer>
             </div>
   }
 }

@@ -5,6 +5,7 @@ import {
   Button,
   ButtonGroup
 } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import { Map, List } from 'immutable';
 import { taskParticipants, taskParticipantsSuccess, taskParticipantsError, activateParticipant, activateParticipantSuccess, activateParticipantError, deactivateParticipant, deactivateParticipantSuccess, deactivateParticipantError } from '../../actions.js';
 import ParticipantTableItem from './ParticipantTableItem.jsx';
@@ -24,19 +25,25 @@ class ParticipantsList extends React.Component {
       return null;
     };
 
-    return <Table id="participant-tbl" responsive striped hover>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Name</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        { participants.map(o =>
-          <ParticipantTableItem key={o.email} data={o} {...this.props} />)}
-      </tbody>
-    </Table>;
+    return <div>
+        <h3>{participants.length} Participants</h3>
+        <LinkContainer to={'/tasks/'+this.props.match.params.id+'/participant-link/new'}>
+            <Button className="new-tbl-item-btn" bsStyle="primary" type="button">Share</Button>
+        </LinkContainer>
+        <Table id="participant-tbl" responsive striped hover>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            { participants.map(o =>
+              <ParticipantTableItem key={o.email} data={o} {...this.props} />)}
+          </tbody>
+        </Table>
+    </div>;
   }
 
   render() {
