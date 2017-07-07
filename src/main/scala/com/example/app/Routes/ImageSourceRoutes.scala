@@ -63,7 +63,7 @@ trait ImageSourceRoutes extends SlickRoutes with AuthenticationSupport {
 
     if(taskAuthorization) {
       Await.result(ImageSource.delete(imageSource.id), Duration.Inf)
-      imageSource.id
+      "200"
     } else
       throw new Exception("Not authorized to edit this task")
   }
