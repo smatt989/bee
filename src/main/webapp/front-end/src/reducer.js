@@ -1,4 +1,4 @@
-import { Map, List } from 'immutable';
+import { Map, List, is } from 'immutable';
 import Immutable from 'immutable';
 import { getSession, setSession } from './utilities';
 import {
@@ -432,6 +432,15 @@ function loginClearInputs(state) {
   return newState.set('loginPassword', Map({ password: '' }));
 }
 
+function addLabel(state, label) {
+  return state.setIn(['currentLabels', 'labels'], state.getIn(['currentLabels','labels']).push(Immutable.fromJS(label)));
+}
+
+function removeLabel(state, label) {
+  const indexOfLabel = state.getIn(['currentLabels', 'labels']).findIndex(function(o){return Object.is(o, Immutable.fromJS(label))})
+  return state.setIn(['currentLabels', 'labels'], state.getIn(['currentLabels', 'labels']).delete(indexOfLabel))
+}
+
 export default function reducer(state = Map(), action) {
   switch (action.type) {
     case 'CLEAN_STATE':
@@ -606,6 +615,10 @@ export default function reducer(state = Map(), action) {
       return loginPasswordChanged(state, action.password);
     case LOGIN_CLEAR_INPUTS:
       return loginClearInputs(state);
+    case 'ADD_LABEL':
+      return addLabel(state, action.label);
+    case 'REMOVE_LABEL':
+      return removeLabel(state, action.label);
     default:
       return state;
   }

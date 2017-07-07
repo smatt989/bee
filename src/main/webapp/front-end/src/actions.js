@@ -799,3 +799,18 @@ export function loginClearInputs() {
     type: LOGIN_CLEAR_INPUTS
   }
 }
+
+
+export function addLabel(label) {
+    return {
+        type: 'ADD_LABEL',
+        label: label
+    }
+}
+
+export function removeLabel(label) {
+    return {
+        type: 'REMOVE_LABEL',
+        label: label
+    }
+}
