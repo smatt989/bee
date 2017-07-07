@@ -812,6 +812,7 @@ export function removeLabel(label) {
         type: 'REMOVE_LABEL',
         label: label
     }
+}
 
 export function startEditingTask() {
   return {
