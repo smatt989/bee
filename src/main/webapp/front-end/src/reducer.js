@@ -48,7 +48,8 @@ function cleanState() {
     signupEmail: Map({ email: '' }),
     signupPassword: Map({ password: '' }),
     loginEmail: Map({ email: '' }),
-    loginPassword: Map({ password: '' })
+    loginPassword: Map({ password: '' }),
+    editingTask: true
   });
 
   return cleanState;
@@ -432,6 +433,14 @@ function loginClearInputs(state) {
   return newState.set('loginPassword', Map({ password: '' }));
 }
 
+function startEditingTask(state) {
+  return state.set('editingTask', true);
+}
+
+function stopEditingTask(state) {
+  return state.set('editingTask', false);
+}
+
 export default function reducer(state = Map(), action) {
   switch (action.type) {
     case 'CLEAN_STATE':
@@ -606,6 +615,10 @@ export default function reducer(state = Map(), action) {
       return loginPasswordChanged(state, action.password);
     case LOGIN_CLEAR_INPUTS:
       return loginClearInputs(state);
+    case "START_EDITING_TASK":
+      return startEditingTask(state);
+    case "STOP_EDITING_TASK":
+      return stopEditingTask(state);
     default:
       return state;
   }
