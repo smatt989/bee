@@ -800,7 +800,6 @@ export function loginClearInputs() {
   }
 }
 
-
 export function addLabel(label) {
     return {
         type: 'ADD_LABEL',
@@ -813,4 +812,15 @@ export function removeLabel(label) {
         type: 'REMOVE_LABEL',
         label: label
     }
+
+export function startEditingTask() {
+  return {
+    type: "START_EDITING_TASK"
+  }
+}
+
+export function stopEditingTask() {
+  return {
+    type: 'STOP_EDITING_TASK'
+  }
 }

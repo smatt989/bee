@@ -48,7 +48,8 @@ function cleanState() {
     signupEmail: Map({ email: '' }),
     signupPassword: Map({ password: '' }),
     loginEmail: Map({ email: '' }),
-    loginPassword: Map({ password: '' })
+    loginPassword: Map({ password: '' }),
+    editingTask: true
   });
 
   return cleanState;
@@ -286,8 +287,7 @@ function deleteImageSource(state) {
 }
 
 function deleteImageSourceSuccess(state, imageSourceId) {
-  // TODO: MIGHT NEED TO DEAL W PRIMITIVE TYPES HERE ON FILTER
-  const newImageSources = state.get('currentImageSources').filterNot(function(o) { return o.get('id') === imageSourceId; });
+  const newImageSources = state.getIn(['currentImageSources', 'imageSources']).filterNot(function(o) {return o.get('id') === Number(imageSourceId);});
   const newState = viewImageSourcesSuccess(state, newImageSources);
   const newNewState = newState.setIn(['currentImageSource', 'imageSource'], null);
   return newNewState.set('deletingImageSource', Map({error: null, loading: false}));
@@ -439,6 +439,12 @@ function addLabel(state, label) {
 function removeLabel(state, label) {
   const indexOfLabel = state.getIn(['currentLabels', 'labels']).findIndex(function(o){return Object.is(o, Immutable.fromJS(label))})
   return state.setIn(['currentLabels', 'labels'], state.getIn(['currentLabels', 'labels']).delete(indexOfLabel))
+function startEditingTask(state) {
+  return state.set('editingTask', true);
+}
+
+function stopEditingTask(state) {
+  return state.set('editingTask', false);
 }
 
 export default function reducer(state = Map(), action) {
@@ -619,6 +625,10 @@ export default function reducer(state = Map(), action) {
       return addLabel(state, action.label);
     case 'REMOVE_LABEL':
       return removeLabel(state, action.label);
+    case "START_EDITING_TASK":
+      return startEditingTask(state);
+    case "STOP_EDITING_TASK":
+      return stopEditingTask(state);
     default:
       return state;
   }

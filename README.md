@@ -2,6 +2,10 @@
 
 This is image annotation software built using scalatra with a connection to Postgres/H2 db with Slick and serving up a react/redux web front end.
 
+## Initial Setup
+
+https://github.com/smatt989/bee/wiki/Initial-Setup
+
 ## Build & Run ##
 
 ```sh

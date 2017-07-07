@@ -11,13 +11,17 @@ import {
   FormControl,
   Radio
 } from 'react-bootstrap';
-import { ontologyTypes, ontologyTypesSuccess, ontologyTypesError, createOntology, createOntologySuccess, createOntologyError } from '../../actions.js';
+import { viewTaskOntology, viewTaskOntologySuccess, viewTaskOntologyError, ontologyTypes, ontologyTypesSuccess, ontologyTypesError, createOntology, createOntologySuccess, createOntologyError } from '../../actions.js';
 import FormGroupBase from '../shared/FormGroupBase.jsx';
 
 class NewOntology extends React.Component {
     componentDidMount() {
         if (this.props.ontologyTypes.get('types').size == 0) {
             this.props.getOntologyTypes()
+        }
+        if(this.props.editingTask && !this.props.currentOntology.get("ontology") && !this.props.currentOntology.get("loading")){
+            //TODO: THIS CAN'T BE THE RIGHT WAY TO DO THIS...
+            this.props.getOntology(this.taskId(), () => {this.state = this.ontologyObjectToState(); this.forceUpdate()})
         }
     }
 
@@ -47,6 +51,7 @@ class NewOntology extends React.Component {
 
     ontologyObjectToState() {
         const obj = this.props.currentOntology.get('ontology') ? this.props.currentOntology.get('ontology') : Map({})
+        console.log(obj)
         return {
             label: obj.get('name', ''),
             type: obj.get('ontologyType', this.defaultOntologyType()),
@@ -90,10 +95,17 @@ class NewOntology extends React.Component {
 
     const taskId = this.taskId();
 
-    if (this.state.redirectToReferrer) {
-      return <Redirect to={"/tasks/"+taskId+"/image-sources/new"} />;
+    var redirectTo = "/tasks/"+taskId+"/image-sources/new"
+
+    if(this.props.editingTask) {
+        redirectTo = "/tasks/"+taskId+"/view"
     }
 
+    if (this.state.redirectToReferrer) {
+      return <Redirect to={redirectTo} />;
+    }
+    console.log('here')
+    console.log(this.state)
     const labelFormProps = {
       type: 'label',
       label: 'Label:',
@@ -138,9 +150,7 @@ class NewOntology extends React.Component {
                                 </FormGroup>
     }
 
-    console.log(this.state.type)
     if(this.state.type != BINARY) {
-        console.log('writing')
         minInput = <FormGroupBase baseProps={minFormProps}/>
         maxInput = <FormGroupBase baseProps={maxFormProps}/>
     }
@@ -194,7 +204,8 @@ const BINARY = "BINARY"
 const mapStateToProps = state => {
   return {
     ontologyTypes: state.get('ontologyTypes'),
-    currentOntology: state.get('currentTaskOntology')
+    currentOntology: state.get('currentTaskOntology'),
+    editingTask: state.get('editingTask')
   };
 };
 
@@ -221,6 +232,19 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                 }
 
                 dispatch(createOntologySuccess(response.payload.data));
+                return true;
+            })
+    },
+    getOntology: (taskId, callback) => {
+        return dispatch(viewTaskOntology(taskId))
+            .then(response => {
+                if (response.error) {
+                    dispatch(viewTaskOntologyError(response.error));
+                    return false;
+                }
+
+                dispatch(viewTaskOntologySuccess(response.payload.data));
+                callback()
                 return true;
             })
     }
