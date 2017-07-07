@@ -439,6 +439,8 @@ function addLabel(state, label) {
 function removeLabel(state, label) {
   const indexOfLabel = state.getIn(['currentLabels', 'labels']).findIndex(function(o){return Object.is(o, Immutable.fromJS(label))})
   return state.setIn(['currentLabels', 'labels'], state.getIn(['currentLabels', 'labels']).delete(indexOfLabel))
+}
+
 function startEditingTask(state) {
   return state.set('editingTask', true);
 }
