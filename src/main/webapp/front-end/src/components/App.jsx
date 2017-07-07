@@ -18,6 +18,7 @@ import ViewTask from './tasks/ViewTask.jsx';
 import NewOntology from './tasks/NewOntology.jsx';
 import ShareTask from './tasks/ShareTask.jsx';
 import AcceptTaskInvitation from './tasks/AcceptTaskInvitation.jsx';
+import LabelImage from './labeling/LabelImage.jsx';
 import Err from './Error.jsx';
 
 export default class App extends React.Component {
@@ -46,6 +47,7 @@ export default class App extends React.Component {
               <PrivateRouteContainer path="/tasks/:id/labels/new" component={NewOntology} />
               <PrivateRouteContainer path="/tasks/:id/image-sources/new" component={NewImageSource} />
               <PrivateRouteContainer path="/tasks/:id/image-sources" component={ImageSources} />
+              <PrivateRouteContainer path="/tasks/:id/labeling" component={LabelImage} />
 
               <Route component={Err}/>
             </Switch>
