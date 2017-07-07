@@ -3,7 +3,7 @@ package com.example.app.Routes
 import com.example.app.models._
 import com.example.app.{AuthenticationSupport, SlickRoutes}
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 
 /**
@@ -28,7 +28,15 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
   }
 
   get("/tasks") {
-    Task.getAll
+    contentType = formats("json")
+    authenticate()
+
+    val userId = user.id
+
+    val participatingIn = Await.result(Task.tasksParticipatingIn(userId).map(_.map(_.toJson(userId))), Duration.Inf)
+    val created = Await.result(Task.tasksCreatedByUser(userId).map(_.map(_.toJson(userId))), Duration.Inf)
+
+    Set(participatingIn ++ created)
   }
 
   get("/tasks/:id/view") {
