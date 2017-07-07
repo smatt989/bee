@@ -799,3 +799,15 @@ export function loginClearInputs() {
     type: LOGIN_CLEAR_INPUTS
   }
 }
+
+export function startEditingTask() {
+  return {
+    type: "START_EDITING_TASK"
+  }
+}
+
+export function stopEditingTask() {
+  return {
+    type: 'STOP_EDITING_TASK'
+  }
+}

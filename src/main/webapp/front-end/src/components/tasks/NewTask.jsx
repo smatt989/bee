@@ -6,13 +6,19 @@ import {
   PageHeader,
   Button
 } from 'react-bootstrap';
-import { saveTask, saveTaskSuccess, saveTaskError, viewTask, viewTaskSuccess, viewTaskError } from '../../actions.js';
+import { saveTask, saveTaskSuccess, saveTaskError, viewTask, viewTaskSuccess, viewTaskError, stopEditingTask, startEditingTask } from '../../actions.js';
 import FormGroupBase from '../shared/FormGroupBase.jsx';
 
 class NewTask extends React.Component {
   componentDidMount() {
+    console.log('here')
     if(this.props.match.params.id && !this.props.currentTask.get('task')) {
         this.props.getTask(this.props.match.params.id)
+    }
+    if(this.props.match.params.id){
+        this.props.startEditingTask()
+    } else {
+        this.props.stopEditingTask()
     }
   }
 
@@ -35,15 +41,20 @@ class NewTask extends React.Component {
   }
 
   render() {
-
-    if(!this.state.id){
-        this.state.name = this.props.currentTask.getIn(['task', 'name'], '')
-        this.state.id = this.props.currentTask.getIn(['task', 'id'], null)
-    }
+    console.log('there')
 
     const { from } = this.props.location.state || { from: { pathname: '/tasks' } };
+
+    var buttonText = "Create Task"
+    var buttonRedirectTo = "/tasks/"+ this.props.currentTask.getIn(['task', 'id']) +"/labels/new"
+
+    if(this.props.editingTask){
+        buttonText = "Save Task"
+        buttonRedirectTo = "/tasks/"+ this.props.currentTask.getIn(['task', 'id']) +"/view"
+    }
+
     if (this.state.redirectToReferrer && this.props.currentTask.getIn(['task', 'id'])) {
-      return <Redirect to={"/tasks/"+ this.props.currentTask.getIn(['task', 'id']) +"/labels/new"} />;
+        return <Redirect to={buttonRedirectTo} />;
     }
 
     const nameFormProps = {
@@ -63,7 +74,7 @@ class NewTask extends React.Component {
         <Button
           bsStyle="primary"
           type="submit">
-          Create Task
+          {buttonText}
         </Button>
       </form>
     </Grid>;
@@ -72,7 +83,8 @@ class NewTask extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    currentTask: state.get('currentTask')
+    currentTask: state.get('currentTask'),
+    editingTask: state.get('editingTask')
   };
 };
 
@@ -101,6 +113,12 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                 dispatch(viewTaskSuccess(response.payload.data));
                 return true;
             })
+    },
+    stopEditingTask: () => {
+        dispatch(stopEditingTask())
+    },
+    startEditingTask: () => {
+        dispatch(startEditingTask())
     }
   };
 };

@@ -6,7 +6,7 @@ import {
   Button
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { viewTask, viewTaskSuccess, viewTaskError, cleanTaskState } from '../../actions.js';
+import { viewTask, viewTaskSuccess, viewTaskError, cleanTaskState, startEditingTask } from '../../actions.js';
 import ImageSourcesInfoContainer from './ImageSourcesInfo.jsx';
 import { ParticipantsListContainer } from './ParticipantsList.jsx';
 import OntologyInfoContainer from './OntologyInfo.jsx';
@@ -15,6 +15,7 @@ class ViewTask extends React.Component {
   componentDidMount() {
     this.props.cleanTask()
     this.props.getTask(this.taskId());
+    this.props.startEditingTask()
   }
 
   taskId() {
@@ -80,6 +81,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           dispatch(viewTaskSuccess(response.payload.data));
           return true;
         });
+    },
+    startEditingTask: () => {
+        dispatch(startEditingTask())
     }
   };
 };

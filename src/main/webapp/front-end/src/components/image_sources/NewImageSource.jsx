@@ -57,9 +57,15 @@ class NewImageSource extends React.Component {
 
   render() {
 
+
+    var redirectTo = "/tasks/"+this.taskId()+"/participant-link/new"
+    if(this.props.editingTask){
+        redirectTo = "/tasks/"+this.taskId()+"/image-sources"
+    }
+
     const { from } = this.props.location.state || { from: { pathname: '/tasks' } };
     if (this.state.redirectToReferrer) {
-      return <Redirect to={"/tasks/"+this.taskId()+"/participant-link/new"} />;
+      return <Redirect to={redirectTo} />;
     }
 
     const nameFormProps = {
@@ -108,7 +114,8 @@ class NewImageSource extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    imageSourceTypes: state.get('imageSourceTypes')
+    imageSourceTypes: state.get('imageSourceTypes'),
+    editingTask: state.get('editingTask')
   };
 };
 
