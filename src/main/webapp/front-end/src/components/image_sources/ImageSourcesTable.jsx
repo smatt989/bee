@@ -5,7 +5,7 @@ import {
   Button,
   ButtonGroup
 } from 'react-bootstrap';
-import { viewImageSources, viewImageSourcesSuccess, viewImageSourcesError } from '../../actions.js';
+import { viewImageSources, viewImageSourcesSuccess, viewImageSourcesError, deleteImageSource, deleteImageSourceSuccess, deleteImageSourceError } from '../../actions.js';
 
 class ImagesSourcesTable extends React.Component {
     componentDidMount() {
@@ -13,6 +13,9 @@ class ImagesSourcesTable extends React.Component {
     }
 
     render() {
+
+      const deleteImageSource = this.props.deleteImageSource
+
       return (
         <Table id="imgsrc-tbl" responsive striped hover>
           <thead>
@@ -31,7 +34,10 @@ class ImagesSourcesTable extends React.Component {
                           <td>{o.get('name')}</td>
                           <td>{o.get('imageSourceType')}</td>
                           <td>55 images</td>
-                          <td><Button>Remove</Button></td>
+                          <td>        <ButtonGroup>
+                                        <Button onClick={() => deleteImageSource(o.get('id'))}>Remove</Button>
+                                        <Button>Edit</Button>
+                                      </ButtonGroup></td>
                         </tr>)
                         : null }
 
@@ -58,6 +64,18 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
                 dispatch(viewImageSourcesSuccess(response.payload.data));
                 return true;
+            })
+    },
+    deleteImageSource: (imageSourceId) => {
+        return dispatch(deleteImageSource(imageSourceId))
+            .then(response => {
+                if(response.error) {
+                    dispatch(deleteImageSourceError(response.error));
+                    return false;
+                }
+
+                dispatch(deleteImageSourceSuccess(imageSourceId));
+                return true
             })
     }
   }

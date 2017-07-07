@@ -287,8 +287,7 @@ function deleteImageSource(state) {
 }
 
 function deleteImageSourceSuccess(state, imageSourceId) {
-  // TODO: MIGHT NEED TO DEAL W PRIMITIVE TYPES HERE ON FILTER
-  const newImageSources = state.get('currentImageSources').filterNot(function(o) { return o.get('id') === imageSourceId; });
+  const newImageSources = state.getIn(['currentImageSources', 'imageSources']).filterNot(function(o) {return o.get('id') === Number(imageSourceId);});
   const newState = viewImageSourcesSuccess(state, newImageSources);
   const newNewState = newState.setIn(['currentImageSource', 'imageSource'], null);
   return newNewState.set('deletingImageSource', Map({error: null, loading: false}));
