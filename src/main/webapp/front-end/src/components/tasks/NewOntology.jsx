@@ -13,6 +13,7 @@ import {
 } from 'react-bootstrap';
 import { viewTaskOntology, viewTaskOntologySuccess, viewTaskOntologyError, ontologyTypes, ontologyTypesSuccess, ontologyTypesError, createOntology, createOntologySuccess, createOntologyError } from '../../actions.js';
 import FormGroupBase from '../shared/FormGroupBase.jsx';
+import { ONTOLOGY_TYPE_BINARY } from './../../utilities.js';
 
 class NewOntology extends React.Component {
     componentDidMount() {
@@ -30,7 +31,7 @@ class NewOntology extends React.Component {
     }
 
     defaultOntologyType() {
-        return this.props.ontologyTypes.get('types').size == 0 ? BINARY : this.props.ontologyTypes.getIn(['types', 0]).get('name')
+        return this.props.ontologyTypes.get('types').size == 0 ? ONTOLOGY_TYPE_BINARY : this.props.ontologyTypes.getIn(['types', 0]).get('name')
     }
 
     targetFromFlags(isAreaLabel, isLengthLabel) {
@@ -51,7 +52,7 @@ class NewOntology extends React.Component {
 
     ontologyObjectToState() {
         const obj = this.props.currentOntology.get('ontology') ? this.props.currentOntology.get('ontology') : Map({})
-        console.log(obj)
+
         return {
             label: obj.get('name', ''),
             type: obj.get('ontologyType', this.defaultOntologyType()),
@@ -104,8 +105,7 @@ class NewOntology extends React.Component {
     if (this.state.redirectToReferrer) {
       return <Redirect to={redirectTo} />;
     }
-    console.log('here')
-    console.log(this.state)
+
     const labelFormProps = {
       type: 'label',
       label: 'Label:',
@@ -150,7 +150,7 @@ class NewOntology extends React.Component {
                                 </FormGroup>
     }
 
-    if(this.state.type != BINARY) {
+    if(this.state.type != ONTOLOGY_TYPE_BINARY) {
         minInput = <FormGroupBase baseProps={minFormProps}/>
         maxInput = <FormGroupBase baseProps={maxFormProps}/>
     }
@@ -198,8 +198,6 @@ class NewOntology extends React.Component {
 const WHOLE_IMAGE = "image"
 const AREA = "area"
 const LENGTH = "length"
-
-const BINARY = "BINARY"
 
 const mapStateToProps = state => {
   return {
