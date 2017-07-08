@@ -437,9 +437,15 @@ function addLabel(state, label) {
 }
 
 function removeLabel(state, label) {
-  const indexOfLabel = state.getIn(['currentLabels', 'labels']).findIndex(function(o){return Object.is(o, Immutable.fromJS(label))})
+  const indexOfLabel = state.getIn(['currentLabels', 'labels']).findIndex(function(o){return is(o, Immutable.fromJS(label))})
   return state.setIn(['currentLabels', 'labels'], state.getIn(['currentLabels', 'labels']).delete(indexOfLabel))
 }
+
+function updateLabelValue(state, label, value) {
+  const indexOfLabel = state.getIn(['currentLabels', 'labels']).findIndex(function(o){return is(o, Immutable.fromJS(label))})
+  return state.setIn(['currentLabels', 'labels'], state.getIn(['currentLabels', 'labels']).update(indexOfLabel, o => o.set('labelValue', value)));
+}
+
 
 function startEditingTask(state) {
   return state.set('editingTask', true);
@@ -627,6 +633,8 @@ export default function reducer(state = Map(), action) {
       return addLabel(state, action.label);
     case 'REMOVE_LABEL':
       return removeLabel(state, action.label);
+    case 'UPDATE_LABEL_VALUE':
+      return updateLabelValue(state, action.label, action.value);
     case "START_EDITING_TASK":
       return startEditingTask(state);
     case "STOP_EDITING_TASK":
