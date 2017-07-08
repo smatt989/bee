@@ -41,3 +41,7 @@ export const tryLogin = (email, password) => {
       return true;
     });
 };
+
+export const ONTOLOGY_TYPE_BINARY = "BINARY"
+export const ONTOLOGY_TYPE_FLOAT_RANGE = "FLOAT_RANGE"
+export const ONTOLOGY_TYPE_INTEGER_RANGE = "INTEGER_RANGE"
