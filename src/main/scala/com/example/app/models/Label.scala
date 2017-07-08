@@ -32,7 +32,7 @@ case class Label(id: String,
     LabelView(ontologyVersionId, ontology, ontologyType, labelValue, xCoordinate, yCoordinate, width, height, point1x, point1y, point2x, point2y, createdMillis)
 }
 
-case class SaveLabels(labels: Seq[JsonLabel], taskId: Int, imageId: String, ontologyVersionId: Int)
+case class SaveLabels(labels: Seq[JsonLabel], taskId: Int, imageId: String)
 
 case class LabelRequest(taskId: Int, imageId: String)
 
@@ -98,12 +98,12 @@ object Label extends SlickUUIDObject[Label, (String, Int, String, Int, String, S
 
   def saveLabels(userId: Int, saveLabels: SaveLabels) = {
     val participant = Await.result(Participant.participantByUserAndTask(userId, saveLabels.taskId), Duration.Inf).get
-    val ontology = Await.result(OntologyVersion.byId(saveLabels.ontologyVersionId), Duration.Inf)
+    val ontology = Await.result(OntologyVersion.latestVersionByTask(saveLabels.taskId), Duration.Inf).get
 
     val now = new DateTime().getMillis
 
     val toCreate = saveLabels.labels.map(label => {
-      label.toModel(participant.id, saveLabels.imageId, saveLabels.ontologyVersionId, ontology.name, ontology.ontologyType, now)
+      label.toModel(participant.id, saveLabels.imageId, ontology.id, ontology.name, ontology.ontologyType, now)
     })
 
     Await.result(db.run(table.filter(a => a.participantId === participant.id && a.imageId === saveLabels.imageId).delete), Duration.Inf)

@@ -704,11 +704,12 @@ export function nextImageError(error) {
   }
 }
 
-export function saveLabels(taskId, labels) {
+export function saveLabels(taskId, imageId, ontologyVersionId, labels) {
+    console.log(ontologyVersionId)
   const request = axios({
     method: 'post',
     url: `${domain}/labels/save`,
-    data: {taskId: taskId, labels: labels},
+    data: {taskId: taskId, imageId: imageId, ontologyVersionId: ontologyVersionId, labels: labels},
     headers: authenticate()
   });
 
@@ -811,6 +812,14 @@ export function removeLabel(label) {
     return {
         type: 'REMOVE_LABEL',
         label: label
+    }
+}
+
+export function updateLabelValue(label, value) {
+    return {
+        type: 'UPDATE_LABEL_VALUE',
+        label: label,
+        value: value
     }
 }
 

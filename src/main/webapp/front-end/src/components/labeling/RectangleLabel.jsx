@@ -3,25 +3,21 @@ import {
   Button,
   ButtonGroup
 } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
 import RemoveLabelButton from './RemoveLabelButton.jsx';
 import LabelValueInput from './LabelValueInput.jsx';
+import { ONTOLOGY_TYPE_BINARY, ONTOLOGY_TYPE_FLOAT_RANGE, ONTOLOGY_TYPE_INTEGER_RANGE } from './../../utilities.js';
 
-const RectangleLabel = ({ rect, remove }) => {
+const RectangleLabel = ({ rect, remove, ontologyType, update }) => {
 
   var divStyle = {
     display: "none"
   }
 
-  var removeButtonStyle = {
-    display: "none"
-  }
-
-  if(rect != null && rect != {} && !(rect.h == 0 && rect.w == 0)){
-    var left = rect.w > 0 ? rect.startX : rect.startX + rect.w
-    var top = rect.h > 0 ? rect.startY : rect.startY + rect.h
-    var height = Math.abs(rect.h)
-    var width = Math.abs(rect.w)
+  if(rect.xCoordinate != null && !(rect.height == 0 && rect.width == 0)){
+    var left = rect.xCoordinate
+    var top = rect.yCoordinate
+    var height = rect.height
+    var width = rect.width
     divStyle = {
         color: 'white',
         backgroundColor: 'clear',
@@ -35,9 +31,15 @@ const RectangleLabel = ({ rect, remove }) => {
     }
   }
 
+  var labelValueInput = null
+
+  if(ontologyType == ONTOLOGY_TYPE_FLOAT_RANGE || ontologyType == ONTOLOGY_TYPE_INTEGER_RANGE){
+    labelValueInput = <LabelValueInput top={rect.height} left={5} label={rect} update={update} />
+  }
+
   return (<div style={divStyle}>
     <RemoveLabelButton remove={remove}/>
-    <LabelValueInput rect={rect} />
+    {labelValueInput}
   </div>)
 };
 

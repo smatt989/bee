@@ -11,10 +11,12 @@ import {
   ControlLabel
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { addLabel, removeLabel, viewTaskOntology, viewTaskOntologySuccess, viewTaskOntologyError } from '../../actions.js';
+import { addLabel, removeLabel, viewTaskOntology, viewTaskOntologySuccess, viewTaskOntologyError, updateLabelValue, viewParticipantImageLabels, viewParticipantImageLabelsSuccess, viewParticipantImageLabelsError, nextImage, nextImageSuccess, nextImageError, saveLabels, saveLabelsSuccess, saveLabelsError } from '../../actions.js';
 import FormGroupBase from '../shared/FormGroupBase.jsx';
 import RectangleLabel from './RectangleLabel.jsx';
 import LineLabel from './LineLabel.jsx';
+import LabelValueInput from './LabelValueInput.jsx';
+import RemoveLabelButton from './RemoveLabelButton.jsx';
 import { ONTOLOGY_TYPE_BINARY, ONTOLOGY_TYPE_FLOAT_RANGE, ONTOLOGY_TYPE_INTEGER_RANGE } from './../../utilities.js';
 
 class LabelImage extends React.Component {
@@ -23,22 +25,49 @@ class LabelImage extends React.Component {
     super(props);
 
     this.state = {
-      rects: [],
       rect: {startX: 0, startY: 0, h: 0, w: 0},
       drag: false
     };
-
-    this.addRect = (rect) => {
-            this.state.rects.push(Object.assign({}, rect));
-    }
 
     this.updateCurrentRect = () => {
         this.forceUpdate()
     }
 
+    this.imageHandleMouseMove = (limit) => (e) => {
+        if (this.state.drag) {
+            //TODO: COULD HAVE MORE DYNAMIC LIMITS VS JUST 1 OR INFINITE
+            if(limit == 1) {
+              this.removeAllPreexistingLabels()
+            }
+            var rect = this.state.rect
+            rect.w = (e.pageX - e.currentTarget.offsetLeft) - rect.startX;
+            rect.h = (e.pageY - e.currentTarget.offsetTop) - rect.startY;
+
+            this.updateCurrentRect()
+        }
+        e.preventDefault()
+    }
+
+    this.imageHandleMouseUp = (createLabelFunction) => () => {
+         this.state.drag = false;
+         var rect = this.state.rect
+         if(rect.h != 0 || rect.w != 0){
+             this.props.addLabel(createLabelFunction(rect, null));
+         }
+         this.state.rect = {startX: 0, startY: 0, h: 0, w: 0}
+         this.updateCurrentRect()
+    }
+
     this.imageHandleMouseDown = this.imageHandleMouseDown.bind(this);
-    this.imageHandleMouseUp = this.imageHandleMouseUp.bind(this);
-    this.imageHandleMouseMove = this.imageHandleMouseMove.bind(this);
+    this.imageHandleClick = this.imageHandleClick.bind(this);
+    this.removeAllPreexistingLabels = this.removeAllPreexistingLabels.bind(this);
+    this.isPositiveImageLabel = this.isPositiveImageLabel.bind(this);
+    this.loadNewImage = this.loadNewImage.bind(this);
+    this.handleSaveLabels = this.handleSaveLabels.bind(this);
+  }
+
+  removeAllPreexistingLabels() {
+    this.props.currentLabels.get('labels').map(label => this.props.removeLabel(label))
   }
 
   imageHandleMouseDown(e) {
@@ -52,36 +81,78 @@ class LabelImage extends React.Component {
     e.preventDefault()
   }
 
-  imageHandleMouseUp() {
-      this.state.drag = false;
-      var rect = this.state.rect
-      if(rect.h != 0 || rect.w != 0){
-          this.addRect(rect);
-          this.props.addLabel(rect);
-      }
-      this.updateCurrentRect()
+  imageHandleClick() {
+    if(this.isPositiveImageLabel()) {
+        this.removeAllPreexistingLabels()
+        //TODO: CRAP... COLLISION BETWEEN LABELING "NO LABEL" AND "0" VALUE FOR INTEGER RANGE... COULD USE SPECIAL VALUE... UGH
+        //TODO: THIS IS ACTUALLY A BIGGER PROBLEM THAN I REALIZED.... FOR EXAMPLE NOT A GOOD WAY TO "LABEL" NO AREAS, ETC.
+        //TODO: NEED TO CHANGE BACKEND TO INCLUDE A "DID SUBMIT LABEL" TABLE, IN ADDITION TO ALREADY EXISTING "DID SEE" TABLE
+        this.props.addLabel(this.makeImageLabel(0))
+    } else {
+        this.removeAllPreexistingLabels()
+        this.props.addLabel(this.makeImageLabel(1))
+    }
+
+    this.updateCurrentRect()
   }
 
-  imageHandleMouseMove(e) {
-      if (this.state.drag) {
-          var rect = this.state.rect
-          rect.w = (e.pageX - e.currentTarget.offsetLeft) - rect.startX;
-          rect.h = (e.pageY - e.currentTarget.offsetTop) - rect.startY;
+  makeAreaLabel(rect, value) {
+    var left = rect.w > 0 ? rect.startX : rect.startX + rect.w
+    var top = rect.h > 0 ? rect.startY : rect.startY + rect.h
+    var height = Math.abs(rect.h)
+    var width = Math.abs(rect.w)
 
-          this.updateCurrentRect()
-      }
-      e.preventDefault()
+    return {
+        labelValue: value,
+        xCoordinate: left,
+        yCoordinate: top,
+        width: width,
+        height: height
+    }
+  }
+
+  makeLengthLabel(rect, value) {
+    return {
+        labelValue: value,
+        point1x: rect.startX,
+        point1y: rect.startY,
+        point2x: rect.startX + rect.w,
+        point2y: rect.startY + rect.h
+    }
+  }
+
+  makeImageLabel(value) {
+    return {
+        labelValue: value
+    }
+  }
+
+  isPositiveImageLabel() {
+    const firstLabel = this.props.currentLabels.getIn(['labels', 0], null)
+    return firstLabel != null && firstLabel.get('labelValue', 0) != 0
+  }
+
+  handleSaveLabels() {
+    const taskId = Number(this.props.match.params.id)
+    const imageId = this.props.currentImage.getIn(['image', 'id'])
+    const ontologyId = this.props.currentOntology.getIn(['ontology', 'id'])
+    const labels = this.props.currentLabels.get('labels', List.of()).toJS()
+    this.props.saveLabels(taskId, imageId, ontologyId, labels, this.loadNewImage)
+  }
+
+  loadNewImage() {
+    const taskId = Number(this.props.match.params.id)
+    this.props.getImage(taskId, (data) => this.props.getLabels(taskId, data.id))
   }
 
   componentDidMount() {
+    this.loadNewImage()
     if(!this.props.currentOntology.get('ontology') && !this.props.currentOntology.get('loading')){
         this.props.getOntology(this.props.match.params.id)
     }
   }
 
   render() {
-
-    //console.log(this.props.currentOntology.get('ontology'))
 
     const ontology = this.props.currentOntology.get('ontology', Map({}))
 
@@ -96,55 +167,97 @@ class LabelImage extends React.Component {
         position: 'relative'
     }
 
-    const newDivStyle = {
-        backgroundColor: 'clear',
-        position: 'absolute',
-        border: '5px solid green',
-        left: 0,
-        top: 0,
-        height: 0,
-        width: 0,
-        display: "none"
-    }
-
     const newSVGStyle = {
         position: 'absolute'
-    }
-
-    const newLineStyle = {
-        display: 'none'
     }
 
     const removeLabel = (label) => () => {
         this.props.removeLabel(label)
     }
 
+    var mouseDownFunction = () => {}
+    var mouseUpFunction = () => {}
+    var mouseMoveFunction = () => {}
+    var imageClickFunction = () => {}
+
+    var areaLabelDiv = null
+    var lengthLabelDiv = null
+    var imageLabelStyle = {
+
+    }
+    var imageLabelValueInput = null
+
+    if(isAreaLabel) {
+        mouseDownFunction = this.imageHandleMouseDown
+        mouseUpFunction = this.imageHandleMouseUp(this.makeAreaLabel)
+        mouseMoveFunction = this.imageHandleMouseMove(labelLimit)
+
+        areaLabelDiv = <div>
+
+                {labels.map(label => {
+                    return <RectangleLabel rect={label.toJS()} remove={removeLabel(label)} update={this.props.updateLabelValue} ontologyType={ontologyType} />
+                })}
+                <RectangleLabel rect={this.makeAreaLabel(this.state.rect, 1)} />
+            </div>
+    } else if(isLengthLabel) {
+        mouseDownFunction = this.imageHandleMouseDown
+        mouseUpFunction = this.imageHandleMouseUp(this.makeLengthLabel)
+        mouseMoveFunction = this.imageHandleMouseMove(labelLimit)
+
+        lengthLabelDiv = <div>
+            <svg style={newSVGStyle} width="100%" height="100%">
+                 <LineLabel rect={this.makeLengthLabel(this.state.rect, 1)} />
+                 {labels.map(label => {
+                         return <LineLabel rect={label.toJS()} remove={removeLabel(label)} ontologyType={ontologyType} />
+                     })}
+             </svg>
+             {labels.map(label => {
+                var rect = label.toJS()
+                 const divStyle = {
+                     backgroundColor: 'clear',
+                     position: 'absolute',
+                     pointerEvents: "none",
+                     left: rect.point1x,
+                     top: rect.point1y
+                 }
+
+                   var labelValueInput = null
+
+                   if(ontologyType == ONTOLOGY_TYPE_FLOAT_RANGE || ontologyType == ONTOLOGY_TYPE_INTEGER_RANGE){
+                     labelValueInput = <LabelValueInput top={15} left={5} label={label.toJS()} update={this.props.updateLabelValue} />
+                   }
+
+                return <div style={divStyle}>
+                    <RemoveLabelButton remove={removeLabel(label)}/>
+                    {labelValueInput}
+                </div>
+             })}
+        </div>
+    } else {
+        imageClickFunction = this.imageHandleClick
+
+        const imageLabel = labels[0] ? labels[0] : null
+
+        imageLabelStyle = this.isPositiveImageLabel() ? {border: "5px green solid"} : {border: "5px red solid"};
+        if(this.isPositiveImageLabel() && (ontologyType == ONTOLOGY_TYPE_FLOAT_RANGE || ontologyType == ONTOLOGY_TYPE_INTEGER_RANGE)){
+            imageLabelValueInput = <LabelValueInput top={5} left={5} update={this.props.updateLabelValue} label={imageLabel} />
+        }
+    }
+
     return <div>
         <Button>Previous</Button>
-        <div width="500" height="500" id="canvas_container" style={containerStyles} onMouseDown={this.imageHandleMouseDown} onMouseUp={this.imageHandleMouseUp} onMouseMove={this.imageHandleMouseMove}>
-            <svg style={newSVGStyle} width="100%" height="100%">
-                <LineLabel rect={this.state.rect} />
-                {
-                    labels.map(label => {
-                        return <LineLabel rect={label.toJS()} remove={removeLabel(label)} />
-                    })
-                }
-            </svg>
+        <div width="500" height="500" id="canvas_container" style={containerStyles} onMouseDown={mouseDownFunction} onMouseUp={mouseUpFunction} onMouseMove={mouseMoveFunction}>
+            {lengthLabelDiv}
 
-            {
-                labels.map(label => {
-                    return <RectangleLabel rect={label.toJS()} remove={removeLabel(label)} />
-                })
-            }
-
-            <RectangleLabel rect={this.state.rect} />
-            <img unselectable="on" id="tagging_image" src='http://www.chestx-ray.com/images/igallery/resized/1-100/1-10-500-500-100.jpg'/>
+            {areaLabelDiv}
+            <img style={imageLabelStyle} unselectable="on" id="tagging_image" src={this.props.currentImage.getIn(['image', 'location'], '')} onClick={imageClickFunction}/>
+            {imageLabelValueInput}
         </div>
         <LinkContainer to="/tasks">
             <Button>Done for now</Button>
         </LinkContainer>
-        <Button>Submit labels</Button>
-        <Button>Skip</Button>
+        <Button onClick={this.handleSaveLabels}>Submit labels</Button>
+        <Button onClick={this.loadNewImage}>Skip</Button>
     </div>
   }
 }
@@ -152,7 +265,8 @@ class LabelImage extends React.Component {
 const mapStateToProps = state => {
   return {
     currentLabels: state.get('currentLabels'),
-    currentOntology: state.get('currentTaskOntology')
+    currentOntology: state.get('currentTaskOntology'),
+    currentImage: state.get('currentImage')
   };
 };
 
@@ -164,6 +278,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     removeLabel: (label) => {
         dispatch(removeLabel(label))
     },
+    updateLabelValue: (label, value) => {
+        dispatch(updateLabelValue(label, value))
+    },
     getOntology: (taskId) => {
         return dispatch(viewTaskOntology(taskId))
             .then(response => {
@@ -173,6 +290,45 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                 }
 
                 dispatch(viewTaskOntologySuccess(response.payload.data));
+                return true;
+            })
+    },
+    getImage: (taskId, callback) => {
+        return dispatch(nextImage(taskId))
+            .then(response => {
+                if(response.error) {
+                    dispatch(nextImageError(response.error));
+                    return false;
+                }
+
+                dispatch(nextImageSuccess(response.payload.data, response.payload.headers));
+                callback(response.payload.data)
+
+                return true;
+            })
+    },
+    getLabels: (taskId, imageId) => {
+        return dispatch(viewParticipantImageLabels(taskId, imageId))
+                    .then(response => {
+                        if(response.error) {
+                            dispatch(viewParticipantImageLabelsError(response.error));
+                            return false;
+                        }
+
+                        dispatch(viewParticipantImageLabelsSuccess(response.payload.data));
+                        return true;
+                    })
+    },
+    saveLabels: (taskId, imageId, ontologyVersionId, labels, callback) => {
+        return dispatch(saveLabels(taskId, imageId, ontologyVersionId, labels))
+            .then(response => {
+                if(response.error) {
+                    dispatch(saveLabelsError(response.error));
+                    return false;
+                }
+
+                dispatch(saveLabelsSuccess(response.payload.data))
+                callback(response.payload.data)
                 return true;
             })
     }

@@ -3,7 +3,6 @@ import {
   Button,
   ButtonGroup
 } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
 
 const LineLabel = ({ rect, remove }) => {
 
@@ -16,11 +15,11 @@ const LineLabel = ({ rect, remove }) => {
   var y1 = 0
   var y2 = 0
 
-  if(rect != null && rect != {} && !(rect.h == 0 && rect.w == 0)){
-      x1 = rect.startX
-      x2 = (rect.startX + rect.w)
-      y1 = rect.startY
-      y2 = (rect.startY + rect.h)
+  if(rect.point1x != null && !(rect.point1x == rect.point2x && rect.point1y == rect.point2y)){
+      x1 = rect.point1x
+      x2 = rect.point2x
+      y1 = rect.point1y
+      y2 = rect.point2y
 
       newLineStyle = {
           display: 'block'
