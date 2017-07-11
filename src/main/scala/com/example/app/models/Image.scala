@@ -48,6 +48,17 @@ object Image extends UpdatableUUIDObject[Image, (String, String, String), Tables
     ), Duration.Inf)).headOption.map{case (image, imageSource) => makeImageWithAccess(reify(image), ImageSource.reify(imageSource))}
   }
 
+  def getImageWithAccess(userId: Int, taskId: Int, imageId: String) = {
+    Await.result(db.run(
+      (for{
+        imageSources <- ImageSource.table if imageSources.taskId === taskId
+        relations <- ImageToImageSourceRelation.table if imageSources.id === relations.imageSourceId
+        images <- table.filter(_.id === imageId) if images.id === relations.imageId
+      } yield (images, imageSources)).result
+    ), Duration.Inf
+    ).headOption.map{case (image, imageSource) => makeImageWithAccess(reify(image), ImageSource.reify(imageSource))}
+  }
+
   def makeImageWithAccess(image: Image, source: ImageSource) = {
     val imageAccessInterface = ImageSource.imageSourceInterfaceFromImageSource(source)
     ImageWithAccess(image, imageAccessInterface.imageHeaders(image))

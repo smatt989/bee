@@ -17,6 +17,10 @@ const TasksTableItem = ({ data, match, leave }) => {
                      </LinkContainer>
   }
 
+  const labelButton = <LinkContainer to={"/tasks/"+data.id+"/labeling"}>
+    <Button>Label</Button>
+  </LinkContainer>
+
   return (
     <tr>
       <td>{data.id}</td>
@@ -24,7 +28,7 @@ const TasksTableItem = ({ data, match, leave }) => {
       <td>
         <ButtonGroup>
           {manageButton}
-          <Button>Label</Button>
+          {labelButton}
           {leaveButton}
         </ButtonGroup>
       </td>

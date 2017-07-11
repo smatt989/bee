@@ -42,7 +42,7 @@ function cleanState() {
     activatingParticipant: Map({error: null, loading: false}),
     leavingTask: Map({error: null, loading: false}),
     markingImageSeen: Map({error: null, loading: false}),
-    currentImage: Map({image: null, loadConfigs: null, markedSeen: false, error: null, loading: false}),
+    currentImage: Map({image: null, viewInfo: null, loadConfigs: null, markedSeen: false, error: null, loading: false}),
     savingLabels: Map({error: null, loading: false}),
     currentLabels: Map({labels: List.of(), error: null, loading: false}),
     signupEmail: Map({ email: '' }),
@@ -370,15 +370,27 @@ function markImageSeenError(state, error) {
 }
 
 function nextImage(state) {
-  return state.set('currentImage', Map({image: null, loadConfigs: null, markedSeen: false, error: null, loading: true}));
+  return state.set('currentImage', Map({image: null, viewInfo: null, loadConfigs: null, markedSeen: false, error: null, loading: true}));
 }
 
-function nextImageSuccess(state, image, configs) {
-  return state.set('currentImage', Map({image: Immutable.fromJS(image), loadConfigs: Immutable.fromJS(configs), markedSeen: false, error: null, loading: false}));
+function nextImageSuccess(state, imageData, configs) {
+  return state.set('currentImage', Map({image: Immutable.fromJS(imageData.image), viewInfo: Immutable.fromJS(imageData.viewInfo), loadConfigs: Immutable.fromJS(configs), markedSeen: false, error: null, loading: false}));
 }
 
 function nextImageError(state, error) {
-  return state.set('currentImage', Map({image: null, loadConfigs: null, markedSeen: false, error: Immutable.fromJS(error), loading: false}));
+  return state.set('currentImage', Map({image: null, viewInfo: null, loadConfigs: null, markedSeen: false, error: Immutable.fromJS(error), loading: false}));
+}
+
+function previousImage(state) {
+    return nextImage(state);
+}
+
+function previousImageSuccess(state, imageData, configs) {
+    return nextImageSuccess(state, imageData, configs);
+}
+
+function previousImageError(state, error) {
+    return previousImageError(state, error);
 }
 
 function saveLabels(state) {
@@ -605,6 +617,12 @@ export default function reducer(state = Map(), action) {
       return nextImageSuccess(state, action.payload, action.configs);
     case 'NEXT_IMAGE_ERROR':
       return nextImageError(state, action.error);
+    case 'PREVIOUS_IMAGE':
+      return previousImage(state);
+    case 'PREVIOUS_IMAGE_SUCCESS':
+      return previousImageSuccess(state, action.payload, action.configs);
+    case 'PREVIOUS_IMAGE_ERROR':
+      return previousImageError(state, action.error);
     case 'SAVE_LABELS':
       return saveLabels(state);
     case 'SAVE_LABELS_SUCCESS':
