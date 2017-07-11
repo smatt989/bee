@@ -173,12 +173,12 @@ class LabelImage extends React.Component {
 
   loadNewImage(next) {
     const taskId = Number(this.props.match.params.id)
-    const viewInfo = this.props.currentImage.get('viewInfo', null)
+    const imageViewId = this.props.currentImage.getIn(['viewInfo', 'imageViewId'], null)
     const callback = (data) => this.props.getLabels(taskId, data.image.id)
     if(next){
-        this.props.nextImage(taskId, viewInfo, callback)
+        this.props.nextImage(taskId, imageViewId, callback)
     }else {
-        this.props.previousImage(taskId, viewInfo, callback)
+        this.props.previousImage(taskId, imageViewId, callback)
     }
   }
 
@@ -331,8 +331,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                 return true;
             })
     },
-    nextImage: (taskId, imageView, callback) => {
-        return dispatch(nextImage(taskId, imageView))
+    nextImage: (taskId, imageViewId, callback) => {
+        return dispatch(nextImage(taskId, imageViewId))
             .then(response => {
                 if(response.error) {
                     dispatch(nextImageError(response.error));
@@ -345,8 +345,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                 return true;
             })
     },
-    previousImage: (taskId, imageView, callback) => {
-       return dispatch(previousImage(taskId, imageView))
+    previousImage: (taskId, imageViewId, callback) => {
+       return dispatch(previousImage(taskId, imageViewId))
            .then(response => {
                if(response.error) {
                    dispatch(previousImageError(response.error));

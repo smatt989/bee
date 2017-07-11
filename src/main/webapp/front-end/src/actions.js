@@ -674,11 +674,11 @@ export function markImageSeenError(error) {
   }
 }
 
-export function nextImage(taskId, imageView) {
+export function nextImage(taskId, imageViewId) {
   const request = axios({
     method: 'post',
     url: `${domain}/images/next`,
-    data: {taskId: taskId, imageView: imageView},
+    data: {taskId: taskId, imageViewId: imageViewId},
     headers: authenticate()
   });
 
@@ -703,11 +703,11 @@ export function nextImageError(error) {
   }
 }
 
-export function previousImage(taskId, imageView) {
+export function previousImage(taskId, imageViewId) {
   const request = axios({
     method: 'post',
     url: `${domain}/images/previous`,
-    data: {taskId: taskId, imageView: imageView},
+    data: {taskId: taskId, imageViewId: imageViewId},
     headers: authenticate()
   });
 

@@ -15,14 +15,14 @@ case class ImageView(id: String = null, participantId: Int, imageId: String, ont
   def updateId(id: String) = this.copy(id = id)
 
   def toJson(taskId: Int) =
-    JsonImageView(taskId, imageId, createdMillis)
+    JsonImageView(taskId, imageId, createdMillis, id)
 }
 
 case class CreateImageView(taskId: Int, imageId: String)
 
-case class JsonImageView(taskId: Int, imageId: String, createdMillis: Long)
+case class JsonImageView(taskId: Int, imageId: String, createdMillis: Long, imageViewId: String)
 
-case class RequestImage(taskId: Int, imageView: Option[JsonImageView] = None)
+case class RequestImage(taskId: Int, imageViewId: Option[String] = None)
 
 case class ImageWithAccessWithView(imageWithAccess: ImageWithAccess, viewInfo: Option[JsonImageView]) {
   def toJson = ImageWithView(imageWithAccess.image, viewInfo)
@@ -52,7 +52,7 @@ object ImageView extends SlickUUIDObject[ImageView, (String, Int, String, Int, L
 
   //TODO: EW.
   def imageIncrement(userId: Int, requestImage: RequestImage, increment: ImageIncrement): Option[ImageWithAccessWithView] = {
-    if(requestImage.imageView.isEmpty && increment == ImageIncrement.next)
+    if(requestImage.imageViewId.isEmpty && increment == ImageIncrement.next)
       Image.nextImage(userId, requestImage.taskId).map(img => ImageWithAccessWithView(img, None))
     else {
       val participant = Await.result(Participant.participantByUserAndTask(userId, requestImage.taskId), Duration.Inf)
@@ -61,8 +61,9 @@ object ImageView extends SlickUUIDObject[ImageView, (String, Int, String, Int, L
       if(previouslySeenImages.nonEmpty){
         val lastIndex = previouslySeenImages.size - 1
 
-        val findIndex = requestImage.imageView.map(imageView => {
-          previouslySeenImages.indexWhere(a => a.createdMillis == requestImage.imageView.get.createdMillis && a.imageId == requestImage.imageView.get.imageId)
+        val findIndex = requestImage.imageViewId.map(imageViewId => {
+          val imageView = Await.result(byId(imageViewId), Duration.Inf)
+          previouslySeenImages.indexWhere(a => a.createdMillis == imageView.createdMillis && a.imageId == imageView.imageId)
         })
 
         val incrementToIndex = findIndex.map(_ + increment.value).getOrElse(lastIndex)
