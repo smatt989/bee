@@ -177,56 +177,29 @@ export function viewTaskError(error) {
   }
 }
 
-export function tasksCreated() {
+export function getTasks() {
   const request = axios({
     method: 'get',
-    url: `${domain}/tasks/created`,
+    url: `${domain}/tasks`,
     headers: authenticate()
   });
 
   return {
-    type: 'TASKS_CREATED',
+    type: 'GET_TASKS',
     payload: request
   }
 }
 
-export function tasksCreatedSuccess(loaded) {
+export function getTasksSuccess(loaded) {
   return {
-    type: 'TASKS_CREATED_SUCCESS',
+    type: 'GET_TASKS_SUCCESS',
     payload: loaded
   }
 }
 
-export function tasksCreatedError(error) {
+export function getTasksError(error) {
   return {
-    type: 'TASKS_CREATED_ERROR',
-    error: error
-  }
-}
-
-export function tasksParticipating() {
-  const request = axios({
-    method: 'get',
-    url: `${domain}/tasks/participating`,
-    headers: authenticate()
-  });
-
-  return {
-    type: 'TASKS_PARTICIPATING',
-    payload: request
-  }
-}
-
-export function tasksParticipatingSuccess(loaded) {
-  return {
-    type: 'TASKS_PARTICIPATING_SUCCESS',
-    payload: loaded
-  }
-}
-
-export function tasksParticipatingError(error) {
-  return {
-    type: 'TASKS_PARTICIPATING_ERROR',
+    type: 'GET_TASKS_ERROR',
     error: error
   }
 }

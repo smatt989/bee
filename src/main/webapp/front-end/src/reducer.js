@@ -24,8 +24,7 @@ function cleanState() {
     logout: Map({error: null, loading: false}),
     savingTask: Map({error: null, loading: false}),
     currentTask: cleanTask,
-    tasksCreated: Map({tasks: List.of(), error: null, loading: false}),
-    tasksParticipating: Map({tasks: List.of(), error: null, loading: false}),
+    allTasks: Map({tasks: List.of(), error: null, loading: false}),
     taskParticipants: cleanParticipants,
     participantLink: Map({link: null, error: null, loading: false}),
     acceptInvitation: Map({task: null, error: null, loading: false}),
@@ -132,28 +131,16 @@ function viewTaskError(state, error) {
   return state.set('currentTask', Map({task: null, error: Immutable.fromJS(error), loading: false}));
 }
 
-function tasksCreated(state) {
-  return state.set('tasksCreated', Map({tasks: List.of(), error: null, loading: true}));
+function getTasks(state) {
+  return state.set('allTasks', Map({tasks: List.of(), error: null, loading: true}));
 }
 
-function tasksCreatedSuccess(state, tasks) {
-  return state.set('tasksCreated', Map({tasks: Immutable.fromJS(tasks), error: null, loading: false}));
+function getTasksSuccess(state, tasks) {
+  return state.set('allTasks', Map({tasks: Immutable.fromJS(tasks), error: null, loading: false}));
 }
 
-function tasksCreatedError(state, error) {
-  return state.set('tasksCreated', Map({tasks: List.of(), error: Immutable.fromJS(error), loading: false}));
-}
-
-function tasksParticipating(state) {
-  return state.set('tasksParticipating', Map({tasks: List.of(), error: null, loading: true}));
-}
-
-function tasksParticipatingSuccess(state, tasks) {
-  return state.set('tasksParticipating', Map({tasks: Immutable.fromJS(tasks), error: null, loading: false}));
-}
-
-function tasksParticipatingError(state, error) {
-  return state.set('tasksParticipating', Map({tasks: List.of(), error: Immutable.fromJS(error), loading: false}));
+function getTasksError(state, error) {
+  return state.set('allTasks', Map({tasks: List.of(), error: Immutable.fromJS(error), loading: false}));
 }
 
 function taskParticipants(state) {
@@ -334,7 +321,7 @@ function leaveTask(state) {
 }
 
 function leaveTaskSuccess(state, participant) {
-  const newState = state.setIn(['tasksParticipating', 'tasks'], state.getIn(['tasksParticipating', 'tasks']).filter(function(o){return o.get('id') != participant.taskId}));
+  const newState = state.setIn(['allTasks', 'tasks'], state.getIn(['allTasks', 'tasks']).filter(function(o){return o.get('id') != participant.taskId}));
   return newState.set('leavingTask', Map({error: null, loading: false}));
 }
 
@@ -503,18 +490,12 @@ export default function reducer(state = Map(), action) {
       return viewTaskSuccess(state, action.payload);
     case 'VIEW_TASK_ERROR':
       return viewTaskError(state, action.error);
-    case 'TASKS_CREATED':
-      return tasksCreated(state);
-    case 'TASKS_CREATED_SUCCESS':
-      return tasksCreatedSuccess(state, action.payload);
-    case 'TASKS_CREATED_ERROR':
-      return tasksCreatedError(state, action.error);
-    case 'TASKS_PARTICIPATING':
-      return tasksParticipating(state);
-    case 'TASKS_PARTICIPATING_SUCCESS':
-      return tasksParticipatingSuccess(state, action.payload);
-    case 'TASKS_PARTICIPATING_ERROR':
-      return tasksParticipatingError(state, action.error);
+    case 'GET_TASKS':
+      return getTasks(state);
+    case 'GET_TASKS_SUCCESS':
+      return getTasksSuccess(state, action.payload);
+    case 'GET_TASKS_ERROR':
+      return getTasksError(state, action.error);
     case 'TASK_PARTICIPANTS':
       return taskParticipants(state);
     case 'TASK_PARTICIPANTS_SUCCESS':
