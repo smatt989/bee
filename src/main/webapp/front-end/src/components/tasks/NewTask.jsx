@@ -11,7 +11,6 @@ import FormGroupBase from '../shared/FormGroupBase.jsx';
 
 class NewTask extends React.Component {
   componentDidMount() {
-    console.log('here')
     if(this.props.match.params.id && !this.props.currentTask.get('task')) {
         this.props.getTask(this.props.match.params.id)
     }
@@ -34,15 +33,12 @@ class NewTask extends React.Component {
     this.onNameChange = (e) => this.setState({ name: e.target.value });
     this.onSubmit = (e) => {
       e.preventDefault();
-      console.log(this.state.id)
       this.props.onSubmit(this.state.name, this.state.id)
         .then(isSuccess => this.setState({ redirectToReferrer: isSuccess }));
     };
   }
 
   render() {
-    console.log('there')
-
     const { from } = this.props.location.state || { from: { pathname: '/tasks' } };
 
     var buttonText = "Create Task"
