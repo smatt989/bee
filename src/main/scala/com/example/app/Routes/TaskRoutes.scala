@@ -36,7 +36,7 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
     val participatingIn = Await.result(Task.tasksParticipatingIn(userId).map(_.map(_.toJson(userId))), Duration.Inf)
     val created = Await.result(Task.tasksCreatedByUser(userId).map(_.map(_.toJson(userId))), Duration.Inf)
 
-    Set(participatingIn ++ created)
+    (participatingIn ++ created).distinct.sortBy(_.id)
   }
 
   get("/tasks/:id/view") {

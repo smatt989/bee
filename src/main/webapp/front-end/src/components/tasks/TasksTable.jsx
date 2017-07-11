@@ -5,13 +5,13 @@ import {
   Button,
   ButtonGroup
 } from 'react-bootstrap';
-import { tasksCreated, tasksCreatedSuccess, tasksCreatedError, tasksParticipating, tasksParticipatingSuccess, tasksParticipatingError, leaveTask, leaveTaskSuccess, leaveTaskError, cleanTaskState } from '../../actions.js';
+import { getTasks, getTasksSuccess, getTasksError, tasksCreated, tasksCreatedSuccess, tasksCreatedError, tasksParticipating, tasksParticipatingSuccess, tasksParticipatingError, leaveTask, leaveTaskSuccess, leaveTaskError, cleanTaskState } from '../../actions.js';
 import TasksTableItem from './TasksTableItem.jsx';
 
 class TasksTable extends React.Component {
   componentDidMount() {
     this.props.cleanTask();
-    this.props.getTasksCreated();
+    this.props.getTasks();
   }
 
   buildContent() {
@@ -45,65 +45,30 @@ class TasksTable extends React.Component {
   }
 }
 
-const mapStateToPropsCreated = state => {
-  const tasksCreated = state.getIn(['tasksCreated', 'tasks']);
+const mapStateToProps = state => {
   return {
-    tasks: tasksCreated ? tasksCreated.toJS() : null,
-    loading: state.getIn(['tasksCreated', 'loading']),
-    error: state.getIn(['tasksCreated', 'error'])
-  };
-};
-
-const mapDispatchToPropsCreated = (dispatch, ownProps) => {
-  return {
-    cleanTask: () => {
-      dispatch(cleanTaskState())
-    },
-    getTasksCreated: () => {
-      return dispatch(tasksCreated())
-        .then(response => {
-          if (response.error) {
-            dispatch(tasksCreatedError(response.error));
-            return false;
-          }
-
-          dispatch(tasksCreatedSuccess(response.payload.data));
-          return true;
-        });
-    }
-  };
-};
-
-export const TasksCreatedTableContainer = connect(
-  mapStateToPropsCreated,
-  mapDispatchToPropsCreated
-)(TasksTable)
-
-const mapStateToPropsParticipating = state => {
-  const tasksCreated = state.getIn(['tasksParticipating', 'tasks']);
-  return {
-    tasks: tasksCreated ? tasksCreated.toJS() : null,
-    loading: state.getIn(['tasksParticipating', 'loading']),
-    error: state.getIn(['tasksParticipating', 'error'])
+    tasks: state.getIn(['allTasks', 'tasks']).toJS(),
+    loading: state.getIn(['allTasks', 'loading']),
+    error: state.getIn(['allTasks', 'error'])
   }
 }
 
-const mapDispatchToPropsParticipating = (dispatch, ownProps) => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     cleanTask: () => {
         dispatch(cleanTaskState())
     },
-    getTasksCreated: () => {
-      return dispatch(tasksParticipating())
-        .then(response => {
-          if (response.error) {
-            dispatch(tasksParticipatingError(response.error));
-            return false;
-          }
+    getTasks: () => {
+        return dispatch(getTasks())
+            .then(response => {
+                if(response.error) {
+                    dispatch(getTasksError(response.error));
+                    return false;
+                }
 
-          dispatch(tasksParticipatingSuccess(response.payload.data));
-          return true;
-        })
+                dispatch(getTasksSuccess(response.payload.data));
+                return true;
+            })
     },
     leave: (taskId) => {
         return dispatch(leaveTask(taskId))
@@ -120,7 +85,7 @@ const mapDispatchToPropsParticipating = (dispatch, ownProps) => {
   }
 }
 
-export const TasksParticipatingTableContainer = connect(
-  mapStateToPropsParticipating,
-  mapDispatchToPropsParticipating
+export const TasksTableContainer = connect(
+  mapStateToProps,
+  mapDispatchToProps
 )(TasksTable)
