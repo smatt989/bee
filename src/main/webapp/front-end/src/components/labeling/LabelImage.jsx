@@ -11,7 +11,7 @@ import {
   ControlLabel
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { addLabel, removeLabel, viewTaskOntology, viewTaskOntologySuccess, viewTaskOntologyError, updateLabelValue, viewParticipantImageLabels, viewParticipantImageLabelsSuccess, viewParticipantImageLabelsError, nextImage, nextImageSuccess, nextImageError, saveLabels, saveLabelsSuccess, saveLabelsError } from '../../actions.js';
+import { addLabel, removeLabel, viewTaskOntology, viewTaskOntologySuccess, viewTaskOntologyError, updateLabelValue, viewParticipantImageLabels, viewParticipantImageLabelsSuccess, viewParticipantImageLabelsError, nextImage, nextImageSuccess, nextImageError, saveLabels, saveLabelsSuccess, saveLabelsError, markImageSeen, markImageSeenSuccess, markImageSeenError, previousImage, previousImageSuccess, previousImageError } from '../../actions.js';
 import FormGroupBase from '../shared/FormGroupBase.jsx';
 import RectangleLabel from './RectangleLabel.jsx';
 import LineLabel from './LineLabel.jsx';
@@ -52,7 +52,9 @@ class LabelImage extends React.Component {
          this.state.drag = false;
          var rect = this.state.rect
          if(rect.h != 0 || rect.w != 0){
-             this.props.addLabel(createLabelFunction(rect, null));
+             var value = this.props.currentOntology.getIn(['ontology', 'ontologyType']) == ONTOLOGY_TYPE_BINARY ? 1 : null;
+             console.log(value)
+             this.props.addLabel(createLabelFunction(rect, value));
          }
          this.state.rect = {startX: 0, startY: 0, h: 0, w: 0}
          this.updateCurrentRect()
@@ -64,6 +66,8 @@ class LabelImage extends React.Component {
     this.isPositiveImageLabel = this.isPositiveImageLabel.bind(this);
     this.loadNewImage = this.loadNewImage.bind(this);
     this.handleSaveLabels = this.handleSaveLabels.bind(this);
+    this.handleSkipLabeling = this.handleSkipLabeling.bind(this);
+    this.seenImage = this.seenImage.bind(this);
   }
 
   removeAllPreexistingLabels() {
@@ -127,33 +131,65 @@ class LabelImage extends React.Component {
     }
   }
 
+  makeNullLabel() {
+    return {
+        labelValue: 0
+    }
+  }
+
+  isNullLabel(label) {
+    return label.labelValue == 0 && !label.point1x && !label.xCoordinate
+  }
+
   isPositiveImageLabel() {
     const firstLabel = this.props.currentLabels.getIn(['labels', 0], null)
     return firstLabel != null && firstLabel.get('labelValue', 0) != 0
   }
 
-  handleSaveLabels() {
+  handleSaveLabels(labels) {
     const taskId = Number(this.props.match.params.id)
     const imageId = this.props.currentImage.getIn(['image', 'id'])
-    const ontologyId = this.props.currentOntology.getIn(['ontology', 'id'])
-    const labels = this.props.currentLabels.get('labels', List.of()).toJS()
-    this.props.saveLabels(taskId, imageId, ontologyId, labels, this.loadNewImage)
+    this.props.saveLabels(taskId, imageId, labels, this.seenImage)
   }
 
-  loadNewImage() {
+  getLabelsWithNullLabels() {
+    const labels = this.props.currentLabels.get('labels', List.of()).toJS()
+    return labels.length > 0 ? labels: [this.makeNullLabel()]
+  }
+
+  handleSkipLabeling() {
+    this.handleSaveLabels([])
+  }
+
+  seenImage() {
+    if(!this.props.currentImage.get('viewInfo')){
+        const taskId = Number(this.props.match.params.id)
+        const imageId = this.props.currentImage.getIn(['image', 'id'])
+        this.props.markImageSeen(taskId, imageId, () => this.loadNewImage(true))
+    } else {
+        this.loadNewImage(true)
+    }
+  }
+
+  loadNewImage(next) {
     const taskId = Number(this.props.match.params.id)
-    this.props.getImage(taskId, (data) => this.props.getLabels(taskId, data.id))
+    const viewInfo = this.props.currentImage.get('viewInfo', null)
+    const callback = (data) => this.props.getLabels(taskId, data.image.id)
+    if(next){
+        this.props.nextImage(taskId, viewInfo, callback)
+    }else {
+        this.props.previousImage(taskId, viewInfo, callback)
+    }
   }
 
   componentDidMount() {
-    this.loadNewImage()
+    this.loadNewImage(true)
     if(!this.props.currentOntology.get('ontology') && !this.props.currentOntology.get('loading')){
         this.props.getOntology(this.props.match.params.id)
     }
   }
 
   render() {
-
     const ontology = this.props.currentOntology.get('ontology', Map({}))
 
     const labelLimit = this.props.currentOntology.getIn(['ontology', 'labelLimit'], 1);
@@ -180,11 +216,13 @@ class LabelImage extends React.Component {
     var mouseMoveFunction = () => {}
     var imageClickFunction = () => {}
 
+    var nullLabelStyle = {border: "5px red solid"};
+
     var areaLabelDiv = null
     var lengthLabelDiv = null
-    var imageLabelStyle = {
 
-    }
+    var imageLabelStyle = labels.size == 0 || (labels.size == 1 && this.isNullLabel(labels.toJS()[0])) ? nullLabelStyle : {};
+
     var imageLabelValueInput = null
 
     if(isAreaLabel) {
@@ -245,7 +283,7 @@ class LabelImage extends React.Component {
     }
 
     return <div>
-        <Button>Previous</Button>
+        <Button onClick={() => this.loadNewImage(false)}>Previous</Button>
         <div width="500" height="500" id="canvas_container" style={containerStyles} onMouseDown={mouseDownFunction} onMouseUp={mouseUpFunction} onMouseMove={mouseMoveFunction}>
             {lengthLabelDiv}
 
@@ -256,8 +294,8 @@ class LabelImage extends React.Component {
         <LinkContainer to="/tasks">
             <Button>Done for now</Button>
         </LinkContainer>
-        <Button onClick={this.handleSaveLabels}>Submit labels</Button>
-        <Button onClick={this.loadNewImage}>Skip</Button>
+        <Button onClick={() => this.handleSaveLabels(this.getLabelsWithNullLabels())}>Submit labels</Button>
+        <Button onClick={this.handleSkipLabeling}>Skip</Button>
     </div>
   }
 }
@@ -293,8 +331,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                 return true;
             })
     },
-    getImage: (taskId, callback) => {
-        return dispatch(nextImage(taskId))
+    nextImage: (taskId, imageView, callback) => {
+        return dispatch(nextImage(taskId, imageView))
             .then(response => {
                 if(response.error) {
                     dispatch(nextImageError(response.error));
@@ -306,6 +344,20 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
                 return true;
             })
+    },
+    previousImage: (taskId, imageView, callback) => {
+       return dispatch(previousImage(taskId, imageView))
+           .then(response => {
+               if(response.error) {
+                   dispatch(previousImageError(response.error));
+                   return false;
+               }
+
+               dispatch(previousImageSuccess(response.payload.data, response.payload.headers));
+               callback(response.payload.data)
+
+               return true;
+           })
     },
     getLabels: (taskId, imageId) => {
         return dispatch(viewParticipantImageLabels(taskId, imageId))
@@ -319,8 +371,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                         return true;
                     })
     },
-    saveLabels: (taskId, imageId, ontologyVersionId, labels, callback) => {
-        return dispatch(saveLabels(taskId, imageId, ontologyVersionId, labels))
+    saveLabels: (taskId, imageId, labels, callback) => {
+        return dispatch(saveLabels(taskId, imageId, labels))
             .then(response => {
                 if(response.error) {
                     dispatch(saveLabelsError(response.error));
@@ -329,6 +381,19 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
                 dispatch(saveLabelsSuccess(response.payload.data))
                 callback(response.payload.data)
+                return true;
+            })
+    },
+    markImageSeen: (taskId, imageId, callback) => {
+        return dispatch(markImageSeen(taskId, imageId))
+            .then(response => {
+                if(response.error) {
+                    dispatch(markImageSeenError(response.error));
+                    return false;
+                }
+
+                dispatch(markImageSeenSuccess(response.payload.data));
+                callback()
                 return true;
             })
     }

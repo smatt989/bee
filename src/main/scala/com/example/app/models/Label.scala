@@ -32,7 +32,7 @@ case class Label(id: String,
     LabelView(ontologyVersionId, ontology, ontologyType, labelValue, xCoordinate, yCoordinate, width, height, point1x, point1y, point2x, point2y, createdMillis)
 }
 
-case class SaveLabels(labels: Seq[JsonLabel], taskId: Int, imageId: String)
+case class SaveLabels(labels: Seq[JsonLabel] = Seq(), taskId: Int, imageId: String)
 
 case class LabelRequest(taskId: Int, imageId: String)
 

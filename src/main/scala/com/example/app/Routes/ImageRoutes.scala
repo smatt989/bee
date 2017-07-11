@@ -33,13 +33,33 @@ trait ImageRoutes extends SlickRoutes with AuthenticationSupport {
     val participantAuthorization = Task.authorizedToParticipateInTask(user.id, imageRequest.taskId)
 
     if(participantAuthorization) {
-      val imageWithAccess = Image.nextImage(user.id, imageRequest.taskId)
+      val imageWithAccess = ImageView.imageIncrement(user.id, imageRequest, ImageIncrement.next)
 
       if(imageWithAccess.isDefined) {
-        response.addHeader(Image.configsHeader, Serialization.write(imageWithAccess.get.accessConfigs))
+        response.addHeader(Image.configsHeader, Serialization.write(imageWithAccess.get.imageWithAccess.accessConfigs))
       }
 
-      imageWithAccess.map(_.image)
+      imageWithAccess.map(_.toJson)
+    } else
+      throw new Exception("Not authorized to view this task's images")
+  }
+
+  post("/images/previous") {
+    contentType = formats("json")
+    authenticate()
+
+    val imageRequest = parsedBody.extract[RequestImage]
+
+    val participantAuthorization = Task.authorizedToParticipateInTask(user.id, imageRequest.taskId)
+
+    if(participantAuthorization) {
+      val imageWithAccess = ImageView.imageIncrement(user.id, imageRequest, ImageIncrement.previous)
+
+      if(imageWithAccess.isDefined) {
+        response.addHeader(Image.configsHeader, Serialization.write(imageWithAccess.get.imageWithAccess.accessConfigs))
+      }
+
+      imageWithAccess.map(_.toJson)
     } else
       throw new Exception("Not authorized to view this task's images")
   }

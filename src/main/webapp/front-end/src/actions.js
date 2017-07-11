@@ -646,11 +646,11 @@ export function activateParticipantError(error) {
   }
 }
 
-export function markImageSeen(taskId, imageId, ontologyId) {
+export function markImageSeen(taskId, imageId) {
   const request = axios({
     method: 'post',
     url: `${domain}/images/seen`,
-    data: {taskId: taskId, imageId: imageId, ontologyVersionId: ontologyId},
+    data: {taskId: taskId, imageId: imageId},
     headers: authenticate()
   });
 
@@ -674,11 +674,11 @@ export function markImageSeenError(error) {
   }
 }
 
-export function nextImage(taskId) {
+export function nextImage(taskId, imageView) {
   const request = axios({
     method: 'post',
     url: `${domain}/images/next`,
-    data: {taskId: taskId},
+    data: {taskId: taskId, imageView: imageView},
     headers: authenticate()
   });
 
@@ -688,7 +688,6 @@ export function nextImage(taskId) {
   }
 }
 
-// TODO: GET HEADERS
 export function nextImageSuccess(loaded, configs) {
   return {
     type: 'NEXT_IMAGE_SUCCESS',
@@ -704,12 +703,40 @@ export function nextImageError(error) {
   }
 }
 
-export function saveLabels(taskId, imageId, ontologyVersionId, labels) {
-    console.log(ontologyVersionId)
+export function previousImage(taskId, imageView) {
+  const request = axios({
+    method: 'post',
+    url: `${domain}/images/previous`,
+    data: {taskId: taskId, imageView: imageView},
+    headers: authenticate()
+  });
+
+  return {
+    type: 'PREVIOUS_IMAGE',
+    payload: request
+  }
+}
+
+export function previousImageSuccess(loaded, configs) {
+  return {
+    type: 'PREVIOUS_IMAGE_SUCCESS',
+    payload: loaded,
+    configs: configs
+  }
+}
+
+export function previousImageError(error) {
+  return {
+    type: 'PREVIOUS_IMAGE_ERROR',
+    error: error
+  }
+}
+
+export function saveLabels(taskId, imageId, labels) {
   const request = axios({
     method: 'post',
     url: `${domain}/labels/save`,
-    data: {taskId: taskId, imageId: imageId, ontologyVersionId: ontologyVersionId, labels: labels},
+    data: {taskId: taskId, imageId: imageId, labels: labels},
     headers: authenticate()
   });
 
