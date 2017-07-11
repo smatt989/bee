@@ -17,7 +17,10 @@ import RectangleLabel from './RectangleLabel.jsx';
 import LineLabel from './LineLabel.jsx';
 import LabelValueInput from './LabelValueInput.jsx';
 import RemoveLabelButton from './RemoveLabelButton.jsx';
-import { ONTOLOGY_TYPE_BINARY, ONTOLOGY_TYPE_FLOAT_RANGE, ONTOLOGY_TYPE_INTEGER_RANGE } from './../../utilities.js';
+import { ONTOLOGY_TYPE_BINARY, ONTOLOGY_TYPE_FLOAT_RANGE, ONTOLOGY_TYPE_INTEGER_RANGE, isNullLabel } from './../../utilities.js';
+import LabelingHint from './LabelingHint.jsx';
+import SubmitLabelsInfo from './SubmitLabelsInfo.jsx';
+import SkipLabelsInfo from './SkipLabelsInfo.jsx';
 
 class LabelImage extends React.Component {
 
@@ -26,7 +29,8 @@ class LabelImage extends React.Component {
 
     this.state = {
       rect: {startX: 0, startY: 0, h: 0, w: 0},
-      drag: false
+      drag: false,
+      hasSavedLabels: false
     };
 
     this.updateCurrentRect = () => {
@@ -53,6 +57,7 @@ class LabelImage extends React.Component {
          var rect = this.state.rect
          if(rect.h != 0 || rect.w != 0){
              var value = this.props.currentOntology.getIn(['ontology', 'ontologyType']) == ONTOLOGY_TYPE_BINARY ? 1 : null;
+             this.removeNullLabels()
              this.props.addLabel(createLabelFunction(rect, value));
          }
          this.state.rect = {startX: 0, startY: 0, h: 0, w: 0}
@@ -67,10 +72,19 @@ class LabelImage extends React.Component {
     this.handleSaveLabels = this.handleSaveLabels.bind(this);
     this.handleSkipLabeling = this.handleSkipLabeling.bind(this);
     this.seenImage = this.seenImage.bind(this);
+    this.removeNullLabels = this.removeNullLabels.bind(this);
   }
 
   removeAllPreexistingLabels() {
     this.props.currentLabels.get('labels').map(label => this.props.removeLabel(label))
+  }
+
+  removeNullLabels() {
+    this.props.currentLabels.get('labels').map(label => {
+        if(isNullLabel(label.toJS())){
+            this.props.removeLabel(label)
+        }
+    })
   }
 
   imageHandleMouseDown(e) {
@@ -136,10 +150,6 @@ class LabelImage extends React.Component {
     }
   }
 
-  isNullLabel(label) {
-    return label.labelValue == 0 && !label.point1x && !label.xCoordinate
-  }
-
   isPositiveImageLabel() {
     const firstLabel = this.props.currentLabels.getIn(['labels', 0], null)
     return firstLabel != null && firstLabel.get('labelValue', 0) != 0
@@ -173,7 +183,7 @@ class LabelImage extends React.Component {
   loadNewImage(next) {
     const taskId = Number(this.props.match.params.id)
     const imageViewId = this.props.currentImage.getIn(['viewInfo', 'imageViewId'], null)
-    const callback = (data) => this.props.getLabels(taskId, data.image.id)
+    const callback = (data) => this.props.getLabels(taskId, data.image.id, (d) => this.state.hasSavedLabels = d.length > 0)
     if(next){
         this.props.nextImage(taskId, imageViewId, callback)
     }else {
@@ -220,7 +230,7 @@ class LabelImage extends React.Component {
     var areaLabelDiv = null
     var lengthLabelDiv = null
 
-    var imageLabelStyle = labels.size == 0 || (labels.size == 1 && this.isNullLabel(labels.toJS()[0])) ? nullLabelStyle : {};
+    var imageLabelStyle = labels.size == 0 || (labels.size == 1 && isNullLabel(labels.toJS()[0])) ? nullLabelStyle : {};
 
     var imageLabelValueInput = null
 
@@ -231,8 +241,8 @@ class LabelImage extends React.Component {
 
         areaLabelDiv = <div>
 
-                {labels.map(label => {
-                    return <RectangleLabel rect={label.toJS()} remove={removeLabel(label)} update={this.props.updateLabelValue} ontologyType={ontologyType} />
+                {labels.map((label, index) => {
+                    return <RectangleLabel key={index} rect={label.toJS()} remove={removeLabel(label)} update={this.props.updateLabelValue} ontologyType={ontologyType} />
                 })}
                 <RectangleLabel rect={this.makeAreaLabel(this.state.rect, 1)} />
             </div>
@@ -244,8 +254,8 @@ class LabelImage extends React.Component {
         lengthLabelDiv = <div>
             <svg style={newSVGStyle} width="100%" height="100%">
                  <LineLabel rect={this.makeLengthLabel(this.state.rect, 1)} />
-                 {labels.map(label => {
-                         return <LineLabel rect={label.toJS()} remove={removeLabel(label)} ontologyType={ontologyType} />
+                 {labels.map((label, index) => {
+                         return <LineLabel key={index} rect={label.toJS()} remove={removeLabel(label)} ontologyType={ontologyType} />
                      })}
              </svg>
              {labels.map(label => {
@@ -275,7 +285,10 @@ class LabelImage extends React.Component {
 
         const imageLabel = labels[0] ? labels[0] : null
 
-        imageLabelStyle = this.isPositiveImageLabel() ? {border: "5px green solid"} : {border: "5px red solid"};
+        if(this.isPositiveImageLabel()){
+            imageLabelStyle = {border: "5px green solid"}
+        }
+
         if(this.isPositiveImageLabel() && (ontologyType == ONTOLOGY_TYPE_FLOAT_RANGE || ontologyType == ONTOLOGY_TYPE_INTEGER_RANGE)){
             imageLabelValueInput = <LabelValueInput top={5} left={5} update={this.props.updateLabelValue} label={imageLabel} />
         }
@@ -293,8 +306,9 @@ class LabelImage extends React.Component {
         <LinkContainer to="/tasks">
             <Button>Done for now</Button>
         </LinkContainer>
-        <Button onClick={() => this.handleSaveLabels(this.getLabelsWithNullLabels())}>Submit labels</Button>
-        <Button onClick={this.handleSkipLabeling}>Skip</Button>
+        <Button onClick={() => this.handleSaveLabels(this.getLabelsWithNullLabels())}><SubmitLabelsInfo currentOntology={this.props.currentOntology} labels={labels} hasSavedLabels={this.state.hasSavedLabels} viewInfo={this.props.currentImage.get('viewInfo', null)} /></Button>
+        <Button onClick={this.handleSkipLabeling}><SkipLabelsInfo labels={labels} hasSavedLabels={this.state.hasSavedLabels} viewInfo={this.props.currentImage.get('viewInfo', null)} /></Button>
+        <LabelingHint currentOntology={this.props.currentOntology} />
     </div>
   }
 }
@@ -358,7 +372,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                return true;
            })
     },
-    getLabels: (taskId, imageId) => {
+    getLabels: (taskId, imageId, callback) => {
         return dispatch(viewParticipantImageLabels(taskId, imageId))
                     .then(response => {
                         if(response.error) {
@@ -367,6 +381,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                         }
 
                         dispatch(viewParticipantImageLabelsSuccess(response.payload.data));
+                        callback(response.payload.data)
                         return true;
                     })
     },

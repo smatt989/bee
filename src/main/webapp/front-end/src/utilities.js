@@ -42,6 +42,10 @@ export const tryLogin = (email, password) => {
     });
 };
 
+export function isNullLabel(label) {
+  return label.labelValue == 0 && !label.point1x && !label.xCoordinate
+}
+
 export const ONTOLOGY_TYPE_BINARY = "BINARY"
 export const ONTOLOGY_TYPE_FLOAT_RANGE = "FLOAT_RANGE"
 export const ONTOLOGY_TYPE_INTEGER_RANGE = "INTEGER_RANGE"
