@@ -42,8 +42,8 @@ class NewOntology extends React.Component {
         return Map({
             name: this.state.label,
             ontologyType: this.state.type,
-            minValue: this.state.min == '' ? null : Number(this.state.min),
-            maxValue: this.state.max == '' ? null : Number(this.state.max),
+            minValue: this.state.min == '' ? null : this.state.type == ONTOLOGY_TYPE_BINARY ? null : Number(this.state.min),
+            maxValue: this.state.max == '' ? null : this.state.type == ONTOLOGY_TYPE_BINARY ? null : Number(this.state.max),
             isAreaLabel: this.state.target == "area",
             isLengthLabel: this.state.target == "length",
             labelLimit: Number(this.state.limit)
@@ -164,7 +164,7 @@ class NewOntology extends React.Component {
 
         <FormGroup>
           <ControlLabel>Label Type</ControlLabel>
-          <FormControl onChange={this.onTypeChange} componentClass="select" placeholder="select">
+          <FormControl value={this.state.type} onChange={this.onTypeChange} componentClass="select" placeholder="select">
             { ontologyTypes ? ontologyTypes.map(o =>
                       <option key={o.get('name')} value={o.get('name')}>{o.get('name')}</option>)
                       : null }
@@ -176,7 +176,7 @@ class NewOntology extends React.Component {
 
         <FormGroup>
           <ControlLabel>Label Target</ControlLabel>
-          <FormControl onChange={this.onTargetChange} componentClass="select" placeholder="select">
+          <FormControl value={this.state.target} onChange={this.onTargetChange} componentClass="select" placeholder="select">
             <option value={WHOLE_IMAGE}>Whole Image</option>
             <option value={AREA}>Area</option>
             <option value={LENGTH}>Length</option>

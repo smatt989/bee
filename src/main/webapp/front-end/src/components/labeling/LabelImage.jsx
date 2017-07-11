@@ -53,7 +53,6 @@ class LabelImage extends React.Component {
          var rect = this.state.rect
          if(rect.h != 0 || rect.w != 0){
              var value = this.props.currentOntology.getIn(['ontology', 'ontologyType']) == ONTOLOGY_TYPE_BINARY ? 1 : null;
-             console.log(value)
              this.props.addLabel(createLabelFunction(rect, value));
          }
          this.state.rect = {startX: 0, startY: 0, h: 0, w: 0}
