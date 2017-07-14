@@ -14,15 +14,15 @@ trait SlickRoutes extends ScalatraBase with FutureSupport with JacksonJsonSuppor
 
   def db: Database
 
-  options("/*"){
-    response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"));
-  }
-
   methodNotAllowed { _ =>
     if (routes.matchingMethodsExcept(Options, requestPath).isEmpty)
       doNotFound() // correct for options("*") CORS behaviour
     else
       MethodNotAllowed()
+  }
+
+  options("/*"){
+    response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"));
   }
 
   before() {
