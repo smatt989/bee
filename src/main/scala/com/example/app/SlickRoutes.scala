@@ -1,7 +1,7 @@
 package com.example.app
 
 import com.example.app.models.{Image, ImageSource}
-import org.scalatra.{CorsSupport, FutureSupport, ScalatraBase}
+import org.scalatra._
 //import slick.driver.H2Driver.api._
 import slick.driver.PostgresDriver.api._
 import org.json4s.{DefaultFormats, Formats}
@@ -14,7 +14,16 @@ trait SlickRoutes extends ScalatraBase with FutureSupport with JacksonJsonSuppor
 
   def db: Database
 
+  options("/*"){
+    response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"));
+  }
 
+  methodNotAllowed { _ =>
+    if (routes.matchingMethodsExcept(Options, requestPath).isEmpty)
+      doNotFound() // correct for options("*") CORS behaviour
+    else
+      MethodNotAllowed()
+  }
 
   before() {
     val imageSourceTypeFieldHeaders = ImageSource.imageSourceTypes.flatMap(_.fields)
