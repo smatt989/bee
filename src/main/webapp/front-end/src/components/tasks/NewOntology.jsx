@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import { Map, List } from 'immutable';
 import {
   Grid,
@@ -97,9 +97,11 @@ class NewOntology extends React.Component {
     const taskId = this.taskId();
 
     var redirectTo = "/tasks/"+taskId+"/image-sources/new"
+    var cancelText = "Skip for now"
 
     if(this.props.editingTask) {
         redirectTo = "/tasks/"+taskId+"/view"
+        cancelText = "Cancel"
     }
 
     if (this.state.redirectToReferrer) {
@@ -155,43 +157,43 @@ class NewOntology extends React.Component {
         maxInput = <FormGroupBase baseProps={maxFormProps}/>
     }
 
-    return <Grid>
-      <PageHeader>
-        Add Label
-      </PageHeader>
-      <form role="form" onSubmit={this.onSubmit}>
-        <FormGroupBase baseProps={labelFormProps}/>
+    return <div className="center-form center box-border">
+                <h1>Add Label</h1>
+                  <form role="form" onSubmit={this.onSubmit}>
+                    <FormGroupBase baseProps={labelFormProps}/>
 
-        <FormGroup>
-          <ControlLabel>Label Type</ControlLabel>
-          <FormControl value={this.state.type} onChange={this.onTypeChange} componentClass="select" placeholder="select">
-            { ontologyTypes ? ontologyTypes.map(o =>
-                      <option key={o.get('name')} value={o.get('name')}>{o.get('name')}</option>)
-                      : null }
-          </FormControl>
-        </FormGroup>
+                    <FormGroup>
+                      <ControlLabel>Label Type</ControlLabel>
+                      <FormControl value={this.state.type} onChange={this.onTypeChange} componentClass="select" placeholder="select">
+                        { ontologyTypes ? ontologyTypes.map(o =>
+                                  <option key={o.get('name')} value={o.get('name')}>{o.get('name')}</option>)
+                                  : null }
+                      </FormControl>
+                    </FormGroup>
 
-        {minInput}
-        {maxInput}
+                    {minInput}
+                    {maxInput}
 
-        <FormGroup>
-          <ControlLabel>Label Target</ControlLabel>
-          <FormControl value={this.state.target} onChange={this.onTargetChange} componentClass="select" placeholder="select">
-            <option value={WHOLE_IMAGE}>Whole Image</option>
-            <option value={AREA}>Area</option>
-            <option value={LENGTH}>Length</option>
-          </FormControl>
-        </FormGroup>
+                    <FormGroup>
+                      <ControlLabel>Label Target</ControlLabel>
+                      <FormControl value={this.state.target} onChange={this.onTargetChange} componentClass="select" placeholder="select">
+                        <option value={WHOLE_IMAGE}>Whole Image</option>
+                        <option value={AREA}>Area</option>
+                        <option value={LENGTH}>Length</option>
+                      </FormControl>
+                    </FormGroup>
 
-        {limitSelector}
-
-        <Button
-          bsStyle="primary"
-          type="submit">
-          Save Label
-        </Button>
-      </form>
-    </Grid>;
+                    {limitSelector}
+                    <div className="form-submit-box">
+                        <Button
+                          bsStyle="primary"
+                          type="submit">
+                          Save Label
+                        </Button>
+                        <p><Link to={{ pathname: redirectTo }}>{cancelText}</Link></p>
+                    </div>
+                  </form>
+                </div>;
   }
 }
 

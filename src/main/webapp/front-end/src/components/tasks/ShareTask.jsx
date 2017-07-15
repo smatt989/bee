@@ -1,8 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Redirect, Link } from 'react-router-dom';
 import {
   Grid,
-  PageHeader
+  PageHeader,
+  Button
 } from 'react-bootstrap';
 import { participantLink, participantLinkSuccess, participantLinkError } from '../../actions.js';
 
@@ -20,29 +22,25 @@ class ShareTask extends React.Component {
         return 'error'
     }
 
-  buildContent() {
-    const link = this.props.participantLink;
-    if (link.get('error')) {
-      return <div>Error</div>
-    } else if (link.get('loading')) {
-      return <div>Loading</div>
-    } else if (!link.get('link')) {
-      return null;
-    }
-
-    return <div>
-        <h2>Share link to invite people to participate!</h2>
-        <h4>{this.invitationLink()}</h4>
-    </div>
-  }
-
   render() {
-    return <Grid>
-      <PageHeader>
-        View Task
-      </PageHeader>
-      { this.buildContent() }
-    </Grid>;
+
+    const redirectTo = "/tasks/"+this.props.match.params.id+"/view"
+
+    return <div className="center-form center box-border">
+              <h1>Share Task</h1>
+              <h3>Share this link to invite people to participate in this task!</h3>
+              <p id="invite-link"><a href={"mailto:?subject=Image Annotation Invitation&body=Please join my image annotation task by clicking on the following link: " +this.invitationLink()}>
+                                  {this.invitationLink()}
+              </a></p>
+              <p className="info-text">This link will remain valid for 1 week. You can always generate a new link.</p>
+              <div className="form-submit-box">
+                  <Link to={redirectTo}><Button
+                    bsStyle="primary">
+                    Done
+                  </Button></Link>
+              </div>
+
+    </div>;
   }
 }
 
