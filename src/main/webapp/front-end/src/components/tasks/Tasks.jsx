@@ -5,8 +5,7 @@ import {
   Button
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import {TasksCreatedTableContainer, TasksParticipatingTableContainer} from './TasksTable.jsx';
-import text from '../../constants/text';
+import {TasksTableContainer} from './TasksTable.jsx';
 
 const Tasks = (props) => {
   return <Grid>
@@ -21,11 +20,7 @@ const Tasks = (props) => {
         </Button>
       </LinkContainer>
     </PageHeader>
-    <TasksCreatedTableContainer
-      {...props}
-      tableHeader={text.tasks_table_header_created} />
-    <TasksParticipatingTableContainer {...props}
-      tableHeader={text.tasks_table_header_participating} />
+    <TasksTableContainer {...props} />
   </Grid>;
 };
 
