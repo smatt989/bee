@@ -10,6 +10,7 @@ import { loginEmailChanged, loginPasswordChanged, loginClearInputs } from '../..
 import { tryLogin } from '../../utilities.js';
 import EmailFormGroup from './EmailFormGroup.jsx';
 import PasswordFormGroup from './PasswordFormGroup.jsx';
+import BeeLabel from './../BeeLabel.jsx';
 
 class Login extends React.Component {
   constructor(props) {
@@ -36,23 +37,30 @@ class Login extends React.Component {
     const { from } = this.props.location.state || { from: { pathname: '/' } };
 
     if (this.state.redirectToReferrer) {
-      return <Redirect to={from} />;
+      return <Redirect to={"/tasks"} />;
     }
 
     return (
-      <Grid>
-        <PageHeader>Log in</PageHeader>
-        <form role="form" onSubmit={this.onSubmit}>
-          <EmailFormGroup emailInputProps={emailInputProps} />
-          <PasswordFormGroup pwInputProps={pwInputProps} />
-          <Button
-            bsStyle="primary"
-            type="submit">
-            Log In
-          </Button>
-          <span className="altAuthMsg"><Link to={{ pathname: "/recover" }}>Forgot your password?</Link></span>
-        </form>
-      </Grid>
+      <div className="sign-in full-screen-page">
+        <div className="home-header">
+            <BeeLabel />
+        </div>
+        <div className="center-form center">
+            <h1>Log into Bee</h1>
+            <form role="form" onSubmit={this.onSubmit}>
+              <EmailFormGroup emailInputProps={emailInputProps} />
+              <PasswordFormGroup pwInputProps={pwInputProps} />
+              <div className="form-submit-box">
+                  <Button
+                    bsStyle="primary"
+                    type="submit">
+                    Log In
+                  </Button>
+              <p>Don't have any account?<span className="altAuthMsg"><Link to={{ pathname: "/register" }}>Sign up!</Link></span></p>
+              </div>
+            </form>
+        </div>
+      </div>
     );
   }
 }

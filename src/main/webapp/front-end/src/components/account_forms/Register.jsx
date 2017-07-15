@@ -10,6 +10,7 @@ import { signupEmailChanged, signupPasswordChanged, signupClearInputs, createUse
 import { tryLogin } from '../../utilities.js';
 import EmailFormGroupContainer from './EmailFormGroup.jsx';
 import PasswordFormGroup from './PasswordFormGroup.jsx';
+import BeeLabel from './../BeeLabel.jsx';
 
 class Register extends React.Component {
   constructor(props) {
@@ -36,23 +37,30 @@ class Register extends React.Component {
     const { from } = this.props.location.state || { from: { pathname: '/' } }
 
     if (this.state.redirectToReferrer) {
-      return <Redirect to={from} />;
+      return <Redirect to={"/tasks"} />;
     }
 
     return (
-      <Grid>
-        <PageHeader>Register</PageHeader>
-        <form role="form" onSubmit={e => this.onSubmit(e)}>
-          <EmailFormGroupContainer emailInputProps={emailInputProps}/>
-          <PasswordFormGroup pwInputProps={pwInputProps}/>
-          <Button
-            bsStyle="primary"
-            type="submit">
-            Register
-          </Button>
-          <span className="altAuthMsg">Have an account? <Link to={{ pathname: "/login" }}>Log in</Link>.</span>
-        </form>
-      </Grid>
+      <div className="sign-up full-screen-page">
+        <div className="home-header">
+            <BeeLabel />
+        </div>
+        <div className="center-form center">
+            <h1>Sign Up</h1>
+            <form role="form" onSubmit={e => this.onSubmit(e)}>
+              <EmailFormGroupContainer emailInputProps={emailInputProps}/>
+              <PasswordFormGroup pwInputProps={pwInputProps}/>
+              <div className="form-submit-box">
+                  <Button
+                    bsStyle="primary"
+                    type="submit">
+                    Create Account
+                  </Button>
+                  <p><span className="altAuthMsg">Have an account? <Link to={{ pathname: "/login" }}>Log in</Link>.</span></p>
+              </div>
+            </form>
+        </div>
+      </div>
     );
   }
 }
