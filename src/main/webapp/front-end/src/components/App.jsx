@@ -1,4 +1,4 @@
-import '../styles/app.scss';
+import '../styles/app.less';
 import React from 'react';
 import {
   HashRouter as Router,
@@ -25,13 +25,13 @@ import Err from './Error.jsx';
 export default class App extends React.Component {
   render() {
     return <Router>
-      <Grid>
+      <div>
         <Row>
           <Col>
             <NavBarContainer />
           </Col>
         </Row>
-        <Row className="show-grid">
+        <Row className="">
           <Col>
             <Switch>
               <Route exact path="/" component={Home}/>
@@ -55,7 +55,7 @@ export default class App extends React.Component {
             </Switch>
           </Col>
         </Row>
-      </Grid>
+      </div>
     </Router>;
   }
 }

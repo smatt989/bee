@@ -10,7 +10,7 @@ trait AppRoutes extends SlickRoutes with AuthenticationSupport{
   get("/") {
     <html>
       <head>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="/front-end/dist/main.css" />
         </head>
         <body>
           <div id="app"></div>
