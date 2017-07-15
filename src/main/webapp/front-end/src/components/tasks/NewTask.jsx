@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import {
   Grid,
   PageHeader,
@@ -43,10 +43,12 @@ class NewTask extends React.Component {
 
     var buttonText = "Create Task"
     var buttonRedirectTo = "/tasks/"+ this.props.currentTask.getIn(['task', 'id']) +"/labels/new"
+    var cancelRedirectTo = "/tasks"
 
     if(this.props.editingTask){
         buttonText = "Save Task"
         buttonRedirectTo = "/tasks/"+ this.props.currentTask.getIn(['task', 'id']) +"/view"
+        cancelRedirectTo = buttonRedirectTo
     }
 
     if (this.state.redirectToReferrer && this.props.currentTask.getIn(['task', 'id'])) {
@@ -61,19 +63,20 @@ class NewTask extends React.Component {
       value: this.state.name
     };
 
-    return <Grid>
-      <PageHeader>
-        New Task
-      </PageHeader>
-      <form role="form" onSubmit={this.onSubmit}>
-        <FormGroupBase baseProps={nameFormProps}/>
-        <Button
-          bsStyle="primary"
-          type="submit">
-          {buttonText}
-        </Button>
-      </form>
-    </Grid>;
+    return <div className="center-form center box-border">
+                <h1>New Task</h1>
+                  <form role="form" onSubmit={this.onSubmit}>
+                    <FormGroupBase baseProps={nameFormProps}/>
+                    <div className="form-submit-box">
+                        <Button
+                          bsStyle="primary"
+                          type="submit">
+                          {buttonText}
+                        </Button>
+                        <p><Link to={{ pathname: buttonRedirectTo }}>Cancel</Link></p>
+                    </div>
+                  </form>
+            </div>;
   }
 }
 

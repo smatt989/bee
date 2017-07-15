@@ -13,12 +13,12 @@ const TasksTableItem = ({ data, match, leave }) => {
     leaveButton = <Button onClick={() => leave(data.id)}>Leave</Button>
   } else {
     manageButton =   <LinkContainer to={`${match.url}/${data.id}/view`}>
-                       <Button>Manage</Button>
+                       <Button bsStyle="primary">Manage</Button>
                      </LinkContainer>
   }
 
   const labelButton = <LinkContainer to={"/tasks/"+data.id+"/labeling"}>
-    <Button>Label</Button>
+    <Button bsStyle="success" >Label</Button>
   </LinkContainer>
 
   return (
