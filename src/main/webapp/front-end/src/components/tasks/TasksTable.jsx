@@ -1,12 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { 
+import {
   Table,
   Button,
   ButtonGroup
 } from 'react-bootstrap';
 import { getTasks, getTasksSuccess, getTasksError, tasksCreated, tasksCreatedSuccess, tasksCreatedError, tasksParticipating, tasksParticipatingSuccess, tasksParticipatingError, leaveTask, leaveTaskSuccess, leaveTaskError, cleanTaskState } from '../../actions.js';
 import TasksTableItem from './TasksTableItem.jsx';
+import EmptyTableMessage from './EmptyTableMessage.jsx';
 
 class TasksTable extends React.Component {
   componentDidMount() {
@@ -24,20 +25,26 @@ class TasksTable extends React.Component {
       return null;
     };
 
-    return <Table id="task-tbl" responsive striped hover>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Name</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        { tasks ? tasks.map(o =>
-          <TasksTableItem key={o.id} data={o} {...this.props} />)
-          : null }
-      </tbody>
-    </Table>;
+    return <div>
+        <h3>{this.props.tableHeader}</h3>
+				<Table id="task-tbl" responsive striped hover>
+		      <thead>
+		        <tr>
+		          <th>#</th>
+		          <th>Name</th>
+		          <th>Actions</th>
+		        </tr>
+		      </thead>
+		      <tbody>
+		        { tasks
+              ? tasks.map(o =>
+		            <TasksTableItem key={o.id} data={o} {...this.props} />)
+		          : null
+		        }
+	      </tbody>
+	    </Table>
+      { tasks.length > 0 ? null : <EmptyTableMessage /> }
+		</div>;
   }
 
   render() {
