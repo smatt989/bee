@@ -10,7 +10,7 @@ export default class ImageSources extends React.Component {
     return <Grid>
         <LinkContainer to={'/tasks/'+taskId+'/view'}>
           <Button
-            className="new-tbl-item-btn"
+            className="m-t-1"
             bsStyle="primary"
             type="button">
             Back to Task

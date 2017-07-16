@@ -103,8 +103,8 @@ class NewImageSource extends React.Component {
 
     const imageSourceTypes = this.props.imageSourceTypes.get('types', null);
 
-    return <div className="center-form center box-border">
-                           <h1>Add Image Source</h1>
+    return <div className="col-md-push-4 col-md-4 m-t-5">
+      <h1>Add Image Source</h1>
       <form role="form" onSubmit={this.onSubmit}>
         <FormGroupBase baseProps={nameFormProps}/>
 
@@ -124,13 +124,13 @@ class NewImageSource extends React.Component {
                 <FormControl value={this.state[f] ? this.state[f] : ''} onChange={ this.changeState(f) } placeholder={f} />
             </FormGroup>
         )}
-        <div className="form-submit-box">
+        <div className="text-xs-center">
             <Button
               bsStyle="primary"
               type="submit">
               Save Image Source
             </Button>
-            <p><Link to={{ pathname: redirectTo }}>{cancelText}</Link></p>
+            <p className='m-t-1'><Link to={{ pathname: redirectTo }}>{cancelText}</Link></p>
         </div>
       </form>
     </div>;
