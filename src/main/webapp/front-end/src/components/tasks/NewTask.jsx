@@ -63,20 +63,20 @@ class NewTask extends React.Component {
       value: this.state.name
     };
 
-    return <div className="center-form center box-border">
-                <h1>New Task</h1>
-                  <form role="form" onSubmit={this.onSubmit}>
-                    <FormGroupBase baseProps={nameFormProps}/>
-                    <div className="form-submit-box">
-                        <Button
-                          bsStyle="primary"
-                          type="submit">
-                          {buttonText}
-                        </Button>
-                        <p><Link to={{ pathname: buttonRedirectTo }}>Cancel</Link></p>
-                    </div>
-                  </form>
-            </div>;
+    return <div className="col-md-push-4 col-md-4 m-t-5">
+      <h1>New Task</h1>
+      <form role="form" onSubmit={this.onSubmit}>
+        <FormGroupBase baseProps={nameFormProps}/>
+        <div className="text-xs-center">
+          <Button
+            bsStyle="primary"
+            type="submit">
+            {buttonText}
+          </Button>
+          <p className="m-t-1"><Link to={{ pathname: buttonRedirectTo }}>Cancel</Link></p>
+        </div>
+      </form>
+    </div>;
   }
 }
 

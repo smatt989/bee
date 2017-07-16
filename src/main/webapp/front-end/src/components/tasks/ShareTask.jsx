@@ -26,19 +26,18 @@ class ShareTask extends React.Component {
 
     const redirectTo = "/tasks/"+this.props.match.params.id+"/view"
 
-    return <div className="center-form center box-border">
-              <h1>Share Task</h1>
-              <h3>Share this link to invite people to participate in this task!</h3>
-              <p id="invite-link"><a href={"mailto:?subject=Image Annotation Invitation&body=Please join my image annotation task by clicking on the following link: " +this.invitationLink()}>
-                                  {this.invitationLink()}
-              </a></p>
-              <p className="info-text">This link will remain valid for 1 week. You can always generate a new link.</p>
-              <div className="form-submit-box">
-                  <Link to={redirectTo}><Button
-                    bsStyle="primary">
-                    Done
-                  </Button></Link>
-              </div>
+    return <div className="col-md-push-4 col-md-4 m-t-5">
+      <h1>Share Task</h1>
+      <h3>Share this link to invite people to participate in this task!</h3>
+      <p className="m-t-3"><a href={"mailto:?subject=Image Annotation Invitation&body=Please join my image annotation task by clicking on the following link: " +this.invitationLink()}>
+        {this.invitationLink()}
+      </a></p>
+      <p className="text-sm">This link will remain valid for 1 week. You can always generate a new link.</p>
+      <div className="text-xs-center">
+        <Link to={redirectTo}>
+          <Button bsStyle="primary">Done</Button>
+        </Link>
+      </div>
 
     </div>;
   }
