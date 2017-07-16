@@ -6,24 +6,26 @@ import { Navbar, NavItem, Nav } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 
 const NavRight = (props) => {
-  return props.session != null ? (
-    <Nav pullRight>
-      <NavItem eventKey={2} onClick={() => props.logout(props.session)}>Log Out</NavItem>
-    </Nav>
-  ) : (
-    <Nav pullRight>
-      <LinkContainer to="/login"><NavItem eventKey={1}>Log In</NavItem></LinkContainer>
-      <LinkContainer to="/register"><NavItem eventKey={2}>Sign Up</NavItem></LinkContainer>
-    </Nav>
-  );
+  return props.session != null
+    ? (
+        <Nav pullRight>
+          <NavItem eventKey={2} onClick={() => props.logout(props.session)}>Log Out</NavItem>
+        </Nav>
+      )
+    : (
+      <Nav pullRight>
+        <LinkContainer to="/login"><NavItem eventKey={1}>Log In</NavItem></LinkContainer>
+        <LinkContainer to="/register"><NavItem eventKey={2}>Sign Up</NavItem></LinkContainer>
+      </Nav>
+    );
 };
 
 class NavBar extends React.Component {
   render() {
-    return <Navbar inverse collapseOnSelect>
+    return <Navbar collapseOnSelect>
       <Navbar.Header>
         <Navbar.Brand>
-          <Link to="/">Bee</Link>
+          <Link to="/"><div className='logo-font'>Bee</div></Link>
         </Navbar.Brand>
         <Navbar.Toggle />
       </Navbar.Header>
