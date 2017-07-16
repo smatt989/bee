@@ -1,8 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import {
-  Grid,
-  PageHeader,
   Button
 } from 'react-bootstrap';
 import { Link, Redirect } from 'react-router-dom';
@@ -10,6 +8,7 @@ import { loginEmailChanged, loginPasswordChanged, loginClearInputs } from '../..
 import { tryLogin } from '../../utilities.js';
 import EmailFormGroup from './EmailFormGroup.jsx';
 import PasswordFormGroup from './PasswordFormGroup.jsx';
+import NavBar from '../NavBar.jsx';
 
 class Login extends React.Component {
   constructor(props) {
@@ -36,23 +35,32 @@ class Login extends React.Component {
     const { from } = this.props.location.state || { from: { pathname: '/' } };
 
     if (this.state.redirectToReferrer) {
-      return <Redirect to={from} />;
+      return <Redirect to={'/tasks'} />;
     }
 
     return (
-      <Grid>
-        <PageHeader>Log in</PageHeader>
-        <form role="form" onSubmit={this.onSubmit}>
-          <EmailFormGroup emailInputProps={emailInputProps} />
-          <PasswordFormGroup pwInputProps={pwInputProps} />
-          <Button
-            bsStyle="primary"
-            type="submit">
-            Log In
-          </Button>
-          <span className="altAuthMsg"><Link to={{ pathname: "/recover" }}>Forgot your password?</Link></span>
-        </form>
-      </Grid>
+      <div className='sign-in full-screen-page'>
+        <NavBar inverse={true} />
+        <div className='col-md-push-4 col-md-4 content-block-inverse'>
+          <h1 className='m-t-3 m-b-3'>Log In</h1>
+          <form role='form' onSubmit={this.onSubmit}>
+            <EmailFormGroup emailInputProps={emailInputProps} />
+            <PasswordFormGroup pwInputProps={pwInputProps} />
+            <div className='text-xs-center'>
+              <Button
+                bsStyle='primary'
+                type='submit'>
+                Log In
+              </Button>
+              <p className='m-t-1'>Don't have any account?
+                <span className='m-l-1'>
+                  <Link to={{ pathname: '/register' }}>Sign up!</Link>
+                </span>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
     );
   }
 }

@@ -18,12 +18,12 @@ class ImageSourcesInfo extends React.Component {
 
   render() {
     return <div>
-                <ImageSourcesCount data={this.props.currentImageSources} {...this.props} />
-                <ImageSourcesImageCount data={this.props.currentImageSourcesDetails} {...this.props} />
-                <LinkContainer to={'/tasks/'+this.props.match.params.id+'/image-sources'}>
-                    <Button className="new-tbl-item-btn" bsStyle="primary" type="button">Edit</Button>
-                </LinkContainer>
-            </div>
+      <ImageSourcesCount data={this.props.currentImageSources} {...this.props} />
+      <ImageSourcesImageCount data={this.props.currentImageSourcesDetails} {...this.props} />
+      <LinkContainer to={'/tasks/'+this.props.match.params.id+'/image-sources'}>
+          <Button className="new-tbl-item-btn" bsStyle="primary" type="button">Edit</Button>
+      </LinkContainer>
+    </div>
   }
 }
 

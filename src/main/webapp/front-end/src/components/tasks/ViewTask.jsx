@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { 
+import {
   Grid,
   PageHeader,
   Button
@@ -10,6 +10,7 @@ import { viewTask, viewTaskSuccess, viewTaskError, cleanTaskState, startEditingT
 import ImageSourcesInfoContainer from './ImageSourcesInfo.jsx';
 import { ParticipantsListContainer } from './ParticipantsList.jsx';
 import OntologyInfoContainer from './OntologyInfo.jsx';
+import NavBar from '../NavBar.jsx';
 
 class ViewTask extends React.Component {
   componentDidMount() {
@@ -37,22 +38,25 @@ class ViewTask extends React.Component {
       <div>
         Name: { task.name }
         <LinkContainer to={'/tasks/'+task.id+'/edit'}>
-            <Button className="new-tbl-item-btn" bsStyle="primary" type="button">Edit</Button>
+          <Button className="new-tbl-item-btn" bsStyle="primary" type="button">Edit</Button>
         </LinkContainer>
       </div>
     </div>
   }
 
   render() {
-    return <Grid>
-      <PageHeader>
-        View Task
-      </PageHeader>
-      { this.buildContent() }
-      <ImageSourcesInfoContainer {...this.props} />
-      <ParticipantsListContainer {...this.props} />
-      <OntologyInfoContainer {...this.props} />
-    </Grid>;
+    return <div>
+      <NavBar inverse={false} />
+      <div className='container'>
+        <PageHeader>
+          View Task
+        </PageHeader>
+        { this.buildContent() }
+        <ImageSourcesInfoContainer {...this.props} />
+        <ParticipantsListContainer {...this.props} />
+        <OntologyInfoContainer {...this.props} />
+      </div>
+    </div>;
   }
 }
 

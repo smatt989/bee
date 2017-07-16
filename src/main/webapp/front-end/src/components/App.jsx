@@ -26,35 +26,25 @@ export default class App extends React.Component {
   render() {
     return <Router>
       <div>
-        <Row>
-          <Col>
-            <NavBarContainer />
-          </Col>
-        </Row>
-        <Row className="">
-          <Col>
-            <Switch>
-              <Route exact path="/" component={Home}/>
-              <Route exact path="/login" component={LoginContainer}/>
-              <Route exact path="/register" component={RegisterContainer}/>
-              <Route exact path="/recover" component={LoginContainer}/>
-              <PrivateRouteContainer exact path="/image-sources" component={ImageSources}/>
-              <PrivateRouteContainer exact path="/tasks" component={Tasks}/>
-              <PrivateRouteContainer exact path="/tasks/new" component={NewTask}/>
-              <PrivateRouteContainer path="/tasks/:id/view" component={ViewTask}/>
-              <PrivateRouteContainer path="/tasks/:id/edit" component={NewTask}/>
-              <PrivateRouteContainer path="/invitation/:invitation" component={AcceptTaskInvitation}/>
-              <PrivateRouteContainer path="/tasks/:id/participant-link/new" component={ShareTask} />
-              <PrivateRouteContainer path="/tasks/:id/labels/new" component={NewOntology} />
-              <PrivateRouteContainer path="/tasks/:id/image-sources/new" component={NewImageSource} />
-              <PrivateRouteContainer path="/tasks/:id/image-sources/:isid" component={NewImageSource} />
-              <PrivateRouteContainer path="/tasks/:id/image-sources" component={ImageSources} />
-              <PrivateRouteContainer path="/tasks/:id/labeling" component={LabelImage} />
-
-              <Route component={Err}/>
-            </Switch>
-          </Col>
-        </Row>
+        <Switch>
+          <Route exact path="/" component={Home}/>
+          <Route exact path="/login" component={LoginContainer}/>
+          <Route exact path="/register" component={RegisterContainer}/>
+          <Route exact path="/recover" component={LoginContainer}/>
+          <PrivateRouteContainer exact path="/image-sources" component={ImageSources}/>
+          <PrivateRouteContainer exact path="/tasks" component={Tasks}/>
+          <PrivateRouteContainer exact path="/tasks/new" component={NewTask}/>
+          <PrivateRouteContainer path="/tasks/:id/view" component={ViewTask}/>
+          <PrivateRouteContainer path="/tasks/:id/edit" component={NewTask}/>
+          <PrivateRouteContainer path="/invitation/:invitation" component={AcceptTaskInvitation}/>
+          <PrivateRouteContainer path="/tasks/:id/participant-link/new" component={ShareTask} />
+          <PrivateRouteContainer path="/tasks/:id/labels/new" component={NewOntology} />
+          <PrivateRouteContainer path="/tasks/:id/image-sources/new" component={NewImageSource} />
+          <PrivateRouteContainer path="/tasks/:id/image-sources/:isid" component={NewImageSource} />
+          <PrivateRouteContainer path="/tasks/:id/image-sources" component={ImageSources} />
+          <PrivateRouteContainer path="/tasks/:id/labeling" component={LabelImage} />
+          <Route component={Err}/>
+        </Switch>
       </div>
     </Router>;
   }

@@ -1,7 +1,5 @@
 import React from 'react';
 import {
-  Grid,
-  PageHeader,
   Button
 } from 'react-bootstrap';
 import { connect } from 'react-redux';
@@ -10,6 +8,7 @@ import { signupEmailChanged, signupPasswordChanged, signupClearInputs, createUse
 import { tryLogin } from '../../utilities.js';
 import EmailFormGroupContainer from './EmailFormGroup.jsx';
 import PasswordFormGroup from './PasswordFormGroup.jsx';
+import NavBar from '../NavBar.jsx';
 
 class Register extends React.Component {
   constructor(props) {
@@ -31,28 +30,33 @@ class Register extends React.Component {
   }
 
   render() {
-    const emailInputProps = { value: this.props.email, placeholder: "Enter your email", action: (email) => signupEmailChanged(email) };
-    const pwInputProps = { value: this.props.password, placeholder: "Choose a password", action: (password) => signupPasswordChanged(password) };
+    const emailInputProps = { value: this.props.email, placeholder: 'Enter your email', action: (email) => signupEmailChanged(email) };
+    const pwInputProps = { value: this.props.password, placeholder: 'Choose a password', action: (password) => signupPasswordChanged(password) };
     const { from } = this.props.location.state || { from: { pathname: '/' } }
 
     if (this.state.redirectToReferrer) {
-      return <Redirect to={from} />;
+      return <Redirect to={'/tasks'} />;
     }
 
     return (
-      <Grid>
-        <PageHeader>Register</PageHeader>
-        <form role="form" onSubmit={e => this.onSubmit(e)}>
-          <EmailFormGroupContainer emailInputProps={emailInputProps}/>
-          <PasswordFormGroup pwInputProps={pwInputProps}/>
-          <Button
-            bsStyle="primary"
-            type="submit">
-            Register
-          </Button>
-          <span className="altAuthMsg">Have an account? <Link to={{ pathname: "/login" }}>Log in</Link>.</span>
-        </form>
-      </Grid>
+      <div className='sign-up full-screen-page'>
+        <NavBar inverse={true} />
+        <div className='col-md-push-4 col-md-4 content-block-inverse'>
+          <h1 className='m-t-3 m-b-3'>Sign Up</h1>
+          <form role='form' onSubmit={e => this.onSubmit(e)}>
+            <EmailFormGroupContainer emailInputProps={emailInputProps}/>
+            <PasswordFormGroup pwInputProps={pwInputProps}/>
+            <div className='text-xs-center'>
+              <Button
+                bsStyle='primary'
+                type='submit'>
+                Create Account
+              </Button>
+              <p className='m-t-1'><span className='m-l-1'>Have an account? <Link to={{ pathname: '/login' }}>Log in</Link>.</span></p>
+            </div>
+          </form>
+        </div>
+      </div>
     );
   }
 }

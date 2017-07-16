@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import { Map, List } from 'immutable';
 import {
   Grid,
@@ -81,8 +81,11 @@ class NewImageSource extends React.Component {
   render() {
 
     var redirectTo = "/tasks/"+this.taskId()+"/participant-link/new"
+    var cancelText = "Skip for now"
+
     if(this.props.editingTask){
         redirectTo = "/tasks/"+this.taskId()+"/image-sources"
+        cancelText = "Cancel"
     }
 
     const { from } = this.props.location.state || { from: { pathname: '/tasks' } };
@@ -100,10 +103,8 @@ class NewImageSource extends React.Component {
 
     const imageSourceTypes = this.props.imageSourceTypes.get('types', null);
 
-    return <Grid>
-      <PageHeader>
-        Add Image Source
-      </PageHeader>
+    return <div className="col-md-push-4 col-md-4 m-t-5">
+      <h1>Add Image Source</h1>
       <form role="form" onSubmit={this.onSubmit}>
         <FormGroupBase baseProps={nameFormProps}/>
 
@@ -123,14 +124,16 @@ class NewImageSource extends React.Component {
                 <FormControl value={this.state[f] ? this.state[f] : ''} onChange={ this.changeState(f) } placeholder={f} />
             </FormGroup>
         )}
-
-        <Button
-          bsStyle="primary"
-          type="submit">
-          Save Image Source
-        </Button>
+        <div className="text-xs-center">
+            <Button
+              bsStyle="primary"
+              type="submit">
+              Save Image Source
+            </Button>
+            <p className='m-t-1'><Link to={{ pathname: redirectTo }}>{cancelText}</Link></p>
+        </div>
       </form>
-    </Grid>;
+    </div>;
   }
 }
 

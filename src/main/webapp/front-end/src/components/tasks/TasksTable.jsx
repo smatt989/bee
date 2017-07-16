@@ -25,9 +25,9 @@ class TasksTable extends React.Component {
       return null;
     };
 
-    return <div>
+    return <div className='container'>
         <h3>{this.props.tableHeader}</h3>
-				<Table id="task-tbl" responsive striped hover>
+				<Table className="task-tbl" responsive striped hover>
 		      <thead>
 		        <tr>
 		          <th>#</th>

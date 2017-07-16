@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { logout, logoutError, logoutSuccess } from '../actions.js';
 import { Navbar, NavItem, Nav } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+import BeeLabel from './BeeLabel.jsx';
 
 const NavRight = (props) => {
   return props.session != null
@@ -22,18 +23,14 @@ const NavRight = (props) => {
 
 class NavBar extends React.Component {
   render() {
-    return <Navbar collapseOnSelect>
+    const { inverse } = this.props;
+    const props = inverse ? {inverse: inverse } : {};
+    props.className = 'm-t-4';
+    return <Navbar {...props} collapseOnSelect>
       <Navbar.Header>
-        <Navbar.Brand>
-          <Link to="/"><div className='logo-font'>Bee</div></Link>
-        </Navbar.Brand>
-        <Navbar.Toggle />
+        <BeeLabel />
       </Navbar.Header>
       <Navbar.Collapse>
-        <Nav>
-          <LinkContainer to="/tasks"><NavItem eventKey={1}>Tasks</NavItem></LinkContainer>
-          <LinkContainer to="/image-sources"><NavItem eventKey={2}>Image Sources</NavItem></LinkContainer>
-        </Nav>
         <NavRight session={this.props.session} logout={this.props.logout}/>
       </Navbar.Collapse>
     </Navbar>;

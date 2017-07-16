@@ -1,23 +1,30 @@
 import React from 'react';
-import { Row, Grid, Jumbotron, Button } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
+import { Grid, Jumbotron, Button, Glyphicon } from 'react-bootstrap';
+import { Link, Redirect } from 'react-router-dom';
+import BeeLabel from './BeeLabel.jsx';
+import NavBar from './NavBar.jsx';
 
 export default class Home extends React.Component {
   render() {
-    return <Jumbotron>
-      <Grid>
+    return <div className="landing full-screen-page">
+        <NavBar inverse={true} />
         <div className='container'>
-          <Row>
-            <h1 className='text-xs-center'>Image Labeling Done Right</h1>
-            <p className='text-xs-center'>At Bee Images, we're changing the way you label your image data so that you can focus on saving lives.</p>
-            <p className='text-xs-center'>
-              <LinkContainer to="/register">
-                <Button bsStyle="primary">Learn more  </Button>
-              </LinkContainer>
-            </p>
-          </Row>
+          <div className="jumbotron jumbotron-home text-xs-center">
+              <div className='row'>
+                <div className='col-md-12'>
+                  <h1>Knowledge Acquisition</h1>
+                  <h3>Efficiently and Intelligently Collect Expert Annotations</h3>
+                </div>
+              </div>
+              <div className='row m-t-2'>
+                <div className='col-md-12'>
+                  <Link to="/register">
+                    <Button bsStyle="success">Create Account</Button>
+                  </Link>
+                </div>
+              </div>
+          </div>
         </div>
-      </Grid>
-    </Jumbotron>;
+      </div>;
   }
 };
