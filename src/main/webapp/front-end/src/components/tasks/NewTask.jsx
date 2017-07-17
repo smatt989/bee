@@ -73,7 +73,7 @@ class NewTask extends React.Component {
             type="submit">
             {buttonText}
           </Button>
-          <p className="m-t-1"><Link to={{ pathname: buttonRedirectTo }}>Cancel</Link></p>
+          <p className="m-t-1"><Link to={{ pathname: cancelRedirectTo }}>Cancel</Link></p>
         </div>
       </form>
     </div>;
