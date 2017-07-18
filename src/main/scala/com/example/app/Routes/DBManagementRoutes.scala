@@ -31,5 +31,11 @@ trait DBManagementRoutes extends SlickRoutes{
     //new Migration4().run
   }
 
+  get("/db/codegen"){
+    slick.codegen.SourceCodeGenerator.main(
+      Array("slick.driver.H2Driver", "org.h2.Driver", "jdbc:h2:~/bee", "demo", "com.example.app")
+    )
+  }
+
 
 }

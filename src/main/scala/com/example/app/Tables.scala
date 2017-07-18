@@ -105,6 +105,10 @@ object Tables {
     def * = (id, externalId, location)
   }
 
+/*  class ImagesDos(tag: Tag) extends demo.Tables.Images(tag) with HasIdColumn[String] {
+    def id = imageId
+  }*/
+
   class ImageToImageSourceRelations(tag: Tag) extends Table[(String, String, Int)](tag, "IMAGE_TO_IMAGE_SOURCE_RELATIONS") with HasIdColumn[String] {
     def id = column[String]("IMAGE_TO_IMAGE_SOURCE_RELATION_ID", O.PrimaryKey)
     def imageId = column[String]("IMAGE_ID")
