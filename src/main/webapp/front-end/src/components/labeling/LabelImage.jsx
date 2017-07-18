@@ -8,8 +8,10 @@ import {
   Button,
   FormGroup,
   FormControl,
-  ControlLabel
+  ControlLabel,
+  ButtonGroup
 } from 'react-bootstrap';
+import NavBar from '../NavBar.jsx';
 import { LinkContainer } from 'react-router-bootstrap';
 import { addLabel, removeLabel, viewTaskOntology, viewTaskOntologySuccess, viewTaskOntologyError, updateLabelValue, viewParticipantImageLabels, viewParticipantImageLabelsSuccess, viewParticipantImageLabelsError, nextImage, nextImageSuccess, nextImageError, saveLabels, saveLabelsSuccess, saveLabelsError, markImageSeen, markImageSeenSuccess, markImageSeenError, previousImage, previousImageSuccess, previousImageError } from '../../actions.js';
 import FormGroupBase from '../shared/FormGroupBase.jsx';
@@ -295,20 +297,30 @@ class LabelImage extends React.Component {
     }
 
     return <div>
-        <Button onClick={() => this.loadNewImage(false)}>Previous</Button>
-        <div width="500" height="500" id="canvas_container" style={containerStyles} onMouseDown={mouseDownFunction} onMouseUp={mouseUpFunction} onMouseMove={mouseMoveFunction}>
+        <NavBar inverse={false}/>
+        <div className="col-md-2 m-t-5">
+            <div onClick={() => this.loadNewImage(false)} className="label-previous"></div>
+        </div>
+        <div className="col-md-4 m-t-5" width="500" height="500" id="canvas_container" style={containerStyles} onMouseDown={mouseDownFunction} onMouseUp={mouseUpFunction} onMouseMove={mouseMoveFunction}>
             {lengthLabelDiv}
 
             {areaLabelDiv}
             <img style={imageLabelStyle} unselectable="on" id="tagging_image" src={this.props.currentImage.getIn(['image', 'location'], '')} onClick={imageClickFunction}/>
             {imageLabelValueInput}
         </div>
-        <LinkContainer to="/tasks">
-            <Button>Done for now</Button>
-        </LinkContainer>
-        <Button onClick={() => this.handleSaveLabels(this.getLabelsWithNullLabels())}><SubmitLabelsInfo currentOntology={this.props.currentOntology} labels={labels} hasSavedLabels={this.state.hasSavedLabels} viewInfo={this.props.currentImage.get('viewInfo', null)} /></Button>
-        <Button onClick={this.handleSkipLabeling}><SkipLabelsInfo labels={labels} hasSavedLabels={this.state.hasSavedLabels} viewInfo={this.props.currentImage.get('viewInfo', null)} /></Button>
-        <LabelingHint currentOntology={this.props.currentOntology} />
+        <div className="col-md-4 m-t-5 pull-right">
+            <LinkContainer to="/tasks">
+                <Button>Done for now</Button>
+            </LinkContainer>
+            <div className="m-t-5">
+                <LabelingHint currentOntology={this.props.currentOntology} />
+            </div>
+            <div className="label-submit" onClick={() => this.handleSaveLabels(this.getLabelsWithNullLabels())}> <SubmitLabelsInfo currentOntology={this.props.currentOntology} labels={labels} hasSavedLabels={this.state.hasSavedLabels} viewInfo={this.props.currentImage.get('viewInfo', null)} /></div>
+            <br />
+            <div className="m-t-5">
+                <Button onClick={this.handleSkipLabeling}><SkipLabelsInfo labels={labels} hasSavedLabels={this.state.hasSavedLabels} viewInfo={this.props.currentImage.get('viewInfo', null)} /></Button>
+            </div>
+        </div>
     </div>
   }
 }

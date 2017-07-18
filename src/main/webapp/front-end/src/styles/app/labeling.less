@@ -1,0 +1,42 @@
+@label-submit-height: 200;
+@label-submit-width: 200;
+@label-submit-arrow-width: 50;
+
+.label-previous {
+  border-right: @label-submit-arrow-width * 1px solid @brand-grey;
+  border-bottom: (@label-submit-height / 2) * 1px solid transparent;
+  border-top: (@label-submit-height / 2) * 1px solid transparent;
+  content: "";
+  height: 0;
+  position: absolute;
+  left: 50;
+  width: 0;
+  top: 125px;
+}
+
+.label-submit {
+  background: @brand-green;
+  display: inline-block;
+  height: @label-submit-height * 1px;
+  position: relative;
+  width: @label-submit-width * 1px;
+  color: @brand-white
+}
+
+.label-submit:after {
+  border-left: @label-submit-arrow-width * 1px solid @brand-green;
+  border-bottom: (@label-submit-height / 2) * 1px solid transparent;
+  border-top: (@label-submit-height / 2) * 1px solid transparent;
+  content: "";
+  height: 0;
+  position: absolute;
+  left: @label-submit-width * 1px;
+  width: 0;
+  top: 0;
+}
+
+.label-submit span {
+    display: inline-block;
+    margin-top: ((@label-submit-height - 24) / 2) * 1px;
+    margin-left: 10px;
+}
