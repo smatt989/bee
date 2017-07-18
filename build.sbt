@@ -4,7 +4,8 @@ import org.scalatra.sbt.PluginKeys._
 import com.earldouglas.xwp.JettyPlugin
 import com.mojolly.scalate.ScalatePlugin._
 import ScalateKeys._
-import com.mchange.v2.c3p0._
+import java.io.File
+import java.nio.file.Files
 
 val Organization = "com.slotkin"
 val Name = "Bee"
@@ -51,7 +52,9 @@ lazy val project = Project (
     ),
     scalacOptions := Seq("-feature"),
     slick <<= slickCodeGenTask, // register manual sbt command
+    hey <<= huh,
     sourceGenerators in Compile <+= slickCodeGenTask,
+    sourceGenerators in Compile <+= huh,
     scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
       Seq(
         TemplateConfig(
@@ -68,19 +71,57 @@ lazy val project = Project (
 ).enablePlugins(JettyPlugin)
 
 lazy val slick = TaskKey[Seq[File]]("gen-tables")
-lazy val slickCodeGenTask = (sourceManaged, dependencyClasspath in Compile, runner in Compile, streams) map { (dir, cp, r, s) =>
+lazy val slickCodeGenTask = (sourceManaged, dependencyClasspath in Compile, runner in Compile, streams) map { (sm, cp, r, s) =>
 
-  val cpds = new com.mchange.v2.c3p0.ComboPooledDataSource
-  val outputDir = (dir / "slick").getPath
+  println("..........generating code.........")
+
   val url = "jdbc:h2:~/bee;"
   val jdbcDriver = "org.h2.Driver"
   val slickDriver = "slick.driver.PostgresDriver"
-  val pkg = "demo"
-  println(outputDir)
-  println(pkg)
-  val newDir = "src/main/scala"
+  val newDir = sm.getPath.split("bee").head+"bee/src/main/scala"
   val newPcg = "com.example.app.demo"
   toError(r.run("slick.codegen.SourceCodeGenerator", cp.files, Array(slickDriver, jdbcDriver, url, newDir, newPcg, "root", "myPassword"), s.log))
+  val fname = newDir + "/com/example/app/demo/Tables.scala"
+  Seq(file(fname))
+}
+
+lazy val hey = TaskKey[Seq[File]]("hey")
+
+lazy val huh = (sourceManaged, target) map { (sm, t) =>
+  val f = file(sm.getPath.split("bee").head+"bee/src/main/webapp/front-end")
+  sbt.Process(Seq("npm", "install"), f) !
+
+  sbt.Process(Seq("webpack"), f) !
+
+   new File(f.getPath, "/dist").listFiles().foreach(fi => {
+     val destinationFile = new File(new File(t.getPath, "/webapp/front-end/dist"), fi.name)
+     if(destinationFile.exists()){
+       emptyFile(destinationFile)
+     }
+     Files.copy(fi.toPath, destinationFile.toPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+   })
+
+  Seq[File]()
+}
+
+def emptyFile(f: File): Unit = {
+  if(f.isDirectory){
+    f.listFiles().map(fi => {
+      emptyFile(fi)
+      fi.delete()
+    })
+  }
+}
+/*
+
+lazy val genFrontend = (sourceManaged, dependencyClasspath in Compile, runner in Compile, streams) map { (dir, cp, r, s) =>
+  val outputDir = (dir / "slick").getPath // place generated files in sbt's managed sources folder
+  val url = "jdbc:h2:mem:test;INIT=runscript from 'src/main/sql/create.sql'" // connection info for a pre-populated throw-away, in-memory db for this demo, which is freshly initialized on every run
+  val jdbcDriver = "org.h2.Driver"
+  val slickDriver = "slick.driver.H2Driver"
+  val pkg = "demo"
+  toError(r.run("slick.codegen.SourceCodeGenerator", cp.files, Array(slickDriver, jdbcDriver, url, outputDir, pkg), s.log))
   val fname = outputDir + "/demo/Tables.scala"
   Seq(file(fname))
 }
+*/
