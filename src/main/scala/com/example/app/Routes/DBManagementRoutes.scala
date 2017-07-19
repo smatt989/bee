@@ -3,7 +3,8 @@ package com.example.app.Routes
 import com.example.app.migrations._
 import com.example.app.{DataImport, SlickRoutes, Tables}
 //import slick.driver.H2Driver.api._
-import slick.driver.PostgresDriver.api._
+import com.example.app.AppGlobals
+import AppGlobals.dbConfig.driver.api._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 

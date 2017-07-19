@@ -1,53 +1,14 @@
-package com.example.app
+package com.example.app.migrations
 
 import com.example.app.AppGlobals
 import AppGlobals.dbConfig.driver.api._
-//import slick.driver.PostgresDriver.api._
-import slick.profile.SqlProfile.ColumnOption.SqlType
+import com.example.app.demo._
 
+object Migration2 extends Migration{
 
-object Tables {
+  val id = 2
 
-  class Users(tag: Tag) extends Table[(Int, String, String)](tag, "USER_ACCOUNTS") with HasIdColumn[Int] {
-    def id = column[Int]("USER_ACCOUNT_ID", O.PrimaryKey, O.AutoInc)
-    def email = column[String]("EMAIL")
-    def hashedPassword = column[String]("HASHED_PASSWORD")
-
-    def * = (id, email, hashedPassword)
-  }
-
-  class DeviceTokens(tag: Tag) extends Table[(Int, Int, Option[String])](tag, "DEVICE_TOKENS") with HasIdColumn[Int] {
-    def id = column[Int]("DEVICE_TOKEN_ID", O.PrimaryKey, O.AutoInc)
-    def userId = column[Int]("USER_ID")
-    def deviceToken = column[Option[String]]("DEVICE_TOKEN")
-
-    def * = (id, userId, deviceToken)
-
-    def user = foreignKey("DEVICE_TOKENS_TO_USER_FK", userId, users)(_.id)
-  }
-
-  class UserSessions(tag: Tag) extends Table[(Int, Int, String)](tag, "USER_SESSIONS") with HasIdColumn[Int] {
-    def id = column[Int]("USER_SESSION_ID", O.PrimaryKey, O.AutoInc)
-    def userId = column[Int]("USER_ID")
-    def hashString = column[String]("HASH_STRING")
-
-    def * = (id, userId, hashString)
-
-    def user = foreignKey("USER_SESSIONS_TO_USER_FK", userId, users)(_.id)
-  }
-
-  class UserConnections(tag: Tag) extends Table[(Int, Int, Int)](tag, "USER_CONNECTIONS") with HasIdColumn[Int] {
-    def id = column[Int]("USER_CONNECTION_ID", O.PrimaryKey, O.AutoInc)
-    def senderUserId = column[Int]("SENDER_USER_ID")
-    def receiverUserId = column[Int]("RECEIVER_USER_ID")
-
-    def * = (id, senderUserId, receiverUserId)
-
-    def sender = foreignKey("USER_CONNECTIONS_SENDER_TO_USERS_FK", senderUserId, users)(_.id)
-    def receiver = foreignKey("USER_CONNECTIONS_RECEIVER_TO_USERS_FK", receiverUserId, users)(_.id)
-  }
-
-  class Tasks(tag: Tag) extends Table[(Int, String, Int, Long)](tag, "TASKS") with HasIdColumn[Int] {
+  class Tasks(tag: Tag) extends Table[(Int, String, Int, Long)](tag, "TASKS") {
     def id = column[Int]("TASK_ID", O.PrimaryKey, O.AutoInc)
     def name = column[String]("TASK_NAME")
     def creatorUserId = column[Int]("CREATOR_USER_ID")
@@ -55,10 +16,10 @@ object Tables {
 
     def * = (id, name, creatorUserId, createdMillis)
 
-    def creator = foreignKey("TASK_TO_USERS_FK", creatorUserId, users)(_.id)
+    def creator = foreignKey("TASK_TO_USERS_FK", creatorUserId, Tables.UserAccounts)(_.userAccountId)
   }
 
-  class OntologyVersions(tag: Tag) extends Table[(Int, String, String, Int, Int, String, Option[Double], Option[Double], Boolean, Boolean, Int, Long)](tag, "ONTOLOGY_VERSIONS") with HasIdColumn[Int] {
+  class OntologyVersions(tag: Tag) extends Table[(Int, String, String, Int, Int, String, Option[Double], Option[Double], Boolean, Boolean, Int, Long)](tag, "ONTOLOGY_VERSIONS") {
     def id = column[Int]("ONTOLOGY_VERSION_ID", O.PrimaryKey, O.AutoInc)
     def name = column[String]("ONTOLOGY_NAME")
     def versionString = column[String]("VERSION_STRING")
@@ -77,7 +38,7 @@ object Tables {
     def task = foreignKey("ONTOLOGY_VERSION_TO_TASKS_FK", taskId, tasks)(_.id)
   }
 
-  class Participants(tag: Tag) extends Table[(Int, Int, Int, Boolean)](tag, "PARTICIPANTS") with HasIdColumn[Int] {
+  class Participants(tag: Tag) extends Table[(Int, Int, Int, Boolean)](tag, "PARTICIPANTS") {
     def id = column[Int]("PARTICIPANT_ID", O.PrimaryKey, O.AutoInc)
     def taskId = column[Int]("TASK_ID")
     def userId = column[Int]("USER_ID")
@@ -85,11 +46,11 @@ object Tables {
 
     def * = (id, taskId, userId, isActive)
 
-    def user = foreignKey("PARTICIPANT_TO_USERS_FK", userId, users)(_.id)
+    def user = foreignKey("PARTICIPANT_TO_USERS_FK", userId, Tables.UserAccounts)(_.userAccountId)
     def task = foreignKey("PARTICIPANT_TO_TASKS_FK", taskId, tasks)(_.id)
   }
 
-  class Invitations(tag: Tag) extends Table[(String, Int, Long)](tag, "INVITATIONS") with HasIdColumn[String] {
+  class Invitations(tag: Tag) extends Table[(String, Int, Long)](tag, "INVITATIONS") {
     def id = column[String]("INVITATION_ID", O.PrimaryKey)
     def taskId = column[Int]("TASK_ID")
     def createdMillis = column[Long]("CREATED_MILLIS")
@@ -99,7 +60,7 @@ object Tables {
     def task = foreignKey("INVITATION_TO_TASKS_FK", taskId, tasks)(_.id)
   }
 
-  class Images(tag: Tag) extends Table[(String, String, String)](tag, "IMAGES") with HasIdColumn[String] {
+  class Images(tag: Tag) extends Table[(String, String, String)](tag, "IMAGES") {
     def id = column[String]("IMAGE_ID", O.PrimaryKey)
     def externalId = column[String]("EXTERNAL_ID")
     def location = column[String]("LOCATION")
@@ -107,11 +68,11 @@ object Tables {
     def * = (id, externalId, location)
   }
 
-/*  class ImagesDos(tag: Tag) extends demo.Tables.Images(tag) with HasIdColumn[String] {
-    def id = imageId
-  }*/
+  /*  class ImagesDos(tag: Tag) extends demo.Tables.Images(tag) with HasIdColumn[String] {
+      def id = imageId
+    }*/
 
-  class ImageToImageSourceRelations(tag: Tag) extends Table[(String, String, Int)](tag, "IMAGE_TO_IMAGE_SOURCE_RELATIONS") with HasIdColumn[String] {
+  class ImageToImageSourceRelations(tag: Tag) extends Table[(String, String, Int)](tag, "IMAGE_TO_IMAGE_SOURCE_RELATIONS") {
     def id = column[String]("IMAGE_TO_IMAGE_SOURCE_RELATION_ID", O.PrimaryKey)
     def imageId = column[String]("IMAGE_ID")
     def imageSourceId = column[Int]("IMAGE_SOURCE_ID")
@@ -122,7 +83,7 @@ object Tables {
     def imageSource = foreignKey("IMAGE_TO_IMAGE_SOURCE_RELATION_TO_IMAGE_SOURCE_FK", imageSourceId, tasks)(_.id)
   }
 
-  class ImageSources(tag: Tag) extends Table[(Int, Int, String, String, String)](tag, "IMAGE_SOURCES") with HasIdColumn[Int] {
+  class ImageSources(tag: Tag) extends Table[(Int, Int, String, String, String)](tag, "IMAGE_SOURCES") {
     def id = column[Int]("IMAGE_SOURCE_ID", O.PrimaryKey, O.AutoInc)
     def taskId = column[Int]("TASK_ID")
     def name = column[String]("IMAGE_SOURCE_NAME")
@@ -134,7 +95,7 @@ object Tables {
     def task = foreignKey("IMAGE_SOURCE_TO_TASK_FK", taskId, tasks)(_.id)
   }
 
-  class Labels(tag: Tag) extends Table[(String, Int, String, Int, String, String, Double, Option[Double], Option[Double], Option[Double], Option[Double], Option[Double], Option[Double], Option[Double], Option[Double], Long)](tag, "LABELS") with HasIdColumn[String] {
+  class Labels(tag: Tag) extends Table[(String, Int, String, Int, String, String, Double, Option[Double], Option[Double], Option[Double], Option[Double], Option[Double], Option[Double], Option[Double], Option[Double], Long)](tag, "LABELS") {
     def id = column[String]("LABEL_ID", O.PrimaryKey)
     def participantId = column[Int]("PARTICIPANT_ID")
     def imageId = column[String]("IMAGE_ID")
@@ -159,7 +120,7 @@ object Tables {
     def ontologyVersion = foreignKey("LABEL_TO_ONTOLOGY_VERSIONS", ontologyVersionId, ontologyVersions)(_.id)
   }
 
-  class ImageViews(tag: Tag) extends Table[(String, Int, String, Int, Long)](tag, "IMAGE_VIEWS") with HasIdColumn[String] {
+  class ImageViews(tag: Tag) extends Table[(String, Int, String, Int, Long)](tag, "IMAGE_VIEWS") {
     def id = column[String]("IMAGE_VIEW_ID", O.PrimaryKey)
     def participantId = column[Int]("PARTICIPANT_ID")
     def imageId = column[String]("IMAGE_ID")
@@ -173,12 +134,6 @@ object Tables {
     def ontologyVersion = foreignKey("IMAGE_VIEW_TO_ONTOLOGY_VERSIONS_FK", ontologyVersionId, ontologyVersions)(_.id)
   }
 
-  val users = TableQuery[Users]
-  val deviceTokens = TableQuery[DeviceTokens]
-  val userSessions = TableQuery[UserSessions]
-
-  val userConnections = TableQuery[UserConnections]
-
   val tasks = TableQuery[Tasks]
   val ontologyVersions = TableQuery[OntologyVersions]
   val participants = TableQuery[Participants]
@@ -189,20 +144,6 @@ object Tables {
   val labels = TableQuery[Labels]
   val imageViews = TableQuery[ImageViews]
 
-
-  val schemas = (users.schema ++ userSessions.schema ++ deviceTokens.schema ++ userConnections.schema ++
-    tasks.schema ++ ontologyVersions.schema ++ participants.schema ++ invitations.schema ++ images.schema ++
-    imageToTaskRelations.schema ++ imageSources.schema ++ labels.schema ++ imageViews.schema)
-
-
-  // DBIO Action which creates the schema
-  val createSchemaAction = schemas.create
-
-  // DBIO Action which drops the schema
-  val dropSchemaAction = schemas.drop
-
-}
-
-trait HasIdColumn[A]{
-  def id: Rep[A]
+  def query = (tasks.schema ++ ontologyVersions.schema ++ participants.schema ++ invitations.schema ++ images.schema ++
+    imageToTaskRelations.schema ++ imageSources.schema ++ labels.schema ++ imageViews.schema).create
 }

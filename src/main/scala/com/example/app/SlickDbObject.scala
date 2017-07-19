@@ -6,14 +6,14 @@ import slick.lifted.TableQuery
 import slick.profile.FixedSqlStreamingAction
 
 import scala.concurrent.Future
-//import slick.driver.H2Driver.api._
-import slick.driver.PostgresDriver.api._
 import slick.profile.FixedSqlAction
 
 import scala.concurrent.ExecutionContext.Implicits.global
 /**
   * Created by matt on 12/1/16.
   */
+
+import AppGlobals.dbConfig.driver.api._
 
 trait SlickObject[IDType, ScalaClass <: HasId[ScalaClass, IDType], TupleSignature, SlickTable <: Table[TupleSignature]] {
 
@@ -23,7 +23,7 @@ trait SlickObject[IDType, ScalaClass <: HasId[ScalaClass, IDType], TupleSignatur
 
   def table: TableQuery[SlickTable]
   def reify(tuple: TupleSignature): ScalaClass
-  def db = AppGlobals.db()
+  def db = AppGlobals.db
 
   def unapply(a: ScalaClass): Option[TupleSignature]
 

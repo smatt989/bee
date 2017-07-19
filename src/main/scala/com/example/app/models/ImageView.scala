@@ -5,7 +5,8 @@ import org.joda.time.DateTime
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
-import slick.driver.PostgresDriver.api._
+import com.example.app.AppGlobals
+import AppGlobals.dbConfig.driver.api._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /**

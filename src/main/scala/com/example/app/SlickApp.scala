@@ -16,7 +16,7 @@ class SlickApp() extends ScalatraServlet with FutureSupport
   with TaskRoutes
   with DBManagementRoutes {
 
-  def db = AppGlobals.db()
+  def db = AppGlobals.db
 
   lazy val realm = "rekki"
 

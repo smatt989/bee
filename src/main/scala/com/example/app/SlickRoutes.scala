@@ -3,7 +3,8 @@ package com.example.app
 import com.example.app.models.{Image, ImageSource}
 import org.scalatra._
 //import slick.driver.H2Driver.api._
-import slick.driver.PostgresDriver.api._
+import com.example.app.AppGlobals
+import AppGlobals.dbConfig.driver.api._
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra.json._
 import org.scalatra.scalate.ScalateSupport

@@ -2,7 +2,8 @@ package com.example.app.models
 
 import com.example.app.{HasIntId, Tables, Updatable, UpdatableDBObject}
 import org.mindrot.jbcrypt.BCrypt
-import slick.driver.PostgresDriver.api._
+import com.example.app.AppGlobals
+import AppGlobals.dbConfig.driver.api._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration

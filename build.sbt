@@ -11,7 +11,7 @@ val Organization = "com.slotkin"
 val Name = "Bee"
 val Version = "0.1.0-SNAPSHOT"
 val ScalaVersion = "2.11.8"
-val ScalatraVersion = "2.5.0"
+val ScalatraVersion = "2.5.1"
 val SlickVersion = "3.1.1"
 
 lazy val project = Project (
@@ -53,8 +53,6 @@ lazy val project = Project (
     scalacOptions := Seq("-feature"),
     slick <<= slickCodeGenTask, // register manual sbt command
     hey <<= huh,
-    sourceGenerators in Compile <+= slickCodeGenTask,
-    sourceGenerators in Compile <+= huh,
     scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
       Seq(
         TemplateConfig(
@@ -72,9 +70,6 @@ lazy val project = Project (
 
 lazy val slick = TaskKey[Seq[File]]("gen-tables")
 lazy val slickCodeGenTask = (sourceManaged, dependencyClasspath in Compile, runner in Compile, streams) map { (sm, cp, r, s) =>
-
-  println("..........generating code.........")
-
   val url = "jdbc:h2:~/bee;"
   val jdbcDriver = "org.h2.Driver"
   val slickDriver = "slick.driver.PostgresDriver"
@@ -112,6 +107,15 @@ def emptyFile(f: File): Unit = {
     })
   }
 }
+
+lazy val dbMigrate  = InputKey[Unit]("db-migrate", "Run something.")
+
+fullRunInputTask( dbMigrate, Compile, "com.example.app.migrations.MigrationRunner")
+
+lazy val dbInit = InputKey[Unit]("db-init", "Start DB.")
+
+fullRunInputTask(dbInit, Compile, "com.example.app.migrations.DBInitializer")
+
 /*
 
 lazy val genFrontend = (sourceManaged, dependencyClasspath in Compile, runner in Compile, streams) map { (dir, cp, r, s) =>

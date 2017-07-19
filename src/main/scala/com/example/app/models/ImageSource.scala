@@ -7,7 +7,8 @@ import org.joda.time.DateTime
 import org.json4s.DefaultFormats
 import org.json4s.JsonAST.{JObject, JValue}
 import org.json4s.jackson.JsonMethods
-import slick.driver.PostgresDriver.api._
+import com.example.app.AppGlobals
+import AppGlobals.dbConfig.driver.api._
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
