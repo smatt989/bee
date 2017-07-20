@@ -76,7 +76,7 @@ object Migration2 extends Migration{
     def * = (id, imageId, imageSourceId)
 
     def image = foreignKey("IMAGE_TO_IMAGE_SOURCE_RELATION_TO_IMAGES_FK", imageId, images)(_.id)
-    def imageSource = foreignKey("IMAGE_TO_IMAGE_SOURCE_RELATION_TO_IMAGE_SOURCE_FK", imageSourceId, tasks)(_.id)
+    def imageSource = foreignKey("IMAGE_TO_IMAGE_SOURCE_RELATION_TO_IMAGE_SOURCE_FK", imageSourceId, imageSources)(_.id)
   }
 
   class ImageSources(tag: Tag) extends Table[(Int, Int, String, String, String)](tag, Some(InitDB.SCHEMA_NAME), "IMAGE_SOURCES") {
