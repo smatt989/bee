@@ -27,8 +27,7 @@ class ScalatraBootstrap extends LifeCycle {
 
   private def closeDbConnection() {
 
-    AppGlobals.dbConfig.db.close()
-
+    DBLauncher.cpds.close()
   }
 
   override def destroy(context: ServletContext) {
