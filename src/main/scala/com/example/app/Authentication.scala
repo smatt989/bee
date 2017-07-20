@@ -2,7 +2,7 @@ package com.example.app
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
-import com.example.app.demo.Tables.UserAccountsRow
+import com.example.app.db.Tables.UserAccountsRow
 import com.example.app.models.{User, UserLogin, UserSession}
 import org.scalatra.auth.ScentryAuthStore.SessionAuthStore
 import org.scalatra.auth.strategy.BasicAuthSupport

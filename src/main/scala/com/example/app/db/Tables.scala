@@ -1,4 +1,4 @@
-package com.example.app.demo
+package com.example.app.db
 // AUTO-GENERATED Slick data model
 /** Stand-alone Slick data model for immediate use */
 object Tables extends {

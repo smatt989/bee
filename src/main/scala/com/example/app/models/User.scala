@@ -4,8 +4,8 @@ import com.example.app.UpdatableDBObject
 import org.mindrot.jbcrypt.BCrypt
 import com.example.app.AppGlobals
 import AppGlobals.dbConfig.driver.api._
-import com.example.app.demo.Tables._
-import com.example.app.demo.{Tables => T}
+import com.example.app.db.Tables._
+import com.example.app.db.{Tables => T}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
@@ -33,13 +33,13 @@ object User extends UpdatableDBObject[UserAccountsRow, UserAccounts]{
 
   lazy val table = T.UserAccounts
 
-  def idFromRow(a: _root_.com.example.app.demo.Tables.UserAccountsRow) =
+  def idFromRow(a: _root_.com.example.app.db.Tables.UserAccountsRow) =
     a.userAccountId
 
-  def updateId(a: _root_.com.example.app.demo.Tables.UserAccountsRow, id: Int) =
+  def updateId(a: _root_.com.example.app.db.Tables.UserAccountsRow, id: Int) =
     a.copy(userAccountId = id)
 
-  def idColumnFromTable(a: _root_.com.example.app.demo.Tables.UserAccounts) =
+  def idColumnFromTable(a: _root_.com.example.app.db.Tables.UserAccounts) =
     a.userAccountId
 
   def updateQuery(a: UserAccountsRow) = table.filter(t => idColumnFromTable(t) === idFromRow(a))

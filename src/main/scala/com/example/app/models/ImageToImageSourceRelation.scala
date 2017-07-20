@@ -1,7 +1,7 @@
 package com.example.app.models
 
 import com.example.app.SlickUUIDObject
-import com.example.app.demo.Tables.{ImageToImageSourceRelations, _}
+import com.example.app.db.Tables.{ImageToImageSourceRelations, _}
 
 /**
   * Created by matt on 5/31/17.
@@ -10,12 +10,12 @@ import com.example.app.demo.Tables.{ImageToImageSourceRelations, _}
 object ImageToImageSourceRelation extends SlickUUIDObject[ImageToImageSourceRelationsRow, ImageToImageSourceRelations]{
   lazy val table = ImageToImageSourceRelations
 
-  def idFromRow(a: _root_.com.example.app.demo.Tables.ImageToImageSourceRelationsRow) =
+  def idFromRow(a: _root_.com.example.app.db.Tables.ImageToImageSourceRelationsRow) =
     a.imageToImageSourceRelationId
 
-  def updateId(a: _root_.com.example.app.demo.Tables.ImageToImageSourceRelationsRow, id: String) =
+  def updateId(a: _root_.com.example.app.db.Tables.ImageToImageSourceRelationsRow, id: String) =
     a.copy(imageToImageSourceRelationId = id)
 
-  def idColumnFromTable(a: _root_.com.example.app.demo.Tables.ImageToImageSourceRelations) =
+  def idColumnFromTable(a: _root_.com.example.app.db.Tables.ImageToImageSourceRelations) =
     a.imageToImageSourceRelationId
 }

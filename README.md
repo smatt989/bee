@@ -17,8 +17,14 @@ $ ./sbt
 
 If `browse` doesn't launch your browser, manually open [http://localhost:8080/](http://localhost:8080/) in your browser.
 
-For first time use, to create the db schema:
- [http://localhost:8080/db/create-tables](http://localhost:8080/db/create-tables)
+For first time use, to create the db schema, run the following:
+ ```sbt db-setup```
+
+This command will:
+1. Check to see if DB has already been initialized
+2. If not, it will create the schema "BEE", and the basic migrations tables
+3. Check which migration scripts have already been applied
+4. Apply any unapplied migration scripts
 
 ## Development ##
 

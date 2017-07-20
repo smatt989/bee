@@ -13,7 +13,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import org.json4s.jackson.Serialization
 
-import com.example.app.demo.Tables._
+import com.example.app.db.Tables._
 
 /**
   * Created by matt on 5/31/17.
@@ -118,13 +118,13 @@ object ImageSource extends UpdatableDBObject[ImageSourcesRow, ImageSources]{
 
   val imageSourceTypeByName = imageSourceTypes.map(a => a.name -> a).toMap
 
-  def idFromRow(a: _root_.com.example.app.demo.Tables.ImageSourcesRow) =
+  def idFromRow(a: _root_.com.example.app.db.Tables.ImageSourcesRow) =
     a.imageSourceId
 
-  def updateId(a: _root_.com.example.app.demo.Tables.ImageSourcesRow, id: Int) =
+  def updateId(a: _root_.com.example.app.db.Tables.ImageSourcesRow, id: Int) =
     a.copy(imageSourceId = id)
 
-  def idColumnFromTable(a: _root_.com.example.app.demo.Tables.ImageSources) =
+  def idColumnFromTable(a: _root_.com.example.app.db.Tables.ImageSources) =
     a.imageSourceId
 }
 

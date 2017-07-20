@@ -9,7 +9,7 @@ import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 
-import com.example.app.demo.Tables._
+import com.example.app.db.Tables._
 
 /**
   * Created by matt on 5/31/17.
@@ -78,12 +78,12 @@ object Task extends UpdatableDBObject[TasksRow, Tasks] {
     saved
   }
 
-  def idFromRow(a: _root_.com.example.app.demo.Tables.TasksRow) =
+  def idFromRow(a: _root_.com.example.app.db.Tables.TasksRow) =
     a.taskId
 
-  def updateId(a: _root_.com.example.app.demo.Tables.TasksRow, id: Int) =
+  def updateId(a: _root_.com.example.app.db.Tables.TasksRow, id: Int) =
     a.copy(taskId = id)
 
-  def idColumnFromTable(a: _root_.com.example.app.demo.Tables.Tasks) =
+  def idColumnFromTable(a: _root_.com.example.app.db.Tables.Tasks) =
     a.taskId
 }

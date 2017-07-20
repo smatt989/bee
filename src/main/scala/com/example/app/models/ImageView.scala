@@ -8,7 +8,7 @@ import scala.concurrent.duration.Duration
 import com.example.app.AppGlobals
 import AppGlobals.dbConfig.driver.api._
 
-import com.example.app.demo.Tables.{ImageViews, _}
+import com.example.app.db.Tables.{ImageViews, _}
 
 /**
   * Created by matt on 5/31/17.
@@ -77,13 +77,13 @@ object ImageView extends SlickUUIDObject[ImageViewsRow, ImageViews] {
   val nextImageIncrement = 1
   val previousImageIncrement = -1
 
-  def idFromRow(a: _root_.com.example.app.demo.Tables.ImageViewsRow) =
+  def idFromRow(a: _root_.com.example.app.db.Tables.ImageViewsRow) =
     a.imageViewId
 
-  def updateId(a: _root_.com.example.app.demo.Tables.ImageViewsRow, id: String) =
+  def updateId(a: _root_.com.example.app.db.Tables.ImageViewsRow, id: String) =
     a.copy(imageViewId = id)
 
-  def idColumnFromTable(a: _root_.com.example.app.demo.Tables.ImageViews) =
+  def idColumnFromTable(a: _root_.com.example.app.db.Tables.ImageViews) =
     a.imageViewId
 }
 

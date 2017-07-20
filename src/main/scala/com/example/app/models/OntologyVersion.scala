@@ -8,7 +8,7 @@ import AppGlobals.dbConfig.driver.api._
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
-import com.example.app.demo.Tables._
+import com.example.app.db.Tables._
 
 /**
   * Created by matt on 5/31/17.
@@ -40,13 +40,13 @@ object OntologyVersion extends SlickDbObject[OntologyVersionsRow, OntologyVersio
 
   val ontologyTypes = Seq(OntologyType("BINARY"), OntologyType("INTEGER_RANGE"), OntologyType("FLOAT_RANGE"))
 
-  def idFromRow(a: _root_.com.example.app.demo.Tables.OntologyVersionsRow) =
+  def idFromRow(a: _root_.com.example.app.db.Tables.OntologyVersionsRow) =
     a.ontologyVersionId
 
-  def updateId(a: _root_.com.example.app.demo.Tables.OntologyVersionsRow, id: Int) =
+  def updateId(a: _root_.com.example.app.db.Tables.OntologyVersionsRow, id: Int) =
     a.copy(ontologyVersionId = id)
 
-  def idColumnFromTable(a: _root_.com.example.app.demo.Tables.OntologyVersions) =
+  def idColumnFromTable(a: _root_.com.example.app.db.Tables.OntologyVersions) =
     a.ontologyVersionId
 }
 

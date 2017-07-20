@@ -6,7 +6,7 @@ import AppGlobals.dbConfig.driver.api._
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
-import com.example.app.demo.Tables._
+import com.example.app.db.Tables._
 
 /**
   * Created by matt on 5/31/17.
@@ -54,12 +54,12 @@ object Participant extends UpdatableDBObject[ParticipantsRow, Participants] {
     Await.result(participantByUserAndTask(userId, taskId).map(a => a.isDefined && a.get.isActive), Duration.Inf)
   }
 
-  def idFromRow(a: _root_.com.example.app.demo.Tables.ParticipantsRow) =
+  def idFromRow(a: _root_.com.example.app.db.Tables.ParticipantsRow) =
     a.participantId
 
-  def updateId(a: _root_.com.example.app.demo.Tables.ParticipantsRow, id: Int) =
+  def updateId(a: _root_.com.example.app.db.Tables.ParticipantsRow, id: Int) =
     a.copy(participantId = id)
 
-  def idColumnFromTable(a: _root_.com.example.app.demo.Tables.Participants) =
+  def idColumnFromTable(a: _root_.com.example.app.db.Tables.Participants) =
     a.participantId
 }

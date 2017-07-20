@@ -3,7 +3,7 @@ package com.example.app.models
 import com.example.app.UpdatableUUIDObject
 import com.example.app.AppGlobals
 import AppGlobals.dbConfig.driver.api._
-import com.example.app.demo.Tables._
+import com.example.app.db.Tables._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -59,12 +59,12 @@ object Image extends UpdatableUUIDObject[ImagesRow, Images] {
     ImageWithAccess(image, imageAccessInterface.imageHeaders(image))
   }
 
-  def idFromRow(a: _root_.com.example.app.demo.Tables.ImagesRow) =
+  def idFromRow(a: _root_.com.example.app.db.Tables.ImagesRow) =
     a.imageId
 
-  def updateId(a: _root_.com.example.app.demo.Tables.ImagesRow, id: String) =
+  def updateId(a: _root_.com.example.app.db.Tables.ImagesRow, id: String) =
     a.copy(imageId = id)
 
-  def idColumnFromTable(a: _root_.com.example.app.demo.Tables.Images) =
+  def idColumnFromTable(a: _root_.com.example.app.db.Tables.Images) =
     a.imageId
 }

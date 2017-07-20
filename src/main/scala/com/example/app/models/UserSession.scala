@@ -9,7 +9,7 @@ import AppGlobals.dbConfig.driver.api._
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
-import com.example.app.demo.Tables._
+import com.example.app.db.Tables._
 
 object UserSession extends SlickDbObject[UserSessionsRow, UserSessions]{
 
@@ -30,12 +30,12 @@ object UserSession extends SlickDbObject[UserSessionsRow, UserSessions]{
   def byHashString(hashString: String) =
     Await.result(db.run(table.filter(_.hashString === hashString).result).map(_.headOption), Duration.Inf)
 
-  def idFromRow(a: _root_.com.example.app.demo.Tables.UserSessionsRow) =
+  def idFromRow(a: _root_.com.example.app.db.Tables.UserSessionsRow) =
     a.userSessionId
 
-  def updateId(a: _root_.com.example.app.demo.Tables.UserSessionsRow, id: Int) =
+  def updateId(a: _root_.com.example.app.db.Tables.UserSessionsRow, id: Int) =
     a.copy(userSessionId = id)
 
-  def idColumnFromTable(a: _root_.com.example.app.demo.Tables.UserSessions) =
+  def idColumnFromTable(a: _root_.com.example.app.db.Tables.UserSessions) =
     a.userSessionId
 }

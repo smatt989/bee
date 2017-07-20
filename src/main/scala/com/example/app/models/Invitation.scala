@@ -5,7 +5,7 @@ import org.joda.time.{DateTime, Interval}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
-import com.example.app.demo.Tables._
+import com.example.app.db.Tables._
 
 /**
   * Created by matt on 5/31/17.
@@ -45,12 +45,12 @@ object Invitation extends SlickUUIDObject[InvitationsRow, Invitations] {
     interval.toDuration.getStandardDays <= 7
   }
 
-  def idFromRow(a: _root_.com.example.app.demo.Tables.InvitationsRow) =
+  def idFromRow(a: _root_.com.example.app.db.Tables.InvitationsRow) =
     a.invitationId
 
-  def updateId(a: _root_.com.example.app.demo.Tables.InvitationsRow, id: String) =
+  def updateId(a: _root_.com.example.app.db.Tables.InvitationsRow, id: String) =
     a.copy(invitationId = id)
 
-  def idColumnFromTable(a: _root_.com.example.app.demo.Tables.Invitations) =
+  def idColumnFromTable(a: _root_.com.example.app.db.Tables.Invitations) =
     a.invitationId
 }

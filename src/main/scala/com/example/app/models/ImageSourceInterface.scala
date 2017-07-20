@@ -3,7 +3,7 @@ package com.example.app.models
 
 import com.amazonaws.auth._
 import com.amazonaws.services.s3.AmazonS3Client
-import com.example.app.demo.Tables.{ImageSourcesRow, ImagesRow}
+import com.example.app.db.Tables.{ImageSourcesRow, ImagesRow}
 import org.json4s.DefaultFormats
 import org.json4s.jackson.JsonMethods
 

@@ -5,7 +5,7 @@ import com.example.app.AppGlobals
 import AppGlobals.dbConfig.driver.api._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import com.example.app.demo.Tables._
+import com.example.app.db.Tables._
 
 case class UserConnection(id: Int = 0, senderUserId: Int, receiverUserId: Int)
 
@@ -61,12 +61,12 @@ object UserConnection extends SlickDbObject[UserConnectionsRow, UserConnections]
   def removeBySenderReceiverPair(senderUserId: Int, receiverUserId: Int) =
     db.run(table.filter(a => a.senderUserId === senderUserId && a.receiverUserId === receiverUserId).delete)
 
-  def idFromRow(a: _root_.com.example.app.demo.Tables.UserConnectionsRow) =
+  def idFromRow(a: _root_.com.example.app.db.Tables.UserConnectionsRow) =
     a.userConnectionId
 
-  def updateId(a: _root_.com.example.app.demo.Tables.UserConnectionsRow, id: Int) =
+  def updateId(a: _root_.com.example.app.db.Tables.UserConnectionsRow, id: Int) =
     a.copy(userConnectionId = id)
 
-  def idColumnFromTable(a: _root_.com.example.app.demo.Tables.UserConnections) =
+  def idColumnFromTable(a: _root_.com.example.app.db.Tables.UserConnections) =
     a.userConnectionId
 }

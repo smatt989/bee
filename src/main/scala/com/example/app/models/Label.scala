@@ -6,7 +6,7 @@ import com.example.app.AppGlobals
 import AppGlobals.dbConfig.driver.api._
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
-import com.example.app.demo.Tables._
+import com.example.app.db.Tables._
 /**
   * Created by matt on 5/31/17.
   */
@@ -93,12 +93,12 @@ object Label extends SlickUUIDObject[LabelsRow, Labels] {
     db.run(table.filter(a => a.participantId === participantId && a.imageId === imageId).result)
   }
 
-  def idFromRow(a: _root_.com.example.app.demo.Tables.LabelsRow) =
+  def idFromRow(a: _root_.com.example.app.db.Tables.LabelsRow) =
     a.labelId
 
-  def updateId(a: _root_.com.example.app.demo.Tables.LabelsRow, id: String) =
+  def updateId(a: _root_.com.example.app.db.Tables.LabelsRow, id: String) =
     a.copy(labelId = id)
 
-  def idColumnFromTable(a: _root_.com.example.app.demo.Tables.Labels) =
+  def idColumnFromTable(a: _root_.com.example.app.db.Tables.Labels) =
     a.labelId
 }

@@ -1,6 +1,6 @@
 package com.example.app.Routes
 
-import com.example.app.demo.Tables.DeviceTokensRow
+import com.example.app.db.Tables.DeviceTokensRow
 import com.example.app.models._
 import com.example.app.{AuthenticationSupport, SessionTokenStrategy, SlickRoutes}
 

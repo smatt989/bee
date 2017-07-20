@@ -2,7 +2,7 @@ package com.example.app.migrations
 
 import com.example.app.AppGlobals
 import AppGlobals.dbConfig.driver.api._
-import com.example.app.demo._
+import com.example.app.db._
 
 object Migration2 extends Migration{
 

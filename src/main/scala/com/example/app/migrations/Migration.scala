@@ -60,7 +60,7 @@ object Migration {
       DBLauncher.cpds.getDriverClass,
       DBLauncher.cpds.getJdbcUrl,
       "src/main/scala",
-      "com.example.app.demo",
+      "com.example.app.db",
       Some(DBLauncher.cpds.getUser),
       Some(DBLauncher.cpds.getPassword)
     )
