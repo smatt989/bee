@@ -17,18 +17,6 @@ trait Migration {
   def query: DBIOAction[_, _ <: dbio.NoStream, _ <: dbio.Effect]
 }
 
-object MigrationRunner {
-  def main(args: Array[String]) : Unit = {
-    Migration.run
-  }
-}
-
-object DBInitializer {
-  def main(args: Array[String]): Unit = {
-    Migration.initDB
-  }
-}
-
 object CodeGenerator {
   def main(args: Array[String]): Unit = {
     Migration.codegen

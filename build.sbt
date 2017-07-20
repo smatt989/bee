@@ -83,6 +83,9 @@ lazy val slickCodeGenTask = (sourceManaged, dependencyClasspath in Compile, runn
 lazy val hey = TaskKey[Seq[File]]("hey")
 
 lazy val huh = (sourceManaged, target) map { (sm, t) =>
+
+  System.out.println(">>>>>>>>>>>>>>>>>>> OVER HERE <<<<<<<<<<")
+
   val f = file(sm.getPath.split("bee").head+"bee/src/main/webapp/front-end")
   sbt.Process(Seq("npm", "install"), f) !
 
@@ -107,12 +110,6 @@ def emptyFile(f: File): Unit = {
     })
   }
 }
-
-lazy val dbMigrate  = InputKey[Unit]("db-migrate", "Run something.")
-fullRunInputTask( dbMigrate, Compile, "com.example.app.migrations.MigrationRunner")
-
-lazy val dbInit = InputKey[Unit]("db-init", "Start DB.")
-fullRunInputTask(dbInit, Compile, "com.example.app.migrations.DBInitializer")
 
 lazy val codeGen = InputKey[Unit]("db-gen", "Start DB.")
 fullRunInputTask(codeGen, Compile, "com.example.app.migrations.CodeGenerator")
