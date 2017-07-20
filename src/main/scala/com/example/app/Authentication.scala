@@ -6,7 +6,7 @@ import com.example.app.demo.Tables.UserAccountsRow
 import com.example.app.models.{User, UserLogin, UserSession}
 import org.scalatra.auth.ScentryAuthStore.SessionAuthStore
 import org.scalatra.auth.strategy.BasicAuthSupport
-import org.scalatra.ScalatraBase
+import org.scalatra.{CookieOptions, ScalatraBase}
 import org.scalatra.auth.{ScentryConfig, ScentryStrategy, ScentrySupport}
 
 object SessionTokenStrategy {
@@ -51,6 +51,10 @@ class CookieStrategy(protected val app: ScalatraBase) extends ScentryStrategy[Us
   def checkAuthentication()(implicit request: HttpServletRequest, response: HttpServletResponse): Option[UserAccountsRow] = {
     val token = tokenVal
     token.flatMap {t => UserSession.byHashString(t).map(UserSession.user)}
+  }
+
+  override def unauthenticated()(implicit request: HttpServletRequest, response: HttpServletResponse) {
+    app.cookies.delete(SessionTokenStrategy.Cookie)(CookieOptions(path = "/"))
   }
 }
 
