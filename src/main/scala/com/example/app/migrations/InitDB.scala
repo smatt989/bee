@@ -7,7 +7,9 @@ object InitDB extends Migration {
 
   val id = 0
 
-  class Migrations(tag: Tag) extends Table[(Int)](tag, "USER_ACCOUNTS") {
+  val MIGRATION_TABLE_NAME = "MIGRATIONS"
+
+  class Migrations(tag: Tag) extends Table[(Int)](tag, MIGRATION_TABLE_NAME) {
     def ido = column[Int]("MIGRATION_ID", O.PrimaryKey)
 
     def * = (ido)

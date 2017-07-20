@@ -16,7 +16,7 @@ object Migration2 extends Migration{
 
     def * = (id, name, creatorUserId, createdMillis)
 
-    def creator = foreignKey("TASK_TO_USERS_FK", creatorUserId, Tables.UserAccounts)(_.userAccountId)
+    def creator = foreignKey("TASK_TO_USERS_FK", creatorUserId, Migration1.users)(_.id)
   }
 
   class OntologyVersions(tag: Tag) extends Table[(Int, String, String, Int, Int, String, Option[Double], Option[Double], Boolean, Boolean, Int, Long)](tag, "ONTOLOGY_VERSIONS") {

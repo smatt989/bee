@@ -109,13 +109,16 @@ def emptyFile(f: File): Unit = {
 }
 
 lazy val dbMigrate  = InputKey[Unit]("db-migrate", "Run something.")
-
 fullRunInputTask( dbMigrate, Compile, "com.example.app.migrations.MigrationRunner")
 
 lazy val dbInit = InputKey[Unit]("db-init", "Start DB.")
-
 fullRunInputTask(dbInit, Compile, "com.example.app.migrations.DBInitializer")
 
+lazy val codeGen = InputKey[Unit]("db-gen", "Start DB.")
+fullRunInputTask(codeGen, Compile, "com.example.app.migrations.CodeGenerator")
+
+lazy val dbSetup = InputKey[Unit]("db-setup", "Setup db")
+fullRunInputTask(dbSetup, Compile, "com.example.app.migrations.DBSetup")
 /*
 
 lazy val genFrontend = (sourceManaged, dependencyClasspath in Compile, runner in Compile, streams) map { (dir, cp, r, s) =>

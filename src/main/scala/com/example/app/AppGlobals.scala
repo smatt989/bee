@@ -8,6 +8,7 @@ import com.typesafe.config.{Config, ConfigFactory}
 import org.slf4j.LoggerFactory
 import slick.backend.DatabaseConfig
 import slick.driver.JdbcProfile
+import slick.jdbc.JdbcBackend.DatabaseFactoryDef
 import slick.profile.BasicProfile
 import slick.util.ClassLoaderUtil
 
@@ -45,8 +46,6 @@ object DBLauncher {
     cpds.setPassword(DB_PASSWORD)
   }
 
-  cpds.setDataSourceName("huh?")
-
 
 
   // ClassLoaderUtil.defaultClassLoader.loadClass(cpds.getDriverClass).newInstance()
@@ -54,29 +53,18 @@ object DBLauncher {
 
   def newDbConfig[R <: BasicProfile : ClassTag](d: String): DatabaseConfig[R] = {
 
-    println("1")
-
     val root = ConfigFactory.load()
-    println("2")
+
     val untypedP =  ClassLoaderUtil.defaultClassLoader.loadClass(d).getField("MODULE$").get(null)
-    println(untypedP)
-    println("3")
-    val r = new DatabaseConfig[R] {
+
+    new DatabaseConfig[R] {
       val driver: R = untypedP.asInstanceOf[R]
 
-      import driver.api._
-
       lazy val db: R#Backend#Database =
-        driver.api.Database.forDataSource(cpds)
-        //driver.Database.forDataSource(cpds)
-      //driver.backend.createDatabase(config, "c3p0").asInstanceOf[R#Backend#Database]
-
-      println("class: "+driver.getClass)
+        driver.api.Database.asInstanceOf[DatabaseFactoryDef].forDataSource(cpds).asInstanceOf[R#Backend#Database]
       lazy val config: Config = ConfigFactory.parseFile(new File("src/main/resources/c3p0.properties"))
-      def driverName = d.substring(0, d.length - 1)
-      def driverIsObject = true
+      def driverName = if(driverIsObject) d.substring(0, d.length-1) else d
+      def driverIsObject = d.endsWith("$")
     }
-    println("4")
-    r
   }
 }
