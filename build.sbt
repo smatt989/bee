@@ -51,6 +51,7 @@ lazy val project = Project (
       "com.typesafe.slick" %% "slick-codegen" % SlickVersion
     ),
     scalacOptions := Seq("-feature"),
+    mainClass in Compile := Some("JettyLauncher"),
     scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
       Seq(
         TemplateConfig(
