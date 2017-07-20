@@ -1,41 +1,35 @@
 package com.example.app.models
 
-import com.example.app.{HasUUID, Tables, UpdatableUUIDObject}
-import org.json4s.JsonAST.JValue
+import com.example.app.UpdatableUUIDObject
 import com.example.app.AppGlobals
 import AppGlobals.dbConfig.driver.api._
+import com.example.app.demo.Tables._
 
 import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 
 /**
   * Created by matt on 5/31/17.
   */
-case class Image(id: String, externalId: String, location: String) extends HasUUID[Image] {
-  def updateId(id: String) = this.copy(id = id)
-}
 
-case class ImageWithAccess(image: Image, accessConfigs: Map[String, String])
+case class ImageWithAccess(image: ImagesRow, accessConfigs: Map[String, String])
 
-object Image extends UpdatableUUIDObject[Image, (String, String, String), Tables.Images] {
+
+object Image extends UpdatableUUIDObject[ImagesRow, Images] {
 
   val configsHeader = "Image-Request-Headers"
 
-  def updateQuery(a: Image) = table.filter(_.id === a.id)
-    .map(x => (x.location))
-    .update((a.location))
+  def updateQuery(a: ImagesRow) = table.filter(t => idColumnFromTable(t) === idFromRow(a))
+    .map(x => x.location)
+    .update(a.location)
 
-  lazy val table = Tables.images
-
-  def reify(tuple: (String, String, String)) =
-    (apply _).tupled(tuple)
+  lazy val table = Images
 
   def nextImage(userId: Int, taskId: Int) = {
     val participant = Await.result(Participant.participantByUserAndTask(userId, taskId), Duration.Inf).get
 
     val labels = Await.result(Label.byTask(taskId), Duration.Inf)
-    val views = Await.result(ImageView.byParticipant(participant.id), Duration.Inf)
+    val views = Await.result(ImageView.byParticipant(participant.participantId), Duration.Inf)
 
     val labeledImages = labels.map(_.imageId)
     val seenImages = views.map(_.imageId)
@@ -43,25 +37,34 @@ object Image extends UpdatableUUIDObject[Image, (String, String, String), Tables
     util.Random.shuffle(Await.result(db.run(
       (for {
         imageSources <- ImageSource.table if imageSources.taskId === taskId
-        relations <- ImageToImageSourceRelation.table if imageSources.id === relations.imageSourceId
-        images <- table.filterNot(_.id inSet (labeledImages ++ seenImages)) if images.id === relations.imageId
+        relations <- ImageToImageSourceRelation.table if imageSources.imageSourceId === relations.imageSourceId
+        images <- table.filterNot(_.imageId inSet (labeledImages ++ seenImages)) if images.imageId === relations.imageId
       } yield (images, imageSources)).result
-    ), Duration.Inf)).headOption.map{case (image, imageSource) => makeImageWithAccess(reify(image), ImageSource.reify(imageSource))}
+    ), Duration.Inf)).headOption.map{case (image, imageSource) => makeImageWithAccess(image, imageSource)}
   }
 
   def getImageWithAccess(userId: Int, taskId: Int, imageId: String) = {
     Await.result(db.run(
       (for{
         imageSources <- ImageSource.table if imageSources.taskId === taskId
-        relations <- ImageToImageSourceRelation.table if imageSources.id === relations.imageSourceId
-        images <- table.filter(_.id === imageId) if images.id === relations.imageId
+        relations <- ImageToImageSourceRelation.table if imageSources.imageSourceId === relations.imageSourceId
+        images <- table.filter(_.imageId === imageId) if images.imageId === relations.imageId
       } yield (images, imageSources)).result
     ), Duration.Inf
-    ).headOption.map{case (image, imageSource) => makeImageWithAccess(reify(image), ImageSource.reify(imageSource))}
+    ).headOption.map{case (image, imageSource) => makeImageWithAccess(image, imageSource)}
   }
 
-  def makeImageWithAccess(image: Image, source: ImageSource) = {
+  def makeImageWithAccess(image: ImagesRow, source: ImageSourcesRow) = {
     val imageAccessInterface = ImageSource.imageSourceInterfaceFromImageSource(source)
     ImageWithAccess(image, imageAccessInterface.imageHeaders(image))
   }
+
+  def idFromRow(a: _root_.com.example.app.demo.Tables.ImagesRow) =
+    a.imageId
+
+  def updateId(a: _root_.com.example.app.demo.Tables.ImagesRow, id: String) =
+    a.copy(imageId = id)
+
+  def idColumnFromTable(a: _root_.com.example.app.demo.Tables.Images) =
+    a.imageId
 }

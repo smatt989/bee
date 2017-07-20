@@ -1,20 +1,18 @@
 package com.example.app.models
 
-import com.example.app.{HasIntId, SlickDbObject, Tables}
+import com.example.app.SlickDbObject
 import com.example.app.AppGlobals
 import AppGlobals.dbConfig.driver.api._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import com.example.app.demo.Tables._
 
-case class UserConnection(id: Int = 0, senderUserId: Int, receiverUserId: Int) extends HasIntId[UserConnection]{
-
-  def updateId(id: Int) =
-    this.copy(id = id)
-}
+case class UserConnection(id: Int = 0, senderUserId: Int, receiverUserId: Int)
 
 case class ConnectionRequestJson(addUserId: Int) {
   def newConnection(senderUserId: Int) = {
-    UserConnection(
+    UserConnectionsRow(
+      userConnectionId = 0,
       senderUserId = senderUserId,
       receiverUserId = addUserId
     )
@@ -23,14 +21,12 @@ case class ConnectionRequestJson(addUserId: Int) {
 
 case class ConnectionDeleteJson(removeUserId: Int)
 
-object UserConnection extends SlickDbObject[UserConnection, (Int, Int, Int), Tables.UserConnections]{
 
-  lazy val table = Tables.userConnections
+object UserConnection extends SlickDbObject[UserConnectionsRow, UserConnections]{
 
-  def reify(tuple: (Int, Int, Int)) =
-    (apply _).tupled(tuple)
+  lazy val table = UserConnections
 
-  def safeSave(connection: UserConnection) = {
+  def safeSave(connection: UserConnectionsRow) = {
     findConnection(connection.senderUserId, connection.receiverUserId).flatMap(optionalConnection => {
       if (optionalConnection.isEmpty) {
         create(connection)
@@ -41,27 +37,36 @@ object UserConnection extends SlickDbObject[UserConnection, (Int, Int, Int), Tab
   }
 
   def findConnection(senderUserId: Int, receiverUserId: Int) =
-    db.run(table.filter(a => a.senderUserId === senderUserId && a.receiverUserId === receiverUserId).result).map(_.map(reify).headOption)
+    db.run(table.filter(a => a.senderUserId === senderUserId && a.receiverUserId === receiverUserId).result).map(_.headOption)
 
   def getBySenderId(senderId: Int) =
-    db.run(table.filter(_.senderUserId === senderId).result).map(_.map(reify))
+    db.run(table.filter(_.senderUserId === senderId).result)
 
   def getReceiversBySenderId(senderId: Int) =
     db.run(
       (for {
-        (cs, us) <- table.filter(_.senderUserId === senderId) join Tables.users on (_.receiverUserId === _.id)
-      } yield (us)).result).map(_.map(User.reifyJson)
+        (cs, us) <- table.filter(_.senderUserId === senderId) join User.table on (_.receiverUserId === _.userAccountId)
+      } yield us).result
     )
 
   def getByReceiverId(receiverId: Int) =
-    db.run(table.filter(_.receiverUserId === receiverId).result).map(_.map(reify))
+    db.run(table.filter(_.receiverUserId === receiverId).result)
 
   def getSendersByReceiverId(receiverId: Int) =
     db.run(
       (for {
-        (cs, us) <- table.filter(_.receiverUserId === receiverId) join Tables.users on (_.senderUserId === _.id)
-      } yield (us)).result).map(_.map(User.reifyJson))
+        (cs, us) <- table.filter(_.receiverUserId === receiverId) join User.table on (_.senderUserId === _.userAccountId)
+      } yield us).result)
 
   def removeBySenderReceiverPair(senderUserId: Int, receiverUserId: Int) =
     db.run(table.filter(a => a.senderUserId === senderUserId && a.receiverUserId === receiverUserId).delete)
+
+  def idFromRow(a: _root_.com.example.app.demo.Tables.UserConnectionsRow) =
+    a.userConnectionId
+
+  def updateId(a: _root_.com.example.app.demo.Tables.UserConnectionsRow, id: Int) =
+    a.copy(userConnectionId = id)
+
+  def idColumnFromTable(a: _root_.com.example.app.demo.Tables.UserConnections) =
+    a.userConnectionId
 }

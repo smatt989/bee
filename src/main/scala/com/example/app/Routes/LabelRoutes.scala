@@ -17,10 +17,10 @@ trait LabelRoutes extends SlickRoutes with AuthenticationSupport {
 
     val saveLabels = parsedBody.extract[SaveLabels]
 
-    val authorizedParticipation = Task.authorizedToParticipateInTask(user.id, saveLabels.taskId)
+    val authorizedParticipation = Task.authorizedToParticipateInTask(user.userAccountId, saveLabels.taskId)
 
     if(authorizedParticipation)
-      Label.saveLabels(user.id, saveLabels).map(_.map(_.toJson))
+      Label.saveLabels(user.userAccountId, saveLabels).map(_.map(Label.makeJson))
     else
       throw new Exception("Not authorized to label this image")
   }
@@ -31,12 +31,12 @@ trait LabelRoutes extends SlickRoutes with AuthenticationSupport {
 
     val labelRequest = parsedBody.extract[LabelRequest]
 
-    val authorizedParticipant = Task.authorizedToParticipateInTask(user.id, labelRequest.taskId) || Task.authorizedToViewTaskDetails(user.id, labelRequest.taskId)
+    val authorizedParticipant = Task.authorizedToParticipateInTask(user.userAccountId, labelRequest.taskId) || Task.authorizedToViewTaskDetails(user.userAccountId, labelRequest.taskId)
 
-    val participant = Await.result(Participant.participantByUserAndTask(user.id, labelRequest.taskId), Duration.Inf)
+    val participant = Await.result(Participant.participantByUserAndTask(user.userAccountId, labelRequest.taskId), Duration.Inf)
 
     if(authorizedParticipant)
-      Label.labelsByParticipantAndImage(participant.get.id, labelRequest.imageId).map(_.map(_.toJson))
+      Label.labelsByParticipantAndImage(participant.get.participantId, labelRequest.imageId).map(_.map(Label.makeJson))
     else
       throw new Exception("Not authorized to view labels for this image")
   }

@@ -1,23 +1,18 @@
 package com.example.app.models
 
-import com.example.app.{HasUUID, SlickUUIDObject, Tables}
+import com.example.app.SlickUUIDObject
 import org.joda.time.DateTime
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import com.example.app.AppGlobals
 import AppGlobals.dbConfig.driver.api._
-import scala.concurrent.ExecutionContext.Implicits.global
+
+import com.example.app.demo.Tables.{ImageViews, _}
 
 /**
   * Created by matt on 5/31/17.
   */
-case class ImageView(id: String = null, participantId: Int, imageId: String, ontologyVersionId: Int, createdMillis: Long) extends HasUUID[ImageView] {
-  def updateId(id: String) = this.copy(id = id)
-
-  def toJson(taskId: Int) =
-    JsonImageView(taskId, imageId, createdMillis, id)
-}
 
 case class CreateImageView(taskId: Int, imageId: String)
 
@@ -29,26 +24,26 @@ case class ImageWithAccessWithView(imageWithAccess: ImageWithAccess, viewInfo: O
   def toJson = ImageWithView(imageWithAccess.image, viewInfo)
 }
 
-case class ImageWithView(image: Image, viewInfo: Option[JsonImageView])
+case class ImageWithView(image: ImagesRow, viewInfo: Option[JsonImageView])
 
-object ImageView extends SlickUUIDObject[ImageView, (String, Int, String, Int, Long), Tables.ImageViews] {
-  lazy val table = Tables.imageViews
+object ImageView extends SlickUUIDObject[ImageViewsRow, ImageViews] {
+  lazy val table = ImageViews
 
-  def reify(tuple: (String, Int, String, Int, Long)) =
-    (apply _).tupled(tuple)
+  def makeJson(a: ImageViewsRow, taskId: Int) =
+    JsonImageView(taskId, a.imageId, a.createdMillis, a.imageViewId)
 
   def createNewImageView(userId: Int, newImageView: CreateImageView) = {
     val participant = Await.result(Participant.participantByUserAndTask(userId, newImageView.taskId), Duration.Inf)
     val currentOntology = Await.result(OntologyVersion.latestVersionByTask(newImageView.taskId), Duration.Inf).get
     if(participant.isDefined) {
-      val imageView = ImageView(null, participant.get.id, newImageView.imageId, currentOntology.id, new DateTime().getMillis)
+      val imageView = ImageViewsRow(null, participant.get.participantId, newImageView.imageId, currentOntology.ontologyVersionId, new DateTime().getMillis)
       create(imageView)
     } else
       throw new Exception("Not authorized to see this image")
   }
 
   def byParticipant(participantId: Int) = {
-    db.run(table.filter(_.participantId === participantId).result).map(_.map(reify))
+    db.run(table.filter(_.participantId === participantId).result)
   }
 
   //TODO: EW.
@@ -57,7 +52,7 @@ object ImageView extends SlickUUIDObject[ImageView, (String, Int, String, Int, L
       Image.nextImage(userId, requestImage.taskId).map(img => ImageWithAccessWithView(img, None))
     else {
       val participant = Await.result(Participant.participantByUserAndTask(userId, requestImage.taskId), Duration.Inf)
-      val previouslySeenImages = Await.result(byParticipant(participant.get.id), Duration.Inf)
+      val previouslySeenImages = Await.result(byParticipant(participant.get.participantId), Duration.Inf)
 
       if(previouslySeenImages.nonEmpty){
         val lastIndex = previouslySeenImages.size - 1
@@ -68,9 +63,10 @@ object ImageView extends SlickUUIDObject[ImageView, (String, Int, String, Int, L
         })
 
         val incrementToIndex = findIndex.map(_ + increment.value).getOrElse(lastIndex)
+        //TODO: TO JSON THING HERE...
         if(incrementToIndex <= lastIndex && incrementToIndex >= 0)
           Image.getImageWithAccess(userId, requestImage.taskId, previouslySeenImages(incrementToIndex).imageId)
-              .map(img => ImageWithAccessWithView(img, Some(previouslySeenImages(incrementToIndex).toJson(requestImage.taskId))))
+              .map(img => ImageWithAccessWithView(img, Some(previouslySeenImages(incrementToIndex)).map(i => JsonImageView(requestImage.taskId, i.imageId, i.createdMillis, i.imageViewId))))
         else
           Image.nextImage(userId, requestImage.taskId).map(img => ImageWithAccessWithView(img, None))
       } else
@@ -80,6 +76,15 @@ object ImageView extends SlickUUIDObject[ImageView, (String, Int, String, Int, L
 
   val nextImageIncrement = 1
   val previousImageIncrement = -1
+
+  def idFromRow(a: _root_.com.example.app.demo.Tables.ImageViewsRow) =
+    a.imageViewId
+
+  def updateId(a: _root_.com.example.app.demo.Tables.ImageViewsRow, id: String) =
+    a.copy(imageViewId = id)
+
+  def idColumnFromTable(a: _root_.com.example.app.demo.Tables.ImageViews) =
+    a.imageViewId
 }
 
 case class ImageIncrement(value: Int)

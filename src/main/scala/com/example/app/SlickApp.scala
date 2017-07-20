@@ -13,8 +13,7 @@ class SlickApp() extends ScalatraServlet with FutureSupport
   with InvitationRoutes
   with LabelRoutes
   with ParticipantRoutes
-  with TaskRoutes
-  with DBManagementRoutes {
+  with TaskRoutes {
 
   def db = AppGlobals.db
 

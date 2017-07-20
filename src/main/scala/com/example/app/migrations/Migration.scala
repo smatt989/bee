@@ -1,13 +1,10 @@
 package com.example.app.migrations
 
-import com.example.app.models.User
-import com.example.app.{AppGlobals, DBLauncher, Tables}
+import com.example.app.{AppGlobals, DBLauncher}
 import slick.dbio
 import AppGlobals.dbConfig.driver.api._
-import slick.profile.FixedSqlAction
 
 import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import slick.codegen.SourceCodeGenerator
 
@@ -19,13 +16,13 @@ trait Migration {
 
 object CodeGenerator {
   def main(args: Array[String]): Unit = {
-    Migration.codegen
+    Migration.codegen()
   }
 }
 
 object DBSetup {
   def main(args: Array[String]): Unit = {
-    Migration.setupDB
+    Migration.setupDB()
   }
 }
 
@@ -33,17 +30,17 @@ object Migration {
 
   lazy val db = AppGlobals.db
 
-  def initDB = {
+  def initDB() = {
     if(!dBInitialized)
       insertOneMigration(InitDB)
     else
       System.out.println("DB already initialized...")
   }
 
-  def run = {
+  def run() = {
     if(dBInitialized) {
       val latest = latestMigrationInDB()
-      migrations.drop(latest).map(f => {
+      migrations.drop(latest).foreach(f => {
         insertOneMigration(f)
       })
       System.out.println("Done.")
@@ -51,12 +48,12 @@ object Migration {
       System.out.println("DB not initialized...")
   }
 
-  def setupDB = {
-    initDB
-    run
+  def setupDB() = {
+    initDB()
+    run()
   }
 
-  def codegen = {
+  def codegen() = {
     SourceCodeGenerator.run(
       AppGlobals.dbConfig.driverName,
       DBLauncher.cpds.getDriverClass,
@@ -68,9 +65,9 @@ object Migration {
     )
   }
 
-  def dBInitialized = {
-    Await.result(db.run(sql"""select TABLE_NAME from information_schema.tables where TABLE_NAME = ${InitDB.MIGRATION_TABLE_NAME}""".as[(String)]), Duration.Inf).size > 0
-  }
+  def dBInitialized =
+    Await.result(db.run(sql"""select TABLE_NAME from information_schema.tables where TABLE_NAME = ${InitDB.MIGRATION_TABLE_NAME}""".as[(String)]), Duration.Inf).nonEmpty
+
 
   private[this] lazy val migrations: Seq[Migration] = Seq(
     Migration1,
@@ -86,8 +83,7 @@ object Migration {
 
   private[this] def insertOneMigration(m: Migration) = {
     System.out.println("Starting migration "+m.id)
-    val r = Await.result(db.run(DBIO.seq(m.query, InitDB.migrationTable += (m.id + 1)).transactionally), Duration.Inf)
+    Await.result(db.run(DBIO.seq(m.query, InitDB.migrationTable += (m.id + 1)).transactionally), Duration.Inf)
     System.out.println("Finished migration "+m.id)
-    r
   }
 }

@@ -1,17 +1,21 @@
 package com.example.app.models
 
-import com.example.app.{HasUUID, SlickUUIDObject, Tables}
+import com.example.app.SlickUUIDObject
+import com.example.app.demo.Tables.{ImageToImageSourceRelations, _}
 
 /**
   * Created by matt on 5/31/17.
   */
-case class ImageToImageSourceRelation(id: String, imageId: String, imageSourceId: Int) extends HasUUID[ImageToImageSourceRelation] {
-  def updateId(id: String) = this.copy(id = id)
-}
 
-object ImageToImageSourceRelation extends SlickUUIDObject[ImageToImageSourceRelation, (String, String, Int), Tables.ImageToImageSourceRelations]{
-  lazy val table = Tables.imageToTaskRelations
+object ImageToImageSourceRelation extends SlickUUIDObject[ImageToImageSourceRelationsRow, ImageToImageSourceRelations]{
+  lazy val table = ImageToImageSourceRelations
 
-  def reify(tuple: (String, String, Int)) =
-    (apply _).tupled(tuple)
+  def idFromRow(a: _root_.com.example.app.demo.Tables.ImageToImageSourceRelationsRow) =
+    a.imageToImageSourceRelationId
+
+  def updateId(a: _root_.com.example.app.demo.Tables.ImageToImageSourceRelationsRow, id: String) =
+    a.copy(imageToImageSourceRelationId = id)
+
+  def idColumnFromTable(a: _root_.com.example.app.demo.Tables.ImageToImageSourceRelations) =
+    a.imageToImageSourceRelationId
 }

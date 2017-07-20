@@ -12,14 +12,14 @@ trait ParticipantRoutes extends SlickRoutes with AuthenticationSupport {
     contentType = formats("json")
     authenticate()
 
-    val userId = user.id
+    val userId = user.userAccountId
 
     val participantId = {params("id")}.toInt
 
     val participantAuthorization = Task.authorizedToEditParticipant(userId, participantId)
 
     if(participantAuthorization)
-      Participant.setParticipantActivation(participantId, false).map(_.toJson)
+      Participant.setParticipantActivation(participantId, activation = false).map(_.toJson)
     else
       throw new Exception("Not authorized to edit participant")
 
@@ -29,7 +29,7 @@ trait ParticipantRoutes extends SlickRoutes with AuthenticationSupport {
     contentType = formats("json")
     authenticate()
 
-    val userId = user.id
+    val userId = user.userAccountId
 
     val participantId = {params("id")}.toInt
 

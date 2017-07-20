@@ -1,6 +1,6 @@
 package com.example.app.models
 
-import com.example.app.{HasIntId, Tables, UpdatableDBObject}
+import com.example.app.UpdatableDBObject
 import org.joda.time.DateTime
 import com.example.app.AppGlobals
 import AppGlobals.dbConfig.driver.api._
@@ -9,42 +9,38 @@ import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 
+import com.example.app.demo.Tables._
+
 /**
   * Created by matt on 5/31/17.
   */
-case class Task(id: Int, name: String, creatorUserId: Int, createdMillis: Long) extends HasIntId[Task]{
-  def updateId(id: Int) = this.copy(id = id)
-
-  def toJson(userId: Int) =
-    InputTask(id, name, userId == creatorUserId, createdMillis)
-}
 
 case class InputTask(id: Int = 0, name: String, isCreator: Boolean = false, createdMillis: Long = new DateTime().getMillis) {
-  def task(userId: Int) = Task(id, name, userId, createdMillis)
+  def task(userId: Int) = TasksRow(id, name, userId, createdMillis)
 }
 
-object Task extends UpdatableDBObject[Task, (Int, String, Int, Long), Tables.Tasks] {
-  def updateQuery(a: Task) = table.filter(_.id === a.id)
-    .map(x => (x.name))
-    .update((a.name))
+object Task extends UpdatableDBObject[TasksRow, Tasks] {
+
+  def makeJson(a: TasksRow, userId: Int) =
+    InputTask(a.taskId, a.taskName, userId == a.creatorUserId, a.createdMillis)
+
+  def updateQuery(a: TasksRow) = table.filter(t => idColumnFromTable(t) === idFromRow(a))
+    .map(x => x.taskName)
+    .update(a.taskName)
 
 
-  lazy val table = Tables.tasks
+  lazy val table = Tasks
 
-  def reify(tuple: (Int, String, Int, Long)) =
-    (apply _).tupled(tuple)
-
-  def tasksCreatedByUser(userId: Int) = {
-    db.run(table.filter(_.creatorUserId === userId).result).map(_.map(reify))
-  }
+  def tasksCreatedByUser(userId: Int) =
+    db.run(table.filter(_.creatorUserId === userId).result)
 
   def tasksParticipatingIn(userId: Int) = {
     db.run(
       (for {
         participants <- Participant.table if participants.userId === userId && participants.isActive
-        tasks <- table if tasks.id === participants.taskId
-      } yield (tasks)).result
-    ).map(_.map(reify))
+        tasks <- table if tasks.taskId === participants.taskId
+      } yield tasks).result
+    )
   }
 
   def isCreatorOfTask(userId: Int, taskId: Int) = {
@@ -75,10 +71,19 @@ object Task extends UpdatableDBObject[Task, (Int, String, Int, Long), Tables.Tas
     authorizedToEditTask(userId, taskId)
   }
 
-  def saveWithParticipantCreation(userId: Int, task: Task) = {
+  def saveWithParticipantCreation(userId: Int, task: TasksRow) = {
     val saved = Await.result(save(task), Duration.Inf)
-    if(!Participant.isParticipantInTask(userId, saved.id))
-      Participant.create(Participant(0, saved.id, userId, true))
+    if(!Participant.isParticipantInTask(userId, saved.taskId))
+      Participant.create(ParticipantsRow(0, saved.taskId, userId, isActive = true))
     saved
   }
+
+  def idFromRow(a: _root_.com.example.app.demo.Tables.TasksRow) =
+    a.taskId
+
+  def updateId(a: _root_.com.example.app.demo.Tables.TasksRow, id: Int) =
+    a.copy(taskId = id)
+
+  def idColumnFromTable(a: _root_.com.example.app.demo.Tables.Tasks) =
+    a.taskId
 }

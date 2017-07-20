@@ -15,15 +15,16 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
     contentType = formats("json")
     authenticate()
 
-    val userId = user.id
+    val userId = user.userAccountId
 
     val inputTask = parsedBody.extract[InputTask]
 
     val toSave = inputTask.task(userId)
 
-    if(!(toSave.existsInDb && !Task.authorizedToEditTask(userId, toSave.id)))
-      Task.saveWithParticipantCreation(userId, toSave).toJson(userId)
-    else
+    if(!(Task.existsInDb(toSave) && !Task.authorizedToEditTask(userId, toSave.taskId))) {
+      val task = Task.saveWithParticipantCreation(userId, toSave)
+      Task.makeJson(task, userId)
+    } else
       throw new Exception("Not authorized to edit this task")
   }
 
@@ -31,12 +32,13 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
     contentType = formats("json")
     authenticate()
 
-    val userId = user.id
+    val userId = user.userAccountId
 
-    val participatingIn = Await.result(Task.tasksParticipatingIn(userId).map(_.map(_.toJson(userId))), Duration.Inf)
-    val created = Await.result(Task.tasksCreatedByUser(userId).map(_.map(_.toJson(userId))), Duration.Inf)
+    val participatingIn = Await.result(Task.tasksParticipatingIn(userId), Duration.Inf)
+    val created = Await.result(Task.tasksCreatedByUser(userId), Duration.Inf)
 
-    (participatingIn ++ created).distinct.sortBy(_.id)
+    (participatingIn.map(a => Task.makeJson(a, userId)) ++ created.map(a => Task.makeJson(a, userId)))
+      .distinct.sortBy(_.id)
   }
 
   get("/tasks/:id/view") {
@@ -45,12 +47,12 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
 
     val taskId = {params("id")}.toInt
 
-    val userId = user.id
+    val userId = user.userAccountId
 
     val taskAuthorization = Task.authorizedToViewTaskDetails(userId, taskId)
 
     if(taskAuthorization)
-      Task.byId(taskId).map(_.toJson(userId))
+      Task.byId(taskId).map(t => Task.makeJson(t, userId))
     else
       throw new Exception("Not authorized to view this task")
   }
@@ -59,18 +61,18 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
     contentType = formats("json")
     authenticate()
 
-    val userId = user.id
+    val userId = user.userAccountId
 
-    Task.tasksCreatedByUser(userId).map(_.map(_.toJson(userId)))
+    Task.tasksCreatedByUser(userId).map(_.map(t => Task.makeJson(t, userId)))
   }
 
   get("/tasks/participating") {
     contentType = formats("json")
     authenticate()
 
-    val userId = user.id
+    val userId = user.userAccountId
 
-    Task.tasksParticipatingIn(userId).map(_.map(_.toJson(userId)))
+    Task.tasksParticipatingIn(userId).map(_.map(t => Task.makeJson(t, userId)))
   }
 
   get("/tasks/:id/participants") {
@@ -79,7 +81,7 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
 
     val taskId = {params("id")}.toInt
 
-    val userId = user.id
+    val userId = user.userAccountId
 
     val taskAuthorization = Task.authorizedToViewTaskDetails(userId, taskId)
 
@@ -93,12 +95,12 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
     contentType = formats("json")
     authenticate()
 
-    val userId = user.id
+    val userId = user.userAccountId
     val taskId = {params("id")}.toInt
 
     val participant = Await.result(Participant.participantByUserAndTask(userId, taskId), Duration.Inf)
     if(participant.isDefined)
-      Participant.setParticipantActivation(participant.get.id, false).map(_.toJson)
+      Participant.setParticipantActivation(participant.get.participantId, activation = false).map(_.toJson)
     else
       throw new Exception("Not able to leave a task you are not a participant in")
   }
@@ -109,7 +111,7 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
 
     val taskId = {params("id")}.toInt
 
-    val userId = user.id
+    val userId = user.userAccountId
 
     val taskAuthorization = Task.authorizedToEditTask(userId, taskId)
 
@@ -123,7 +125,7 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
     contentType = formats("json")
     authenticate()
 
-    val userId = user.id
+    val userId = user.userAccountId
 
     val taskId = {params("id")}.toInt
 
@@ -132,7 +134,7 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
     val ontology = parsedBody.extract[OntologyVersionJson]
 
     if(taskAuthorization)
-      OntologyVersion.createOntologyVersion(taskId, ontology).map(_.toJson)
+      OntologyVersion.createOntologyVersion(taskId, ontology).map(OntologyVersion.makeJson)
     else
       throw new Exception("Not authorized to edit this task")
   }
@@ -143,12 +145,12 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
 
     val taskId = {params("id")}.toInt
 
-    val userId = user.id
+    val userId = user.userAccountId
 
     val ontologyAuthorization = Task.authorizedToParticipateInTask(userId, taskId) || Task.authorizedToEditTask(userId, taskId)
 
     if(ontologyAuthorization)
-      OntologyVersion.latestVersionByTask(taskId).map(_.map(_.toJson))
+      OntologyVersion.latestVersionByTask(taskId).map(_.map(OntologyVersion.makeJson))
     else
       throw new Exception("Not authorized to view this task's ontology")
   }
@@ -165,12 +167,12 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
 
     val taskId = {params("id")}.toInt
 
-    val userId = user.id
+    val userId = user.userAccountId
 
     val taskAuthorization = Task.authorizedToViewTaskDetails(userId, taskId)
 
     if(taskAuthorization)
-      ImageSource.byTask(taskId).map(_.map(_.toJson))
+      ImageSource.byTask(taskId).map(_.map(ImageSource.makeJson))
     else
       throw new Exception("Not authorized to view this information for this task")
   }
@@ -180,13 +182,13 @@ trait TaskRoutes extends SlickRoutes with AuthenticationSupport{
     authenticate()
 
     val taskId = {params("id")}.toInt
-    val userId = user.id
+    val userId = user.userAccountId
 
     val taskAuthorization = Task.authorizedToViewTaskDetails(userId, taskId)
 
     if(taskAuthorization){
       val imageSources = Await.result(ImageSource.byTask(taskId), Duration.Inf)
-      ImageSource.imageCountInSources(imageSources.map(_.id))
+      ImageSource.imageCountInSources(imageSources.map(_.imageSourceId))
     }
     else
       throw new Exception("Not authorized to view this information for this task")

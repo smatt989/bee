@@ -2,7 +2,6 @@ package com.example.app
 
 import java.io.File
 
-import slick.driver.H2Driver.api._
 import com.mchange.v2.c3p0.ComboPooledDataSource
 import com.typesafe.config.{Config, ConfigFactory}
 import org.slf4j.LoggerFactory
@@ -52,8 +51,6 @@ object DBLauncher {
   val dbConf = newDbConfig[JdbcProfile](slickDriver)
 
   def newDbConfig[R <: BasicProfile : ClassTag](d: String): DatabaseConfig[R] = {
-
-    val root = ConfigFactory.load()
 
     val untypedP =  ClassLoaderUtil.defaultClassLoader.loadClass(d).getField("MODULE$").get(null)
 

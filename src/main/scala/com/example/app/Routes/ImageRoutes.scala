@@ -2,7 +2,6 @@ package com.example.app.Routes
 
 import com.example.app.models._
 import com.example.app.{AuthenticationSupport, SlickRoutes}
-import org.json4s.jackson.JsonMethods
 import org.json4s.jackson.Serialization
 
 /**
@@ -16,10 +15,10 @@ trait ImageRoutes extends SlickRoutes with AuthenticationSupport {
 
     val imageView = parsedBody.extract[CreateImageView]
 
-    val participantAuthorization = Task.authorizedToParticipateInTask(user.id, imageView.taskId)
+    val participantAuthorization = Task.authorizedToParticipateInTask(user.userAccountId, imageView.taskId)
 
     if(participantAuthorization)
-      ImageView.createNewImageView(user.id, imageView).map(_.toJson(imageView.taskId))
+      ImageView.createNewImageView(user.userAccountId, imageView).map(a => ImageView.makeJson(a, imageView.taskId))
     else
       throw new Exception("Not authorized to view this image")
   }
@@ -30,10 +29,10 @@ trait ImageRoutes extends SlickRoutes with AuthenticationSupport {
 
     val imageRequest = parsedBody.extract[RequestImage]
 
-    val participantAuthorization = Task.authorizedToParticipateInTask(user.id, imageRequest.taskId)
+    val participantAuthorization = Task.authorizedToParticipateInTask(user.userAccountId, imageRequest.taskId)
 
     if(participantAuthorization) {
-      val imageWithAccess = ImageView.imageIncrement(user.id, imageRequest, ImageIncrement.next)
+      val imageWithAccess = ImageView.imageIncrement(user.userAccountId, imageRequest, ImageIncrement.next)
 
       if(imageWithAccess.isDefined) {
         response.addHeader(Image.configsHeader, Serialization.write(imageWithAccess.get.imageWithAccess.accessConfigs))
@@ -50,10 +49,10 @@ trait ImageRoutes extends SlickRoutes with AuthenticationSupport {
 
     val imageRequest = parsedBody.extract[RequestImage]
 
-    val participantAuthorization = Task.authorizedToParticipateInTask(user.id, imageRequest.taskId)
+    val participantAuthorization = Task.authorizedToParticipateInTask(user.userAccountId, imageRequest.taskId)
 
     if(participantAuthorization) {
-      val imageWithAccess = ImageView.imageIncrement(user.id, imageRequest, ImageIncrement.previous)
+      val imageWithAccess = ImageView.imageIncrement(user.userAccountId, imageRequest, ImageIncrement.previous)
 
       if(imageWithAccess.isDefined) {
         response.addHeader(Image.configsHeader, Serialization.write(imageWithAccess.get.imageWithAccess.accessConfigs))

@@ -18,16 +18,16 @@ trait ImageSourceRoutes extends SlickRoutes with AuthenticationSupport {
     val imageSource = parsedBody.extract[ImageSourceRequest]
 
     val taskAuthorization = if(imageSource.id != null && imageSource.id > 0)
-      Task.authorizedToEditImageSource(user.id, imageSource.id)
+      Task.authorizedToEditImageSource(user.userAccountId, imageSource.id)
     else
-      Task.authorizedToEditTask(user.id, imageSource.taskId)
+      Task.authorizedToEditTask(user.userAccountId, imageSource.taskId)
 
     //TODO: NOT OBVIOUS THAT OVERLAPPING IMAGE SOURCE IMAGES ARE BEING CONSOLIDATED HERE
     if(taskAuthorization) {
       val savedImageSource = Await.result(ImageSource.save(imageSource.getSerialized), Duration.Inf)
       ImageSource.updateImageSourceImages(savedImageSource)
-      savedImageSource.makeHeaderMap
-      savedImageSource.toJson
+      ImageSource.makeHeaderMap(savedImageSource)
+      ImageSource.makeJson(savedImageSource)
     } else
       throw new Exception("Not authorized to edit this task")
   }
@@ -38,15 +38,15 @@ trait ImageSourceRoutes extends SlickRoutes with AuthenticationSupport {
 
     val imageSourceId = {params("id")}.toInt
 
-    val userId = user.id
+    val userId = user.userAccountId
 
     val taskAuthorization =
-      Task.authorizedToEditImageSource(user.id, imageSourceId)
+      Task.authorizedToEditImageSource(userId, imageSourceId)
 
     if(taskAuthorization) {
       val imageSource = Await.result(ImageSource.byId(imageSourceId), Duration.Inf)
-      imageSource.makeHeaderMap
-      imageSource.toJson
+      ImageSource.makeHeaderMap(imageSource)
+      ImageSource.makeJson(imageSource)
     } else
       throw new Exception("Not authorized to view this image source")
   }
@@ -59,10 +59,10 @@ trait ImageSourceRoutes extends SlickRoutes with AuthenticationSupport {
 
     val imageSource = Await.result(ImageSource.byId(imageSourceId), Duration.Inf)
 
-    val taskAuthorization = Task.authorizedToEditTask(user.id, imageSource.taskId)
+    val taskAuthorization = Task.authorizedToEditTask(user.userAccountId, imageSource.taskId)
 
     if(taskAuthorization) {
-      Await.result(ImageSource.delete(imageSource.id), Duration.Inf)
+      Await.result(ImageSource.delete(imageSource.imageSourceId), Duration.Inf)
       "200"
     } else
       throw new Exception("Not authorized to edit this task")

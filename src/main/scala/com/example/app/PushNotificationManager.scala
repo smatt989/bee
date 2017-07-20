@@ -8,7 +8,7 @@ import com.relayrides.pushy.apns.util.{ApnsPayloadBuilder, SimpleApnsPushNotific
 import java.util.concurrent.{Future => JFuture}
 
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Promise, Future => SFuture}
+import scala.concurrent.{Await, Promise}
 import scala.util.Try
 
 object PushNotificationManager {
@@ -35,7 +35,7 @@ object PushNotificationManager {
   def connect(): Unit = {
     val jfuture: JFuture[Void] = apnsClient.connect(ApnsClient.PRODUCTION_APNS_HOST)
     val promise = Promise[Void]()
-    new Thread(new Runnable { def run() { promise.complete(Try{ jfuture.get }) }}).start
+    new Thread(new Runnable { def run() { promise.complete(Try{ jfuture.get }) }}).start()
     val future = promise.future
 
     System.out.println("Establishing connection...")
@@ -64,27 +64,27 @@ object PushNotificationManager {
 
     try {
       val pushNotificationResponse =
-        sendNotificationFuture.get();
+        sendNotificationFuture.get()
 
       System.out.println("Push notification received...")
-      if (pushNotificationResponse.isAccepted()) {
+      if (pushNotificationResponse.isAccepted) {
         System.out.println("Push notification accepted by APNs gateway.")
       } else {
         System.out.println("Notification rejected by the APNs gateway: " +
-          pushNotificationResponse.getRejectionReason())
+          pushNotificationResponse.getRejectionReason)
 
-        if (pushNotificationResponse.getTokenInvalidationTimestamp() != null) {
+        if (pushNotificationResponse.getTokenInvalidationTimestamp != null) {
           System.out.println("\t…and the token is invalid as of " +
-            pushNotificationResponse.getTokenInvalidationTimestamp())
+            pushNotificationResponse.getTokenInvalidationTimestamp)
         }
       }
     } catch {case e: ExecutionException =>
       System.err.println("Failed to send push notification.")
       e.printStackTrace()
 
-      if (e.getCause().isInstanceOf[ClientNotConnectedException]) {
+      if (e.getCause.isInstanceOf[ClientNotConnectedException]) {
         System.out.println("Waiting for client to reconnect…")
-        apnsClient.getReconnectionFuture().await()
+        apnsClient.getReconnectionFuture.await()
         System.out.println("Reconnected.")
       }
     }

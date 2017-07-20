@@ -3,8 +3,7 @@ package com.example.app.models
 
 import com.amazonaws.auth._
 import com.amazonaws.services.s3.AmazonS3Client
-import com.amazonaws.services.s3.event.S3EventNotification.S3BucketEntity
-import com.amazonaws.{AmazonWebServiceClient, ClientConfiguration}
+import com.example.app.demo.Tables.{ImageSourcesRow, ImagesRow}
 import org.json4s.DefaultFormats
 import org.json4s.jackson.JsonMethods
 
@@ -15,15 +14,15 @@ import scala.collection.JavaConversions._
   */
 trait ImageSourceInterface {
 
-  def accessImages: Seq[Image]
-  def imageHeaders(image: Image): Map[String, String]
+  def accessImages: Seq[ImagesRow]
+  def imageHeaders(image: ImagesRow): Map[String, String]
 }
 
-class AmazonS3ImageSource(imageSource: ImageSource) extends ImageSourceInterface {
+class AmazonS3ImageSource(imageSource: ImageSourcesRow) extends ImageSourceInterface {
 
   implicit val formats = DefaultFormats
 
-  val parsed = imageSource.jsonConfigs
+  val parsed = JsonMethods.parse(imageSource.imageSourceConfigs)
 
   val bucket = (parsed \ "Bucket").extract[String]
   val accessKey = (parsed \ "Access-Key").extract[String]
@@ -39,16 +38,16 @@ class AmazonS3ImageSource(imageSource: ImageSource) extends ImageSourceInterface
     val bucketExists = s3.doesBucketExist(bucket)
 
     if(bucketExists) {
-      val objects = s3.listObjects(bucket).getObjectSummaries()
+      val objects = s3.listObjects(bucket).getObjectSummaries
 
       objects.toList.map(o => {
         val key = o.getKey
-        Image(null, key, s3.getResourceUrl(bucket, key))
+        ImagesRow(null, key, s3.getResourceUrl(bucket, key))
       })
     } else
       throw new Exception("no such bucket...")
   }
 
-  def imageHeaders(image: Image) =
+  def imageHeaders(image: ImagesRow) =
     Map("referer" -> accessKey)
 }

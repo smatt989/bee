@@ -2,8 +2,6 @@ package com.example.app
 
 import com.example.app.models.{Image, ImageSource}
 import org.scalatra._
-//import slick.driver.H2Driver.api._
-import com.example.app.AppGlobals
 import AppGlobals.dbConfig.driver.api._
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra.json._
@@ -23,7 +21,7 @@ trait SlickRoutes extends ScalatraBase with FutureSupport with JacksonJsonSuppor
   }
 
   options("/*"){
-    response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"));
+    response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"))
   }
 
   before() {

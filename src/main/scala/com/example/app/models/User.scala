@@ -1,26 +1,19 @@
 package com.example.app.models
 
-import com.example.app.{HasIntId, Tables, Updatable, UpdatableDBObject}
+import com.example.app.UpdatableDBObject
 import org.mindrot.jbcrypt.BCrypt
 import com.example.app.AppGlobals
 import AppGlobals.dbConfig.driver.api._
+import com.example.app.demo.Tables._
+import com.example.app.demo.{Tables => T}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
-
-case class User(id: Int, email: String, hashedPassword: String) extends HasIntId[User] {
-
-  def updateId(id: Int) =
-    this.copy(id = id)
-
-  lazy val toJson =
-    UserJson(id, email)
-}
+import scala.concurrent.Await
 
 case class UserCreate(email: String, password: String) {
   lazy val makeUser =
-    User(0, email, User.makeHash(password))
+    UserAccountsRow(0, email, User.makeHash(password))
 }
 
 case class UpdateUser(email: String, password: String, newEmail: Option[String], newPassword: Option[String]){
@@ -32,17 +25,24 @@ case class UserLogin(email: String, password: String)
 
 case class UserJson(id: Int, email: String)
 
-object User extends UpdatableDBObject[User, (Int, String, String), Tables.Users]{
 
-  lazy val table = Tables.users
+object User extends UpdatableDBObject[UserAccountsRow, UserAccounts]{
 
-  def reify(tuple: (Int, String, String)) =
-    (apply _).tupled(tuple)
+  def makeJson(a: UserAccountsRow) =
+    UserJson(a.userAccountId, a.email)
 
-  def reifyJson(tuple: (Int, String, String)) =
-    reify(tuple).toJson
+  lazy val table = T.UserAccounts
 
-  def updateQuery(a: User) = table.filter(_.id === a.id)
+  def idFromRow(a: _root_.com.example.app.demo.Tables.UserAccountsRow) =
+    a.userAccountId
+
+  def updateId(a: _root_.com.example.app.demo.Tables.UserAccountsRow, id: Int) =
+    a.copy(userAccountId = id)
+
+  def idColumnFromTable(a: _root_.com.example.app.demo.Tables.UserAccounts) =
+    a.userAccountId
+
+  def updateQuery(a: UserAccountsRow) = table.filter(t => idColumnFromTable(t) === idFromRow(a))
     .map(x => (x.email, x.hashedPassword))
     .update((a.email, a.hashedPassword))
 
@@ -52,21 +52,21 @@ object User extends UpdatableDBObject[User, (Int, String, String), Tables.Users]
   private[this] def checkPassword(password: String, hashedPassword: String) =
     BCrypt.checkpw(password, hashedPassword)
 
-  def authenticate(user: User, password: String) = {
+  def authenticate(user: UserAccountsRow, password: String) = {
     checkPassword(password, user.hashedPassword)
   }
 
   def searchUserName(query: String) = {
     val queryString = "%"+query.toLowerCase()+"%"
-    db.run(table.filter(_.email.toLowerCase like queryString).result).map(_.map(reifyJson))
+    db.run(table.filter(_.email.toLowerCase like queryString).result)//.map(_.map(reifyJson))
   }
 
   private[this] def unauthenticatedUserFromUserLogin(userLogin: UserLogin) = {
 
     Await.result(
-      db.run(table.filter(_.email.toLowerCase === userLogin.email.toLowerCase()).result).map(_.headOption.map(reify).getOrElse{
+      db.run(table.filter(_.email.toLowerCase === userLogin.email.toLowerCase()).result).map(_.headOption.getOrElse{
         throw new Exception("No user with that email")
-      }), UserSession.waitDuration)
+      }), Duration.Inf)
   }
 
   def authenticatedUser(userLogin: UserLogin) = {
