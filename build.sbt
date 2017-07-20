@@ -11,7 +11,7 @@ val Organization = "com.slotkin"
 val Name = "Bee"
 val Version = "0.1.0-SNAPSHOT"
 val ScalaVersion = "2.11.8"
-val ScalatraVersion = "2.5.1"
+val ScalatraVersion = "2.5.0"
 val SlickVersion = "3.1.1"
 
 lazy val project = Project (
