@@ -2,7 +2,7 @@ package com.example.app.demo
 // AUTO-GENERATED Slick data model
 /** Stand-alone Slick data model for immediate use */
 object Tables extends {
-  val profile = slick.driver.H2Driver
+  val profile = slick.driver.PostgresDriver
 } with Tables
 
 /** Slick data model trait for extension, choice of backend or usage in the cake pattern. (Make sure to initialize this late.) */
@@ -21,15 +21,15 @@ trait Tables {
   /** Entity class storing rows of table DeviceTokens
    *  @param deviceTokenId Database column DEVICE_TOKEN_ID SqlType(INTEGER), AutoInc, PrimaryKey
    *  @param userId Database column USER_ID SqlType(INTEGER)
-   *  @param deviceToken Database column DEVICE_TOKEN SqlType(VARCHAR) */
-  case class DeviceTokensRow(deviceTokenId: Int, userId: Int, deviceToken: Option[String])
+   *  @param deviceToken Database column DEVICE_TOKEN SqlType(VARCHAR), Default(None) */
+  case class DeviceTokensRow(deviceTokenId: Int, userId: Int, deviceToken: Option[String] = None)
   /** GetResult implicit for fetching DeviceTokensRow objects using plain SQL queries */
   implicit def GetResultDeviceTokensRow(implicit e0: GR[Int], e1: GR[Option[String]]): GR[DeviceTokensRow] = GR{
     prs => import prs._
     DeviceTokensRow.tupled((<<[Int], <<[Int], <<?[String]))
   }
   /** Table description of table DEVICE_TOKENS. Objects of this class serve as prototypes for rows in queries. */
-  class DeviceTokens(_tableTag: Tag) extends Table[DeviceTokensRow](_tableTag, "DEVICE_TOKENS") {
+  class DeviceTokens(_tableTag: Tag) extends Table[DeviceTokensRow](_tableTag, Some("PUBLIC"), "DEVICE_TOKENS") {
     def * = (deviceTokenId, userId, deviceToken) <> (DeviceTokensRow.tupled, DeviceTokensRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(deviceTokenId), Rep.Some(userId), deviceToken).shaped.<>({r=>import r._; _1.map(_=> DeviceTokensRow.tupled((_1.get, _2.get, _3)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
@@ -38,8 +38,8 @@ trait Tables {
     val deviceTokenId: Rep[Int] = column[Int]("DEVICE_TOKEN_ID", O.AutoInc, O.PrimaryKey)
     /** Database column USER_ID SqlType(INTEGER) */
     val userId: Rep[Int] = column[Int]("USER_ID")
-    /** Database column DEVICE_TOKEN SqlType(VARCHAR) */
-    val deviceToken: Rep[Option[String]] = column[Option[String]]("DEVICE_TOKEN")
+    /** Database column DEVICE_TOKEN SqlType(VARCHAR), Default(None) */
+    val deviceToken: Rep[Option[String]] = column[Option[String]]("DEVICE_TOKEN", O.Default(None))
 
     /** Foreign key referencing UserAccounts (database name DEVICE_TOKENS_TO_USER_FK) */
     lazy val userAccountsFk = foreignKey("DEVICE_TOKENS_TO_USER_FK", userId, UserAccounts)(r => r.userAccountId, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Restrict)
@@ -58,7 +58,7 @@ trait Tables {
     ImagesRow.tupled((<<[String], <<[String], <<[String]))
   }
   /** Table description of table IMAGES. Objects of this class serve as prototypes for rows in queries. */
-  class Images(_tableTag: Tag) extends Table[ImagesRow](_tableTag, "IMAGES") {
+  class Images(_tableTag: Tag) extends Table[ImagesRow](_tableTag, Some("PUBLIC"), "IMAGES") {
     def * = (imageId, externalId, location) <> (ImagesRow.tupled, ImagesRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(imageId), Rep.Some(externalId), Rep.Some(location)).shaped.<>({r=>import r._; _1.map(_=> ImagesRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
@@ -86,7 +86,7 @@ trait Tables {
     ImageSourcesRow.tupled((<<[Int], <<[Int], <<[String], <<[String], <<[String]))
   }
   /** Table description of table IMAGE_SOURCES. Objects of this class serve as prototypes for rows in queries. */
-  class ImageSources(_tableTag: Tag) extends Table[ImageSourcesRow](_tableTag, "IMAGE_SOURCES") {
+  class ImageSources(_tableTag: Tag) extends Table[ImageSourcesRow](_tableTag, Some("PUBLIC"), "IMAGE_SOURCES") {
     def * = (imageSourceId, taskId, imageSourceName, imageSourceType, imageSourceConfigs) <> (ImageSourcesRow.tupled, ImageSourcesRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(imageSourceId), Rep.Some(taskId), Rep.Some(imageSourceName), Rep.Some(imageSourceType), Rep.Some(imageSourceConfigs)).shaped.<>({r=>import r._; _1.map(_=> ImageSourcesRow.tupled((_1.get, _2.get, _3.get, _4.get, _5.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
@@ -119,7 +119,7 @@ trait Tables {
     ImageToImageSourceRelationsRow.tupled((<<[String], <<[String], <<[Int]))
   }
   /** Table description of table IMAGE_TO_IMAGE_SOURCE_RELATIONS. Objects of this class serve as prototypes for rows in queries. */
-  class ImageToImageSourceRelations(_tableTag: Tag) extends Table[ImageToImageSourceRelationsRow](_tableTag, "IMAGE_TO_IMAGE_SOURCE_RELATIONS") {
+  class ImageToImageSourceRelations(_tableTag: Tag) extends Table[ImageToImageSourceRelationsRow](_tableTag, Some("PUBLIC"), "IMAGE_TO_IMAGE_SOURCE_RELATIONS") {
     def * = (imageToImageSourceRelationId, imageId, imageSourceId) <> (ImageToImageSourceRelationsRow.tupled, ImageToImageSourceRelationsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(imageToImageSourceRelationId), Rep.Some(imageId), Rep.Some(imageSourceId)).shaped.<>({r=>import r._; _1.map(_=> ImageToImageSourceRelationsRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
@@ -152,7 +152,7 @@ trait Tables {
     ImageViewsRow.tupled((<<[String], <<[Int], <<[String], <<[Int], <<[Long]))
   }
   /** Table description of table IMAGE_VIEWS. Objects of this class serve as prototypes for rows in queries. */
-  class ImageViews(_tableTag: Tag) extends Table[ImageViewsRow](_tableTag, "IMAGE_VIEWS") {
+  class ImageViews(_tableTag: Tag) extends Table[ImageViewsRow](_tableTag, Some("PUBLIC"), "IMAGE_VIEWS") {
     def * = (imageViewId, participantId, imageId, ontologyVersionId, createdMillis) <> (ImageViewsRow.tupled, ImageViewsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(imageViewId), Rep.Some(participantId), Rep.Some(imageId), Rep.Some(ontologyVersionId), Rep.Some(createdMillis)).shaped.<>({r=>import r._; _1.map(_=> ImageViewsRow.tupled((_1.get, _2.get, _3.get, _4.get, _5.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
@@ -189,7 +189,7 @@ trait Tables {
     InvitationsRow.tupled((<<[String], <<[Int], <<[Long]))
   }
   /** Table description of table INVITATIONS. Objects of this class serve as prototypes for rows in queries. */
-  class Invitations(_tableTag: Tag) extends Table[InvitationsRow](_tableTag, "INVITATIONS") {
+  class Invitations(_tableTag: Tag) extends Table[InvitationsRow](_tableTag, Some("PUBLIC"), "INVITATIONS") {
     def * = (invitationId, taskId, createdMillis) <> (InvitationsRow.tupled, InvitationsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(invitationId), Rep.Some(taskId), Rep.Some(createdMillis)).shaped.<>({r=>import r._; _1.map(_=> InvitationsRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
@@ -215,23 +215,23 @@ trait Tables {
    *  @param ontology Database column ONTOLOGY SqlType(VARCHAR)
    *  @param ontologyType Database column ONTOLOGY_TYPE SqlType(VARCHAR)
    *  @param labelValue Database column LABEL_VALUE SqlType(DOUBLE)
-   *  @param xCoordinate Database column X_COORDINATE SqlType(DOUBLE)
-   *  @param yCoordinate Database column Y_COORDINATE SqlType(DOUBLE)
-   *  @param width Database column WIDTH SqlType(DOUBLE)
-   *  @param height Database column HEIGHT SqlType(DOUBLE)
-   *  @param point1X Database column POINT_1_X SqlType(DOUBLE)
-   *  @param point1Y Database column POINT_1_Y SqlType(DOUBLE)
-   *  @param point2X Database column POINT_2_X SqlType(DOUBLE)
-   *  @param point2Y Database column POINT_2_Y SqlType(DOUBLE)
+   *  @param xCoordinate Database column X_COORDINATE SqlType(DOUBLE), Default(None)
+   *  @param yCoordinate Database column Y_COORDINATE SqlType(DOUBLE), Default(None)
+   *  @param width Database column WIDTH SqlType(DOUBLE), Default(None)
+   *  @param height Database column HEIGHT SqlType(DOUBLE), Default(None)
+   *  @param point1X Database column POINT_1_X SqlType(DOUBLE), Default(None)
+   *  @param point1Y Database column POINT_1_Y SqlType(DOUBLE), Default(None)
+   *  @param point2X Database column POINT_2_X SqlType(DOUBLE), Default(None)
+   *  @param point2Y Database column POINT_2_Y SqlType(DOUBLE), Default(None)
    *  @param createdMillis Database column CREATED_MILLIS SqlType(BIGINT) */
-  case class LabelsRow(labelId: String, participantId: Int, imageId: String, ontologyVersionId: Int, ontology: String, ontologyType: String, labelValue: Double, xCoordinate: Option[Double], yCoordinate: Option[Double], width: Option[Double], height: Option[Double], point1X: Option[Double], point1Y: Option[Double], point2X: Option[Double], point2Y: Option[Double], createdMillis: Long)
+  case class LabelsRow(labelId: String, participantId: Int, imageId: String, ontologyVersionId: Int, ontology: String, ontologyType: String, labelValue: Double, xCoordinate: Option[Double] = None, yCoordinate: Option[Double] = None, width: Option[Double] = None, height: Option[Double] = None, point1X: Option[Double] = None, point1Y: Option[Double] = None, point2X: Option[Double] = None, point2Y: Option[Double] = None, createdMillis: Long)
   /** GetResult implicit for fetching LabelsRow objects using plain SQL queries */
   implicit def GetResultLabelsRow(implicit e0: GR[String], e1: GR[Int], e2: GR[Double], e3: GR[Option[Double]], e4: GR[Long]): GR[LabelsRow] = GR{
     prs => import prs._
     LabelsRow.tupled((<<[String], <<[Int], <<[String], <<[Int], <<[String], <<[String], <<[Double], <<?[Double], <<?[Double], <<?[Double], <<?[Double], <<?[Double], <<?[Double], <<?[Double], <<?[Double], <<[Long]))
   }
   /** Table description of table LABELS. Objects of this class serve as prototypes for rows in queries. */
-  class Labels(_tableTag: Tag) extends Table[LabelsRow](_tableTag, "LABELS") {
+  class Labels(_tableTag: Tag) extends Table[LabelsRow](_tableTag, Some("PUBLIC"), "LABELS") {
     def * = (labelId, participantId, imageId, ontologyVersionId, ontology, ontologyType, labelValue, xCoordinate, yCoordinate, width, height, point1X, point1Y, point2X, point2Y, createdMillis) <> (LabelsRow.tupled, LabelsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(labelId), Rep.Some(participantId), Rep.Some(imageId), Rep.Some(ontologyVersionId), Rep.Some(ontology), Rep.Some(ontologyType), Rep.Some(labelValue), xCoordinate, yCoordinate, width, height, point1X, point1Y, point2X, point2Y, Rep.Some(createdMillis)).shaped.<>({r=>import r._; _1.map(_=> LabelsRow.tupled((_1.get, _2.get, _3.get, _4.get, _5.get, _6.get, _7.get, _8, _9, _10, _11, _12, _13, _14, _15, _16.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
@@ -250,22 +250,22 @@ trait Tables {
     val ontologyType: Rep[String] = column[String]("ONTOLOGY_TYPE")
     /** Database column LABEL_VALUE SqlType(DOUBLE) */
     val labelValue: Rep[Double] = column[Double]("LABEL_VALUE")
-    /** Database column X_COORDINATE SqlType(DOUBLE) */
-    val xCoordinate: Rep[Option[Double]] = column[Option[Double]]("X_COORDINATE")
-    /** Database column Y_COORDINATE SqlType(DOUBLE) */
-    val yCoordinate: Rep[Option[Double]] = column[Option[Double]]("Y_COORDINATE")
-    /** Database column WIDTH SqlType(DOUBLE) */
-    val width: Rep[Option[Double]] = column[Option[Double]]("WIDTH")
-    /** Database column HEIGHT SqlType(DOUBLE) */
-    val height: Rep[Option[Double]] = column[Option[Double]]("HEIGHT")
-    /** Database column POINT_1_X SqlType(DOUBLE) */
-    val point1X: Rep[Option[Double]] = column[Option[Double]]("POINT_1_X")
-    /** Database column POINT_1_Y SqlType(DOUBLE) */
-    val point1Y: Rep[Option[Double]] = column[Option[Double]]("POINT_1_Y")
-    /** Database column POINT_2_X SqlType(DOUBLE) */
-    val point2X: Rep[Option[Double]] = column[Option[Double]]("POINT_2_X")
-    /** Database column POINT_2_Y SqlType(DOUBLE) */
-    val point2Y: Rep[Option[Double]] = column[Option[Double]]("POINT_2_Y")
+    /** Database column X_COORDINATE SqlType(DOUBLE), Default(None) */
+    val xCoordinate: Rep[Option[Double]] = column[Option[Double]]("X_COORDINATE", O.Default(None))
+    /** Database column Y_COORDINATE SqlType(DOUBLE), Default(None) */
+    val yCoordinate: Rep[Option[Double]] = column[Option[Double]]("Y_COORDINATE", O.Default(None))
+    /** Database column WIDTH SqlType(DOUBLE), Default(None) */
+    val width: Rep[Option[Double]] = column[Option[Double]]("WIDTH", O.Default(None))
+    /** Database column HEIGHT SqlType(DOUBLE), Default(None) */
+    val height: Rep[Option[Double]] = column[Option[Double]]("HEIGHT", O.Default(None))
+    /** Database column POINT_1_X SqlType(DOUBLE), Default(None) */
+    val point1X: Rep[Option[Double]] = column[Option[Double]]("POINT_1_X", O.Default(None))
+    /** Database column POINT_1_Y SqlType(DOUBLE), Default(None) */
+    val point1Y: Rep[Option[Double]] = column[Option[Double]]("POINT_1_Y", O.Default(None))
+    /** Database column POINT_2_X SqlType(DOUBLE), Default(None) */
+    val point2X: Rep[Option[Double]] = column[Option[Double]]("POINT_2_X", O.Default(None))
+    /** Database column POINT_2_Y SqlType(DOUBLE), Default(None) */
+    val point2Y: Rep[Option[Double]] = column[Option[Double]]("POINT_2_Y", O.Default(None))
     /** Database column CREATED_MILLIS SqlType(BIGINT) */
     val createdMillis: Rep[Long] = column[Long]("CREATED_MILLIS")
 
@@ -288,7 +288,7 @@ trait Tables {
     MigrationsRow(<<[Int])
   }
   /** Table description of table MIGRATIONS. Objects of this class serve as prototypes for rows in queries. */
-  class Migrations(_tableTag: Tag) extends Table[MigrationsRow](_tableTag, "MIGRATIONS") {
+  class Migrations(_tableTag: Tag) extends Table[MigrationsRow](_tableTag, Some("PUBLIC"), "MIGRATIONS") {
     def * = migrationId <> (MigrationsRow, MigrationsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = Rep.Some(migrationId).shaped.<>(r => r.map(_=> MigrationsRow(r.get)), (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
@@ -306,20 +306,20 @@ trait Tables {
    *  @param orderValue Database column ORDER_VALUE SqlType(INTEGER)
    *  @param taskId Database column TASK_ID SqlType(INTEGER)
    *  @param ontologyType Database column ONTOLOGY_TYPE SqlType(VARCHAR)
-   *  @param minValue Database column MIN_VALUE SqlType(DOUBLE)
-   *  @param maxValue Database column MAX_VALUE SqlType(DOUBLE)
+   *  @param minValue Database column MIN_VALUE SqlType(DOUBLE), Default(None)
+   *  @param maxValue Database column MAX_VALUE SqlType(DOUBLE), Default(None)
    *  @param isAreaLabel Database column IS_AREA_LABEL SqlType(BOOLEAN)
    *  @param isLengthLabel Database column IS_LENGTH_LABEL SqlType(BOOLEAN)
    *  @param labelLimit Database column LABEL_LIMIT SqlType(INTEGER)
    *  @param createdMillis Database column CREATED_MILLIS SqlType(BIGINT) */
-  case class OntologyVersionsRow(ontologyVersionId: Int, ontologyName: String, versionString: String, orderValue: Int, taskId: Int, ontologyType: String, minValue: Option[Double], maxValue: Option[Double], isAreaLabel: Boolean, isLengthLabel: Boolean, labelLimit: Int, createdMillis: Long)
+  case class OntologyVersionsRow(ontologyVersionId: Int, ontologyName: String, versionString: String, orderValue: Int, taskId: Int, ontologyType: String, minValue: Option[Double] = None, maxValue: Option[Double] = None, isAreaLabel: Boolean, isLengthLabel: Boolean, labelLimit: Int, createdMillis: Long)
   /** GetResult implicit for fetching OntologyVersionsRow objects using plain SQL queries */
   implicit def GetResultOntologyVersionsRow(implicit e0: GR[Int], e1: GR[String], e2: GR[Option[Double]], e3: GR[Boolean], e4: GR[Long]): GR[OntologyVersionsRow] = GR{
     prs => import prs._
     OntologyVersionsRow.tupled((<<[Int], <<[String], <<[String], <<[Int], <<[Int], <<[String], <<?[Double], <<?[Double], <<[Boolean], <<[Boolean], <<[Int], <<[Long]))
   }
   /** Table description of table ONTOLOGY_VERSIONS. Objects of this class serve as prototypes for rows in queries. */
-  class OntologyVersions(_tableTag: Tag) extends Table[OntologyVersionsRow](_tableTag, "ONTOLOGY_VERSIONS") {
+  class OntologyVersions(_tableTag: Tag) extends Table[OntologyVersionsRow](_tableTag, Some("PUBLIC"), "ONTOLOGY_VERSIONS") {
     def * = (ontologyVersionId, ontologyName, versionString, orderValue, taskId, ontologyType, minValue, maxValue, isAreaLabel, isLengthLabel, labelLimit, createdMillis) <> (OntologyVersionsRow.tupled, OntologyVersionsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(ontologyVersionId), Rep.Some(ontologyName), Rep.Some(versionString), Rep.Some(orderValue), Rep.Some(taskId), Rep.Some(ontologyType), minValue, maxValue, Rep.Some(isAreaLabel), Rep.Some(isLengthLabel), Rep.Some(labelLimit), Rep.Some(createdMillis)).shaped.<>({r=>import r._; _1.map(_=> OntologyVersionsRow.tupled((_1.get, _2.get, _3.get, _4.get, _5.get, _6.get, _7, _8, _9.get, _10.get, _11.get, _12.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
@@ -336,10 +336,10 @@ trait Tables {
     val taskId: Rep[Int] = column[Int]("TASK_ID")
     /** Database column ONTOLOGY_TYPE SqlType(VARCHAR) */
     val ontologyType: Rep[String] = column[String]("ONTOLOGY_TYPE")
-    /** Database column MIN_VALUE SqlType(DOUBLE) */
-    val minValue: Rep[Option[Double]] = column[Option[Double]]("MIN_VALUE")
-    /** Database column MAX_VALUE SqlType(DOUBLE) */
-    val maxValue: Rep[Option[Double]] = column[Option[Double]]("MAX_VALUE")
+    /** Database column MIN_VALUE SqlType(DOUBLE), Default(None) */
+    val minValue: Rep[Option[Double]] = column[Option[Double]]("MIN_VALUE", O.Default(None))
+    /** Database column MAX_VALUE SqlType(DOUBLE), Default(None) */
+    val maxValue: Rep[Option[Double]] = column[Option[Double]]("MAX_VALUE", O.Default(None))
     /** Database column IS_AREA_LABEL SqlType(BOOLEAN) */
     val isAreaLabel: Rep[Boolean] = column[Boolean]("IS_AREA_LABEL")
     /** Database column IS_LENGTH_LABEL SqlType(BOOLEAN) */
@@ -367,7 +367,7 @@ trait Tables {
     ParticipantsRow.tupled((<<[Int], <<[Int], <<[Int], <<[Boolean]))
   }
   /** Table description of table PARTICIPANTS. Objects of this class serve as prototypes for rows in queries. */
-  class Participants(_tableTag: Tag) extends Table[ParticipantsRow](_tableTag, "PARTICIPANTS") {
+  class Participants(_tableTag: Tag) extends Table[ParticipantsRow](_tableTag, Some("PUBLIC"), "PARTICIPANTS") {
     def * = (participantId, taskId, userId, isActive) <> (ParticipantsRow.tupled, ParticipantsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(participantId), Rep.Some(taskId), Rep.Some(userId), Rep.Some(isActive)).shaped.<>({r=>import r._; _1.map(_=> ParticipantsRow.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
@@ -401,7 +401,7 @@ trait Tables {
     TasksRow.tupled((<<[Int], <<[String], <<[Int], <<[Long]))
   }
   /** Table description of table TASKS. Objects of this class serve as prototypes for rows in queries. */
-  class Tasks(_tableTag: Tag) extends Table[TasksRow](_tableTag, "TASKS") {
+  class Tasks(_tableTag: Tag) extends Table[TasksRow](_tableTag, Some("PUBLIC"), "TASKS") {
     def * = (taskId, taskName, creatorUserId, createdMillis) <> (TasksRow.tupled, TasksRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(taskId), Rep.Some(taskName), Rep.Some(creatorUserId), Rep.Some(createdMillis)).shaped.<>({r=>import r._; _1.map(_=> TasksRow.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
@@ -432,7 +432,7 @@ trait Tables {
     UserAccountsRow.tupled((<<[Int], <<[String], <<[String]))
   }
   /** Table description of table USER_ACCOUNTS. Objects of this class serve as prototypes for rows in queries. */
-  class UserAccounts(_tableTag: Tag) extends Table[UserAccountsRow](_tableTag, "USER_ACCOUNTS") {
+  class UserAccounts(_tableTag: Tag) extends Table[UserAccountsRow](_tableTag, Some("PUBLIC"), "USER_ACCOUNTS") {
     def * = (userAccountId, email, hashedPassword) <> (UserAccountsRow.tupled, UserAccountsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(userAccountId), Rep.Some(email), Rep.Some(hashedPassword)).shaped.<>({r=>import r._; _1.map(_=> UserAccountsRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
@@ -458,7 +458,7 @@ trait Tables {
     UserConnectionsRow.tupled((<<[Int], <<[Int], <<[Int]))
   }
   /** Table description of table USER_CONNECTIONS. Objects of this class serve as prototypes for rows in queries. */
-  class UserConnections(_tableTag: Tag) extends Table[UserConnectionsRow](_tableTag, "USER_CONNECTIONS") {
+  class UserConnections(_tableTag: Tag) extends Table[UserConnectionsRow](_tableTag, Some("PUBLIC"), "USER_CONNECTIONS") {
     def * = (userConnectionId, senderUserId, receiverUserId) <> (UserConnectionsRow.tupled, UserConnectionsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(userConnectionId), Rep.Some(senderUserId), Rep.Some(receiverUserId)).shaped.<>({r=>import r._; _1.map(_=> UserConnectionsRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
@@ -489,7 +489,7 @@ trait Tables {
     UserSessionsRow.tupled((<<[Int], <<[Int], <<[String]))
   }
   /** Table description of table USER_SESSIONS. Objects of this class serve as prototypes for rows in queries. */
-  class UserSessions(_tableTag: Tag) extends Table[UserSessionsRow](_tableTag, "USER_SESSIONS") {
+  class UserSessions(_tableTag: Tag) extends Table[UserSessionsRow](_tableTag, Some("PUBLIC"), "USER_SESSIONS") {
     def * = (userSessionId, userId, hashString) <> (UserSessionsRow.tupled, UserSessionsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(userSessionId), Rep.Some(userId), Rep.Some(hashString)).shaped.<>({r=>import r._; _1.map(_=> UserSessionsRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
