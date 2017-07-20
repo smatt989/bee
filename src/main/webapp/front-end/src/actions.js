@@ -1,8 +1,7 @@
 import axios from 'axios';
 import {authenticatedSession, authenticationHeader, authenticate} from './utilities';
 
-const fullstack = false;
-const domain = fullstack ? '' : 'http://localhost:8080';
+const domain = CONFIG ? CONFIG.frontServer ? 'http://localhost:8080' : '' : '';
 
 /*
  * action types

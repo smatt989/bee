@@ -13,6 +13,7 @@ object SessionTokenStrategy {
   val HeaderKey = "Bee-Session-Key"
   val Email = "email"
   val Password = "password"
+  val Cookie = "BEE_SESS_KEY"
 }
 
 class SessionTokenStrategy(protected val app: ScalatraBase) extends ScentryStrategy[UserAccountsRow] {
@@ -28,12 +29,28 @@ class SessionTokenStrategy(protected val app: ScalatraBase) extends ScentryStrat
 
   override def isValid(implicit request: HttpServletRequest): Boolean = {
     getToken.isDefined
-
   }
 
   def authenticate()(implicit request: HttpServletRequest, response: HttpServletResponse): Option[UserAccountsRow] = {
     val token = getToken
     token.flatMap {t =>  UserSession.byHashString(t).map(UserSession.user) }
+  }
+}
+
+class CookieStrategy(protected val app: ScalatraBase) extends ScentryStrategy[UserAccountsRow] {
+
+  private def tokenVal(implicit request: HttpServletRequest) =
+    app.cookies.get(SessionTokenStrategy.Cookie)
+
+  override def isValid(implicit request: HttpServletRequest) =
+    tokenVal.nonEmpty
+
+  def authenticate()(implicit request: HttpServletRequest, response: HttpServletResponse): Option[UserAccountsRow] =
+    checkAuthentication()
+
+  def checkAuthentication()(implicit request: HttpServletRequest, response: HttpServletResponse): Option[UserAccountsRow] = {
+    val token = tokenVal
+    token.flatMap {t => UserSession.byHashString(t).map(UserSession.user)}
   }
 }
 
@@ -93,6 +110,7 @@ trait AuthenticationSupport extends ScentrySupport[UserAccountsRow] with BasicAu
   override protected def registerAuthStrategies = {
     scentry.register("user_password", _ ⇒ new PasswordStrategy(self))
     scentry.register("session_token", _ ⇒ new SessionTokenStrategy(self))
+    scentry.register("cookie", _ => new CookieStrategy(self))
   }
 
 }
