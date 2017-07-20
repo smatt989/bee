@@ -9,7 +9,9 @@ object InitDB extends Migration {
 
   val MIGRATION_TABLE_NAME = "MIGRATIONS"
 
-  class Migrations(tag: Tag) extends Table[(Int)](tag, MIGRATION_TABLE_NAME) {
+  val SCHEMA_NAME = "BEE"
+
+  class Migrations(tag: Tag) extends Table[(Int)](tag, Some(SCHEMA_NAME), MIGRATION_TABLE_NAME) {
     def ido = column[Int]("MIGRATION_ID", O.PrimaryKey)
 
     def * = (ido)
@@ -17,5 +19,10 @@ object InitDB extends Migration {
 
   lazy val migrationTable = TableQuery[Migrations]
 
-  def query = migrationTable.schema.create
+  def createSchema = {
+    val toInsert = "\""+SCHEMA_NAME+"\""
+    sqlu"""CREATE SCHEMA #${toInsert}"""
+  }
+
+  def query = DBIO.seq(createSchema, migrationTable.schema.create).transactionally
 }

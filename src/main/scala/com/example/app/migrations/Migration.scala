@@ -54,9 +54,6 @@ object Migration {
   }
 
   def codegen() = {
-    println(AppGlobals.dbConfig.driverName)
-    println(DBLauncher.cpds.getDriverClass)
-    println(DBLauncher.cpds.getJdbcUrl)
     SourceCodeGenerator.run(
       //AppGlobals.dbConfig.driverName,
       "slick.driver.PostgresDriver",

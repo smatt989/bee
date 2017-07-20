@@ -3,7 +3,7 @@ package com.example.app
 import java.util.UUID
 
 import slick.lifted.TableQuery
-import slick.profile.{FixedSqlAction, FixedSqlStreamingAction, RelationalProfile, RelationalTableComponent}
+import slick.profile.{FixedSqlAction, FixedSqlStreamingAction, RelationalProfile}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -12,7 +12,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 
 import AppGlobals.dbConfig.driver.api._
-import com.example.app.demo
 
 trait SlickObject[IDType, SlickRow, SlickTable <: RelationalProfile#Table[SlickRow]] {
 

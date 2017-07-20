@@ -6,7 +6,7 @@ object Migration1 extends Migration {
 
   val id = 1
 
-  class Users(tag: Tag) extends Table[(Int, String, String)](tag, "USER_ACCOUNTS") {
+  class Users(tag: Tag) extends Table[(Int, String, String)](tag, Some(InitDB.SCHEMA_NAME), "USER_ACCOUNTS") {
     def id = column[Int]("USER_ACCOUNT_ID", O.PrimaryKey, O.AutoInc)
     def email = column[String]("EMAIL")
     def hashedPassword = column[String]("HASHED_PASSWORD")
@@ -14,7 +14,7 @@ object Migration1 extends Migration {
     def * = (id, email, hashedPassword)
   }
 
-  class DeviceTokens(tag: Tag) extends Table[(Int, Int, Option[String])](tag, "DEVICE_TOKENS") {
+  class DeviceTokens(tag: Tag) extends Table[(Int, Int, Option[String])](tag, Some(InitDB.SCHEMA_NAME), "DEVICE_TOKENS") {
     def id = column[Int]("DEVICE_TOKEN_ID", O.PrimaryKey, O.AutoInc)
     def userId = column[Int]("USER_ID")
     def deviceToken = column[Option[String]]("DEVICE_TOKEN")
@@ -24,7 +24,7 @@ object Migration1 extends Migration {
     def user = foreignKey("DEVICE_TOKENS_TO_USER_FK", userId, users)(_.id)
   }
 
-  class UserSessions(tag: Tag) extends Table[(Int, Int, String)](tag, "USER_SESSIONS") {
+  class UserSessions(tag: Tag) extends Table[(Int, Int, String)](tag, Some(InitDB.SCHEMA_NAME), "USER_SESSIONS") {
     def id = column[Int]("USER_SESSION_ID", O.PrimaryKey, O.AutoInc)
     def userId = column[Int]("USER_ID")
     def hashString = column[String]("HASH_STRING")
@@ -34,7 +34,7 @@ object Migration1 extends Migration {
     def user = foreignKey("USER_SESSIONS_TO_USER_FK", userId, users)(_.id)
   }
 
-  class UserConnections(tag: Tag) extends Table[(Int, Int, Int)](tag, "USER_CONNECTIONS") {
+  class UserConnections(tag: Tag) extends Table[(Int, Int, Int)](tag, Some(InitDB.SCHEMA_NAME), "USER_CONNECTIONS") {
     def id = column[Int]("USER_CONNECTION_ID", O.PrimaryKey, O.AutoInc)
     def senderUserId = column[Int]("SENDER_USER_ID")
     def receiverUserId = column[Int]("RECEIVER_USER_ID")
