@@ -85,6 +85,7 @@ object ImageSource extends UpdatableDBObject[ImageSourcesRow, ImageSources]{
   def imageSourceInterfaceFromImageSource(imageSource: ImageSourcesRow): ImageSourceInterface = {
     imageSource.imageSourceType match {
       case amazonS3.name => new AmazonS3ImageSource(imageSource)
+      case s3Bucket.name => new AmazonS3BucketSource(imageSource)
     }
   }
 
@@ -113,8 +114,9 @@ object ImageSource extends UpdatableDBObject[ImageSourcesRow, ImageSources]{
   }
 
   val amazonS3 = ImageSourceType("AMAZON_S3", Seq("Bucket", "Access-Key", "Secret"))
+  val s3Bucket = ImageSourceType("S3_BUCKET", Seq("Bucket"))
 
-  val imageSourceTypes = Seq(amazonS3)
+  val imageSourceTypes = Seq(amazonS3, s3Bucket)
 
   val imageSourceTypeByName = imageSourceTypes.map(a => a.name -> a).toMap
 

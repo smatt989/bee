@@ -133,8 +133,8 @@ trait Tables {
 
     /** Foreign key referencing Images (database name IMAGE_TO_IMAGE_SOURCE_RELATION_TO_IMAGES_FK) */
     lazy val imagesFk = foreignKey("IMAGE_TO_IMAGE_SOURCE_RELATION_TO_IMAGES_FK", imageId, Images)(r => r.imageId, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Restrict)
-    /** Foreign key referencing Tasks (database name IMAGE_TO_IMAGE_SOURCE_RELATION_TO_IMAGE_SOURCE_FK) */
-    lazy val tasksFk = foreignKey("IMAGE_TO_IMAGE_SOURCE_RELATION_TO_IMAGE_SOURCE_FK", imageSourceId, Tasks)(r => r.taskId, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Restrict)
+    /** Foreign key referencing ImageSources (database name IMAGE_TO_IMAGE_SOURCE_RELATION_TO_IMAGE_SOURCE_FK) */
+    lazy val imageSourcesFk = foreignKey("IMAGE_TO_IMAGE_SOURCE_RELATION_TO_IMAGE_SOURCE_FK", imageSourceId, ImageSources)(r => r.imageSourceId, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Restrict)
   }
   /** Collection-like TableQuery object for table ImageToImageSourceRelations */
   lazy val ImageToImageSourceRelations = new TableQuery(tag => new ImageToImageSourceRelations(tag))

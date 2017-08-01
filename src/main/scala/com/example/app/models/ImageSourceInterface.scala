@@ -3,6 +3,7 @@ package com.example.app.models
 
 import com.amazonaws.auth._
 import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.S3ObjectSummary
 import com.example.app.db.Tables.{ImageSourcesRow, ImagesRow}
 import org.json4s.DefaultFormats
 import org.json4s.jackson.JsonMethods
@@ -18,11 +19,14 @@ trait ImageSourceInterface {
   def imageHeaders(image: ImagesRow): Map[String, String]
 }
 
-class AmazonS3ImageSource(imageSource: ImageSourcesRow) extends ImageSourceInterface {
+trait JsonConfigs {
 
   implicit val formats = DefaultFormats
+  def imageSource: ImageSourcesRow
+  def parsed = JsonMethods.parse(imageSource.imageSourceConfigs)
+}
 
-  val parsed = JsonMethods.parse(imageSource.imageSourceConfigs)
+class AmazonS3ImageSource(val imageSource: ImageSourcesRow) extends ImageSourceInterface with JsonConfigs {
 
   val bucket = (parsed \ "Bucket").extract[String]
   val accessKey = (parsed \ "Access-Key").extract[String]
@@ -38,9 +42,18 @@ class AmazonS3ImageSource(imageSource: ImageSourcesRow) extends ImageSourceInter
     val bucketExists = s3.doesBucketExist(bucket)
 
     if(bucketExists) {
-      val objects = s3.listObjects(bucket).getObjectSummaries
 
-      objects.toList.map(o => {
+      var obj = s3.listObjects(bucket)
+      var listings = obj.getObjectSummaries.toList
+      var truncated = obj.isTruncated
+
+      while(truncated) {
+        obj = s3.listNextBatchOfObjects(obj)
+        listings = listings ++ obj.getObjectSummaries.toList
+        truncated = obj.isTruncated
+      }
+
+      listings.map(o => {
         val key = o.getKey
         ImagesRow(null, key, s3.getResourceUrl(bucket, key))
       })
@@ -50,4 +63,37 @@ class AmazonS3ImageSource(imageSource: ImageSourcesRow) extends ImageSourceInter
 
   def imageHeaders(image: ImagesRow) =
     Map("referer" -> accessKey)
+}
+
+class AmazonS3BucketSource(val imageSource: ImageSourcesRow) extends ImageSourceInterface with JsonConfigs {
+
+  val bucket = (parsed \ "Bucket").extract[String]
+
+  def accessImages = {
+    val s3 = new AmazonS3Client()
+
+    val bucketExists = s3.doesBucketExist(bucket)
+
+    if(bucketExists) {
+
+
+      var obj = s3.listObjects(bucket)
+      var listings = obj.getObjectSummaries.toList
+      var truncated = obj.isTruncated
+
+      while(truncated) {
+        obj = s3.listNextBatchOfObjects(obj)
+        listings = listings ++ obj.getObjectSummaries.toList
+        truncated = obj.isTruncated
+      }
+
+      listings.map(o => {
+        val key = o.getKey
+        ImagesRow(null, key, s3.getResourceUrl(bucket, key))
+      })
+    } else
+      throw new Exception("no such bucket...")
+  }
+
+  def imageHeaders(image: _root_.com.example.app.db.Tables.ImagesRow) = Map()
 }
