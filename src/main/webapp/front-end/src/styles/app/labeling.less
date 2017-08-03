@@ -1,6 +1,7 @@
 @label-submit-height: 200;
 @label-submit-width: 200;
 @label-submit-arrow-width: 50;
+@label-border-width: 3px;
 
 .label-previous {
   border-right: @label-submit-arrow-width * 1px solid @brand-grey;
@@ -11,7 +12,12 @@
   position: absolute;
   left: 50;
   width: 0;
-  top: 125px;
+  top: 159px;
+  cursor: pointer;
+}
+
+.label-previous:hover {
+  border-right-color: @brand-grey-plus-10;
 }
 
 .label-submit {
@@ -20,7 +26,8 @@
   height: @label-submit-height * 1px;
   position: relative;
   width: @label-submit-width * 1px;
-  color: @brand-white
+  color: @brand-white;
+  cursor: pointer;
 }
 
 .label-submit:after {
@@ -33,10 +40,81 @@
   left: @label-submit-width * 1px;
   width: 0;
   top: 0;
+  cursor: pointer;
 }
+
+.label-submit:hover {
+    background: @brand-green-minus-10;
+}
+
+.label-submit:hover::after {
+    border-left-color: @brand-green-minus-10;
+}
+
 
 .label-submit span {
     display: inline-block;
     margin-top: ((@label-submit-height - 24) / 2) * 1px;
     margin-left: 10px;
+}
+
+#canvas_container {
+    position: absolute;
+}
+
+#canvas_container line {
+    stroke: @brand-green;
+    stroke-width: @label-border-width;
+    display: block;
+}
+
+#tagging_image {
+    width: 500px;
+}
+
+.negative-label {
+    outline: @label-border-width @brand-red solid
+}
+
+.positive-label {
+    outline: @label-border-width @brand-green solid
+}
+
+.no-label {
+    outline: @label-border-width transparent solid
+}
+
+.rectangle-label {
+    background-color: clear;
+    position: absolute;
+    pointer-events: none;
+    border: @label-border-width @brand-green solid;
+}
+
+.line-label-2 {
+    position: absolute;
+    pointer-events: none;
+    border-top: @label-border-width @brand-green solid;
+    display: inline-block;
+}
+
+.remove-label-button {
+    border-radius: 50%;
+    background: grey;
+    text-align: center;
+    position: absolute;
+    display: inline-block;
+    pointer-events: auto;
+    cursor: pointer;
+    height: 25;
+    width: 25;
+    top: -14;
+    left: -14;
+}
+
+.remove-label-button span {
+    color: @brand-white;
+    display: inline-block;
+    margin-left: 1px;
+    margin-top: 4px;
 }

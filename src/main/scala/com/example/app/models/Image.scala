@@ -14,10 +14,14 @@ import scala.concurrent.duration.Duration
 
 case class ImageWithAccess(image: ImagesRow, accessConfigs: Map[String, String])
 
+case class ImageJson(id: String, location: String)
 
 object Image extends UpdatableUUIDObject[ImagesRow, Images] {
 
   val configsHeader = "Image-Request-Headers"
+
+  def makeJson(row: ImagesRow) =
+    ImageJson(row.imageId, row.location)
 
   def updateQuery(a: ImagesRow) = table.filter(t => idColumnFromTable(t) === idFromRow(a))
     .map(x => x.location)

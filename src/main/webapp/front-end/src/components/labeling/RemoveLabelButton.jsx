@@ -1,26 +1,14 @@
 import React from 'react';
 import {
   Button,
-  ButtonGroup
+  ButtonGroup,
+  Glyphicon
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 
 const RemoveLabelButton = ({ remove }) => {
 
-  const removeButtonStyle = {
-      borderRadius: "50%",
-      background: "grey",
-      textAlign: "center",
-      position: "absolute",
-      display: "inline-block",
-      pointerEvents: "auto",
-      height: 25,
-      width: 25,
-      top: -12,
-      left: -12
-  }
-
-  return (<div style={removeButtonStyle} onClick={remove}>X</div>)
+  return (<div className="remove-label-button" onClick={remove}><Glyphicon glyph="remove" /></div>)
 };
 
 export default RemoveLabelButton;

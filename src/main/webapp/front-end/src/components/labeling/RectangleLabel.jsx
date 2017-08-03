@@ -19,13 +19,8 @@ const RectangleLabel = ({ rect, remove, ontologyType, update }) => {
     var height = rect.height
     var width = rect.width
     divStyle = {
-        color: 'white',
-        backgroundColor: 'clear',
-        position: 'absolute',
-        border: '5px solid green',
-        pointerEvents: "none",
-        left: left,
-        top: top,
+        marginLeft: left,
+        marginTop: top,
         height: height,
         width: width
     }
@@ -37,7 +32,7 @@ const RectangleLabel = ({ rect, remove, ontologyType, update }) => {
     labelValueInput = <LabelValueInput top={rect.height} left={5} label={rect} update={update} />
   }
 
-  return (<div style={divStyle}>
+  return (<div style={divStyle} className="rectangle-label">
     <RemoveLabelButton remove={remove}/>
     {labelValueInput}
   </div>)

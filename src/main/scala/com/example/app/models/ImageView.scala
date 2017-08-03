@@ -21,10 +21,10 @@ case class JsonImageView(taskId: Int, imageId: String, createdMillis: Long, imag
 case class RequestImage(taskId: Int, imageViewId: Option[String] = None)
 
 case class ImageWithAccessWithView(imageWithAccess: ImageWithAccess, viewInfo: Option[JsonImageView]) {
-  def toJson = ImageWithView(imageWithAccess.image, viewInfo)
+  def toJson = ImageWithView(Image.makeJson(imageWithAccess.image), viewInfo)
 }
 
-case class ImageWithView(image: ImagesRow, viewInfo: Option[JsonImageView])
+case class ImageWithView(image: ImageJson, viewInfo: Option[JsonImageView])
 
 object ImageView extends SlickUUIDObject[ImageViewsRow, ImageViews] {
   lazy val table = ImageViews

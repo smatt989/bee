@@ -3,31 +3,62 @@ import {
   Button,
   ButtonGroup
 } from 'react-bootstrap';
+import RemoveLabelButton from './RemoveLabelButton.jsx';
+import LabelValueInput from './LabelValueInput.jsx';
+import { ONTOLOGY_TYPE_BINARY, ONTOLOGY_TYPE_FLOAT_RANGE, ONTOLOGY_TYPE_INTEGER_RANGE } from './../../utilities.js';
 
-const LineLabel = ({ rect, remove }) => {
+const LineLabel = ({ rect, remove, ontologyType, update }) => {
 
-  var newLineStyle = {
-    display: "none"
-  }
+ var divStyle = {
+   display: "none"
+ }
 
-  var x1 = 0
-  var x2 = 0
-  var y1 = 0
-  var y2 = 0
+ if(rect.point1x != null && !(rect.point1x == rect.point2x && rect.point1y == rect.point2y)){
+   const left = rect.point1x < rect.point2x ? rect.point1x : rect.point2x
+   const top = rect.point1y < rect.point2y ? rect.point1y : rect.point2y
+   const height = Math.abs(rect.point1x - rect.point2x)
+   const width = Math.abs(rect.point1y - rect.point2y)
 
-  if(rect.point1x != null && !(rect.point1x == rect.point2x && rect.point1y == rect.point2y)){
-      x1 = rect.point1x
-      x2 = rect.point2x
-      y1 = rect.point1y
-      y2 = rect.point2y
 
-      newLineStyle = {
-          display: 'block'
-      }
-  }
+   const lengthOfDiagonal = Math.sqrt(Math.pow(height, 2) + Math.pow(width, 2));
 
-  return (<line onClick={remove} style={newLineStyle} x1={x1} y1={y1} x2={x2} y2={y2}
-                strokeWidth="5" stroke="green"/>)
+   var degrees
+
+   const asin = Math.asin(width / lengthOfDiagonal)
+
+    //down to the right
+   if(rect.point1x < rect.point2x && rect.point1y < rect.point2y){
+       degrees = asin * 180 / Math.PI
+    //up to the left
+   } else if(rect.point1x > rect.point2x && rect.point1y > rect.point2y){
+        degrees = (asin * 180 / Math.PI) + 180
+    //up to the right
+   } else if(rect.point1x < rect.point2x && rect.point1y > rect.point2y) {
+       degrees = (asin * 180 / Math.PI) * -1
+       //down to the left
+   } else {
+        degrees = (asin * 180 / Math.PI) * -1 + 180
+   }
+
+   divStyle = {
+       marginLeft: rect.point1x,
+       marginTop: rect.point1y,
+       width: lengthOfDiagonal,
+       transform: "rotate("+degrees+"deg)",
+       transformOrigin: "0% 0%"
+   }
+ }
+
+ var labelValueInput = null
+
+ if(ontologyType == ONTOLOGY_TYPE_FLOAT_RANGE || ontologyType == ONTOLOGY_TYPE_INTEGER_RANGE){
+   labelValueInput = <LabelValueInput top={rect.height} left={5} label={rect} update={update} />
+ }
+
+ return (<div style={divStyle} className="line-label-2">
+   <RemoveLabelButton remove={remove}/>
+   {labelValueInput}
+ </div>)
 };
 
 export default LineLabel;

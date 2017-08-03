@@ -32,12 +32,9 @@ class LabelImage extends React.Component {
     this.state = {
       rect: {startX: 0, startY: 0, h: 0, w: 0},
       drag: false,
-      hasSavedLabels: false
+      hasSavedLabels: false,
+      doneForNow: false
     };
-
-    this.updateCurrentRect = () => {
-        this.forceUpdate()
-    }
 
     this.imageHandleMouseMove = (limit) => (e) => {
         if (this.state.drag) {
@@ -46,24 +43,21 @@ class LabelImage extends React.Component {
               this.removeAllPreexistingLabels()
             }
             var rect = this.state.rect
-            rect.w = (e.pageX - e.currentTarget.offsetLeft) - rect.startX;
-            rect.h = (e.pageY - e.currentTarget.offsetTop) - rect.startY;
-
-            this.updateCurrentRect()
+            rect.w = this.rectLeftCorner(e) - rect.startX;
+            rect.h = this.rectTopCorner(e) - rect.startY;
+            this.setState({rect: rect})
         }
         e.preventDefault()
     }
 
     this.imageHandleMouseUp = (createLabelFunction) => () => {
-         this.state.drag = false;
          var rect = this.state.rect
          if(rect.h != 0 || rect.w != 0){
              var value = this.props.currentOntology.getIn(['ontology', 'ontologyType']) == ONTOLOGY_TYPE_BINARY ? 1 : null;
              this.removeNullLabels()
              this.props.addLabel(createLabelFunction(rect, value));
          }
-         this.state.rect = {startX: 0, startY: 0, h: 0, w: 0}
-         this.updateCurrentRect()
+         this.setState({rect: {startX: 0, startY: 0, h: 0, w: 0}, drag: false});
     }
 
     this.imageHandleMouseDown = this.imageHandleMouseDown.bind(this);
@@ -75,6 +69,7 @@ class LabelImage extends React.Component {
     this.handleSkipLabeling = this.handleSkipLabeling.bind(this);
     this.seenImage = this.seenImage.bind(this);
     this.removeNullLabels = this.removeNullLabels.bind(this);
+    this.handleDoneForNow = this.handleDoneForNow.bind(this);
   }
 
   removeAllPreexistingLabels() {
@@ -89,14 +84,28 @@ class LabelImage extends React.Component {
     })
   }
 
+  rectTopCorner(e) {
+    const currentStyle = window.getComputedStyle(e.currentTarget)
+    const parentStyle = window.getComputedStyle(e.currentTarget.parentElement)
+
+    return e.pageY - e.currentTarget.parentElement.offsetTop - e.currentTarget.offsetTop - parseFloat(parentStyle.marginTop) + 6 //IDK WHY
+  }
+
+  rectLeftCorner(e) {
+    const currentStyle = window.getComputedStyle(e.currentTarget)
+    const parentStyle = window.getComputedStyle(e.currentTarget.parentElement)
+
+
+    return e.pageX - e.currentTarget.parentElement.offsetLeft - e.currentTarget.offsetLeft - parseFloat(parentStyle.marginLeft)
+  }
+
   imageHandleMouseDown(e) {
     var rect = this.state.rect
-    rect.startX = e.pageX - e.currentTarget.offsetLeft;
-    rect.startY = e.pageY - e.currentTarget.offsetTop;
+    rect.startX = this.rectLeftCorner(e);
+    rect.startY = this.rectTopCorner(e);
     rect.h = 0
     rect.w = 0
-    this.updateCurrentRect()
-    this.state.drag = true;
+    this.setState({drag: true, rect: rect});
     e.preventDefault()
   }
 
@@ -111,8 +120,6 @@ class LabelImage extends React.Component {
         this.removeAllPreexistingLabels()
         this.props.addLabel(this.makeImageLabel(1))
     }
-
-    this.updateCurrentRect()
   }
 
   makeAreaLabel(rect, value) {
@@ -172,6 +179,10 @@ class LabelImage extends React.Component {
     this.handleSaveLabels([])
   }
 
+  handleDoneForNow() {
+    this.setState({doneForNow: true});
+  }
+
   seenImage() {
     if(!this.props.currentImage.get('viewInfo')){
         const taskId = Number(this.props.match.params.id)
@@ -201,6 +212,11 @@ class LabelImage extends React.Component {
   }
 
   render() {
+    if (this.state.doneForNow) {
+        console.log("redirecting?")
+      return <Redirect to={"/tasks"} push />;
+    }
+
     const ontology = this.props.currentOntology.get('ontology', Map({}))
 
     const labelLimit = this.props.currentOntology.getIn(['ontology', 'labelLimit'], 1);
@@ -210,12 +226,10 @@ class LabelImage extends React.Component {
 
     const labels = this.props.currentLabels.get('labels')
 
+    const isLoading = this.props.currentImage.get('loading');
+
     const containerStyles = {
         position: 'relative'
-    }
-
-    const newSVGStyle = {
-        position: 'absolute'
     }
 
     const removeLabel = (label) => () => {
@@ -227,12 +241,11 @@ class LabelImage extends React.Component {
     var mouseMoveFunction = () => {}
     var imageClickFunction = () => {}
 
-    var nullLabelStyle = {border: "5px red solid"};
 
     var areaLabelDiv = null
     var lengthLabelDiv = null
 
-    var imageLabelStyle = labels.size == 0 || (labels.size == 1 && isNullLabel(labels.toJS()[0])) ? nullLabelStyle : {};
+    var imageLabelStyle = labels.size == 0 || (labels.size == 1 && isNullLabel(labels.toJS()[0])) ? "negative-label" : "no-label";
 
     var imageLabelValueInput = null
 
@@ -254,41 +267,19 @@ class LabelImage extends React.Component {
         mouseMoveFunction = this.imageHandleMouseMove(labelLimit)
 
         lengthLabelDiv = <div>
-            <svg style={newSVGStyle} width="100%" height="100%">
-                 <LineLabel rect={this.makeLengthLabel(this.state.rect, 1)} />
-                 {labels.map((label, index) => {
-                         return <LineLabel key={index} rect={label.toJS()} remove={removeLabel(label)} ontologyType={ontologyType} />
-                     })}
-             </svg>
-             {labels.map(label => {
-                var rect = label.toJS()
-                 const divStyle = {
-                     backgroundColor: 'clear',
-                     position: 'absolute',
-                     pointerEvents: "none",
-                     left: rect.point1x,
-                     top: rect.point1y
-                 }
 
-                   var labelValueInput = null
-
-                   if(ontologyType == ONTOLOGY_TYPE_FLOAT_RANGE || ontologyType == ONTOLOGY_TYPE_INTEGER_RANGE){
-                     labelValueInput = <LabelValueInput top={15} left={5} label={label.toJS()} update={this.props.updateLabelValue} />
-                   }
-
-                return <div style={divStyle}>
-                    <RemoveLabelButton remove={removeLabel(label)}/>
-                    {labelValueInput}
-                </div>
-             })}
-        </div>
+                {labels.map((label, index) => {
+                    return <LineLabel key={index} rect={label.toJS()} remove={removeLabel(label)} update={this.props.updateLabelValue} ontologyType={ontologyType} />
+                })}
+                <LineLabel rect={this.makeLengthLabel(this.state.rect, 1)} />
+            </div>
     } else {
         imageClickFunction = this.imageHandleClick
 
         const imageLabel = labels[0] ? labels[0] : null
 
         if(this.isPositiveImageLabel()){
-            imageLabelStyle = {border: "5px green solid"}
+            imageLabelStyle = "positive-label"
         }
 
         if(this.isPositiveImageLabel() && (ontologyType == ONTOLOGY_TYPE_FLOAT_RANGE || ontologyType == ONTOLOGY_TYPE_INTEGER_RANGE)){
@@ -301,24 +292,27 @@ class LabelImage extends React.Component {
         <div className="col-md-2 m-t-5">
             <div onClick={() => this.loadNewImage(false)} className="label-previous"></div>
         </div>
-        <div className="col-md-4 m-t-5" width="500" height="500" id="canvas_container" style={containerStyles} onMouseDown={mouseDownFunction} onMouseUp={mouseUpFunction} onMouseMove={mouseMoveFunction}>
-            {lengthLabelDiv}
+        <div className="col-md-5 m-t-5">
+            <div id="canvas_container" style={containerStyles} onMouseDown={mouseDownFunction} onMouseUp={mouseUpFunction} onMouseMove={mouseMoveFunction} >
+                {lengthLabelDiv}
 
-            {areaLabelDiv}
-            <img style={imageLabelStyle} unselectable="on" id="tagging_image" src={this.props.currentImage.getIn(['image', 'location'], '')} onClick={imageClickFunction}/>
-            {imageLabelValueInput}
+                {areaLabelDiv}
+
+                <img className={imageLabelStyle} unselectable="on" id="tagging_image" src={this.props.currentImage.getIn(['image', 'location'], '')} onClick={imageClickFunction} />
+
+
+                {imageLabelValueInput}
+            </div>
         </div>
         <div className="col-md-4 m-t-5 pull-right">
-            <LinkContainer to="/tasks">
-                <Button>Done for now</Button>
-            </LinkContainer>
+            <Button onClick={this.handleDoneForNow}>Done for now</Button>
             <div className="m-t-5">
                 <LabelingHint currentOntology={this.props.currentOntology} />
             </div>
             <div className="label-submit" onClick={() => this.handleSaveLabels(this.getLabelsWithNullLabels())}> <SubmitLabelsInfo currentOntology={this.props.currentOntology} labels={labels} hasSavedLabels={this.state.hasSavedLabels} viewInfo={this.props.currentImage.get('viewInfo', null)} /></div>
             <br />
             <div className="m-t-5">
-                <Button onClick={this.handleSkipLabeling}><SkipLabelsInfo labels={labels} hasSavedLabels={this.state.hasSavedLabels} viewInfo={this.props.currentImage.get('viewInfo', null)} /></Button>
+                <Button disabled={isLoading} onClick={this.handleSkipLabeling}><SkipLabelsInfo labels={labels} hasSavedLabels={this.state.hasSavedLabels} viewInfo={this.props.currentImage.get('viewInfo', null)} /></Button>
             </div>
         </div>
     </div>
