@@ -5,29 +5,79 @@ import {
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 
-const LabelValueInput = ({ top, left, update, label }) => {
+class LabelValueInput extends React.Component {
 
-  const inputStyle = {
-    pointerEvents: "auto",
-    color: 'black',
-    position: 'absolute',
-    top: top,
-    left: left
-  }
+    constructor(props) {
+      super(props);
 
-  function isNumeric(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
-  }
+      this.defaultSize = "150px"
 
-  const updateFunction = (e) => {
-    const value = isNumeric(e.target.value) ? Number(e.target.value) : null
-    update(label, value)
-  }
+      this.handleFocus = this.handleFocus.bind(this);
+      this.handleBlur = this.handleBlur.bind(this);
+    }
 
-  const currentLabelValue = label ? isNumeric(label.labelValue) ? Number(label.labelValue) : '' : ''
+    componentDidMount(){
+      this.nameInput.focus();
+    }
 
-  return (<input type="text" onClick={function(e){e.target.focus()}} style={inputStyle} defaultValue={currentLabelValue} onChange={updateFunction} placeholder="Label value" />
-)
-};
+    handleFocus(e) {
+        this.nameInput.style.width = this.defaultSize
+    }
+
+    handleBlur(e) {
+        if(this.nameInput.value.length > 0){
+            this.nameInput.style.width = ((this.nameInput.value.length + 1) * 9) + 'px';
+        } else {
+            this.nameInput.style.width = this.defaultSize
+        }
+    }
+
+    handleEnterPress(e) {
+        console.log("inside")
+        if(e.key == "Enter") {
+            console.log("enter")
+            e.currentTarget.blur()
+        }
+    }
+
+    render(){
+
+      const top = this.props.top
+      const left = this.props.left
+      const update = this.props.update
+      const label = this.props.label
+
+      const inputStyle = {
+        pointerEvents: "auto",
+        color: 'black',
+        position: 'absolute',
+        top: top,
+        left: left
+      }
+
+      function isNumeric(n) {
+        return !isNaN(parseFloat(n)) && isFinite(n);
+      }
+
+      const updateFunction = (e) => {
+        const value = isNumeric(e.target.value) ? Number(e.target.value) : null
+        update(label, value)
+      }
+
+      const currentLabelValue = label ? isNumeric(label.labelValue) ? Number(label.labelValue) : '' : ''
+
+
+      return <input type="text"
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+        ref={(input) => { this.nameInput = input; }}
+        onClick={function(e){e.target.focus()}}
+        style={inputStyle}
+        value={currentLabelValue}
+        onChange={updateFunction}
+        onKeyUp={this.handleEnterPress}
+        placeholder="Label value" />
+      }
+}
 
 export default LabelValueInput;

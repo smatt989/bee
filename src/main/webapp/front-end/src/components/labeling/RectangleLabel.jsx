@@ -13,6 +13,8 @@ const RectangleLabel = ({ rect, remove, ontologyType, update }) => {
     display: "none"
   }
 
+  const className = "rectangle-label"
+
   if(rect.xCoordinate != null && !(rect.height == 0 && rect.width == 0)){
     var left = rect.xCoordinate
     var top = rect.yCoordinate
@@ -32,7 +34,7 @@ const RectangleLabel = ({ rect, remove, ontologyType, update }) => {
     labelValueInput = <LabelValueInput top={rect.height} left={5} label={rect} update={update} />
   }
 
-  return (<div style={divStyle} className="rectangle-label">
+  return (<div style={divStyle} className={className}>
     <RemoveLabelButton remove={remove}/>
     {labelValueInput}
   </div>)

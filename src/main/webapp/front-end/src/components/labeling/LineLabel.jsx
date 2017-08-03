@@ -13,6 +13,8 @@ const LineLabel = ({ rect, remove, ontologyType, update }) => {
    display: "none"
  }
 
+ const className = "line-label"
+
  if(rect.point1x != null && !(rect.point1x == rect.point2x && rect.point1y == rect.point2y)){
    const left = rect.point1x < rect.point2x ? rect.point1x : rect.point2x
    const top = rect.point1y < rect.point2y ? rect.point1y : rect.point2y
@@ -55,7 +57,7 @@ const LineLabel = ({ rect, remove, ontologyType, update }) => {
    labelValueInput = <LabelValueInput top={rect.height} left={5} label={rect} update={update} />
  }
 
- return (<div style={divStyle} className="line-label-2">
+ return (<div style={divStyle} className={className}>
    <RemoveLabelButton remove={remove}/>
    {labelValueInput}
  </div>)
