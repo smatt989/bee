@@ -29,10 +29,10 @@ const LineLabel = ({ rect, remove, ontologyType, update }) => {
    const asin = Math.asin(width / lengthOfDiagonal)
 
     //down to the right
-   if(rect.point1x < rect.point2x && rect.point1y < rect.point2y){
+   if(rect.point1x < rect.point2x && rect.point1y <= rect.point2y){
        degrees = asin * 180 / Math.PI
     //up to the left
-   } else if(rect.point1x > rect.point2x && rect.point1y > rect.point2y){
+   } else if(rect.point1x >= rect.point2x && rect.point1y > rect.point2y){
         degrees = (asin * 180 / Math.PI) + 180
     //up to the right
    } else if(rect.point1x < rect.point2x && rect.point1y > rect.point2y) {
