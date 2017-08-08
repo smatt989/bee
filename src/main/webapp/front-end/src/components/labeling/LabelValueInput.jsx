@@ -4,6 +4,13 @@ import {
   ButtonGroup
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+import { isNumeric, valueInRange, couldBeNumeric, isANumber, writingDecimal } from './../../utilities.js';
+import {
+  FormGroup,
+  ControlLabel,
+  FormControl,
+  HelpBlock
+} from 'react-bootstrap';
 
 class LabelValueInput extends React.Component {
 
@@ -16,26 +23,20 @@ class LabelValueInput extends React.Component {
       this.handleBlur = this.handleBlur.bind(this);
     }
 
-    componentDidMount(){
-      this.nameInput.focus();
-    }
-
     handleFocus(e) {
-        this.nameInput.style.width = this.defaultSize
+        e.currentTarget.style.width = this.defaultSize
     }
 
     handleBlur(e) {
-        if(this.nameInput.value.length > 0){
-            this.nameInput.style.width = ((this.nameInput.value.length + 1) * 9) + 'px';
+        if(e.currentTarget.value.length > 0){
+            e.currentTarget.style.width = ((e.currentTarget.value.length + 1) * 9 + 20) + 'px';
         } else {
-            this.nameInput.style.width = this.defaultSize
+            e.currentTarget.style.width = this.defaultSize
         }
     }
 
     handleEnterPress(e) {
-        console.log("inside")
         if(e.key == "Enter") {
-            console.log("enter")
             e.currentTarget.blur()
         }
     }
@@ -47,6 +48,9 @@ class LabelValueInput extends React.Component {
       const update = this.props.update
       const label = this.props.label
 
+      const min = this.props.min
+      const max = this.props.max
+
       const inputStyle = {
         pointerEvents: "auto",
         color: 'black',
@@ -55,28 +59,41 @@ class LabelValueInput extends React.Component {
         left: left
       }
 
-      function isNumeric(n) {
-        return !isNaN(parseFloat(n)) && isFinite(n);
-      }
-
       const updateFunction = (e) => {
-        const value = isNumeric(e.target.value) ? Number(e.target.value) : null
+        console.log("updating...")
+        //const value = couldBeNumeric(e.target.value) ? e.targetValue : isANumber(e.target.value) ? Number(e.target.value) : ''
+        const value = couldBeNumeric(e.target.value) ? isANumber(e.target.value) ? Number(e.target.value) : e.target.value : null
         update(label, value)
       }
 
-      const currentLabelValue = label ? isNumeric(label.labelValue) ? Number(label.labelValue) : '' : ''
+      const currentLabelValue = label ? couldBeNumeric(label.labelValue) ? String(label.labelValue) : '' : ''
 
 
-      return <input type="text"
-        onFocus={this.handleFocus}
-        onBlur={this.handleBlur}
-        ref={(input) => { this.nameInput = input; }}
-        onClick={function(e){e.target.focus()}}
-        style={inputStyle}
-        value={currentLabelValue}
-        onChange={updateFunction}
-        onKeyUp={this.handleEnterPress}
-        placeholder="Label value" />
+
+
+      function getValidationState() {
+        if(valueInRange(currentLabelValue, min, max)){
+            return 'success';
+        } else if (currentLabelValue == ''){
+            return 'warning'
+        }
+        return 'error'
+      }
+
+      return <FormGroup
+                controlId="formBasicText"
+                validationState={getValidationState()}
+                style={inputStyle} >
+              <FormControl type="text"
+                onFocus={this.handleFocus}
+                onBlur={this.handleBlur}
+                onClick={function(e){e.target.focus(); e.preventDefault()}}
+                value={currentLabelValue}
+                onChange={updateFunction}
+                onKeyUp={this.handleEnterPress}
+                placeholder="Label value" autoFocus />
+
+              </FormGroup>
       }
 }
 

@@ -7,7 +7,7 @@ import RemoveLabelButton from './RemoveLabelButton.jsx';
 import LabelValueInput from './LabelValueInput.jsx';
 import { ONTOLOGY_TYPE_BINARY, ONTOLOGY_TYPE_FLOAT_RANGE, ONTOLOGY_TYPE_INTEGER_RANGE } from './../../utilities.js';
 
-const RectangleLabel = ({ rect, remove, ontologyType, update }) => {
+const RectangleLabel = ({ rect, remove, ontologyType, update, min, max }) => {
 
   var divStyle = {
     display: "none"
@@ -31,7 +31,7 @@ const RectangleLabel = ({ rect, remove, ontologyType, update }) => {
   var labelValueInput = null
 
   if(ontologyType == ONTOLOGY_TYPE_FLOAT_RANGE || ontologyType == ONTOLOGY_TYPE_INTEGER_RANGE){
-    labelValueInput = <LabelValueInput top={rect.height} left={5} label={rect} update={update} />
+    labelValueInput = <LabelValueInput top={rect.height} left={5} label={rect} update={update} min={min} max={max} />
   }
 
   return (<div style={divStyle} className={className}>

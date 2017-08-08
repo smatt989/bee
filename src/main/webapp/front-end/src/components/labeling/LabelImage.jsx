@@ -19,10 +19,11 @@ import RectangleLabel from './RectangleLabel.jsx';
 import LineLabel from './LineLabel.jsx';
 import LabelValueInput from './LabelValueInput.jsx';
 import RemoveLabelButton from './RemoveLabelButton.jsx';
-import { ONTOLOGY_TYPE_BINARY, ONTOLOGY_TYPE_FLOAT_RANGE, ONTOLOGY_TYPE_INTEGER_RANGE, isNullLabel } from './../../utilities.js';
+import { ONTOLOGY_TYPE_BINARY, ONTOLOGY_TYPE_FLOAT_RANGE, ONTOLOGY_TYPE_INTEGER_RANGE, isNullLabel, valueInRange } from './../../utilities.js';
 import LabelingHint from './LabelingHint.jsx';
 import SubmitLabelsInfo from './SubmitLabelsInfo.jsx';
 import SkipLabelsInfo from './SkipLabelsInfo.jsx';
+import OntologySentenceContainer from '../tasks/OntologySentence.jsx';
 
 class LabelImage extends React.Component {
 
@@ -70,6 +71,7 @@ class LabelImage extends React.Component {
     this.seenImage = this.seenImage.bind(this);
     this.removeNullLabels = this.removeNullLabels.bind(this);
     this.handleDoneForNow = this.handleDoneForNow.bind(this);
+    this.validLabels = this.validLabels.bind(this)
   }
 
   removeAllPreexistingLabels() {
@@ -167,7 +169,29 @@ class LabelImage extends React.Component {
   handleSaveLabels(labels) {
     const taskId = Number(this.props.match.params.id)
     const imageId = this.props.currentImage.getIn(['image', 'id'])
-    this.props.saveLabels(taskId, imageId, labels, this.seenImage)
+
+    if(this.validLabels()){
+        this.props.saveLabels(taskId, imageId, labels, this.seenImage)
+    }
+    return false;
+  }
+
+  validLabels() {
+    const min = this.props.currentOntology.getIn(['ontology', 'minValue'], null);
+    const max = this.props.currentOntology.getIn(['ontology', 'maxValue'], null);
+
+    if(this.props.currentOntology.getIn(['ontology', 'ontologyType'], '') != ONTOLOGY_TYPE_BINARY){
+        var allValid = true
+        this.props.currentLabels.get('labels', List.of()).map(label => {
+            if(!valueInRange(label.get('labelValue', null), min, max)){
+                allValid = false
+            }
+        })
+        if(!allValid){
+            return false;
+        }
+    }
+    return true
   }
 
   getLabelsWithNullLabels() {
@@ -213,7 +237,6 @@ class LabelImage extends React.Component {
 
   render() {
     if (this.state.doneForNow) {
-        console.log("redirecting?")
       return <Redirect to={"/tasks"} push />;
     }
 
@@ -223,6 +246,9 @@ class LabelImage extends React.Component {
     const ontologyType = this.props.currentOntology.getIn(['ontology', 'ontologyType'], ONTOLOGY_TYPE_BINARY);
     const isAreaLabel = this.props.currentOntology.getIn(['ontology', 'isAreaLabel'], false);
     const isLengthLabel = this.props.currentOntology.getIn(['ontology', 'isLengthLabel'], false);
+
+    const min = this.props.currentOntology.getIn(['ontology', 'minValue'], null);
+    const max = this.props.currentOntology.getIn(['ontology', 'maxValue'], null);
 
     const labels = this.props.currentLabels.get('labels')
 
@@ -257,7 +283,7 @@ class LabelImage extends React.Component {
         areaLabelDiv = <div>
 
                 {labels.map((label, index) => {
-                    return <RectangleLabel key={index} rect={label.toJS()} remove={removeLabel(label)} update={this.props.updateLabelValue} ontologyType={ontologyType} />
+                    return <RectangleLabel key={index} rect={label.toJS()} remove={removeLabel(label)} update={this.props.updateLabelValue} ontologyType={ontologyType} min={min} max={max} />
                 })}
                 <RectangleLabel rect={this.makeAreaLabel(this.state.rect, 1)} />
             </div>
@@ -269,7 +295,7 @@ class LabelImage extends React.Component {
         lengthLabelDiv = <div>
 
                 {labels.map((label, index) => {
-                    return <LineLabel key={index} rect={label.toJS()} remove={removeLabel(label)} update={this.props.updateLabelValue} ontologyType={ontologyType} />
+                    return <LineLabel key={index} rect={label.toJS()} remove={removeLabel(label)} update={this.props.updateLabelValue} ontologyType={ontologyType} min={min} max={max} />
                 })}
                 <LineLabel rect={this.makeLengthLabel(this.state.rect, 1)} />
             </div>
@@ -293,7 +319,9 @@ class LabelImage extends React.Component {
             <div onClick={() => this.loadNewImage(false)} className="label-previous"></div>
         </div>
         <div className="col-md-5 m-t-5">
+            <OntologySentenceContainer {...this.props} />
             <div id="canvas_container" style={containerStyles} onMouseDown={mouseDownFunction} onMouseUp={mouseUpFunction} onMouseMove={mouseMoveFunction} >
+
                 {lengthLabelDiv}
 
                 {areaLabelDiv}

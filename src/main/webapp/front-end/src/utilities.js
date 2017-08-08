@@ -49,3 +49,53 @@ export function isNullLabel(label) {
 export const ONTOLOGY_TYPE_BINARY = "BINARY"
 export const ONTOLOGY_TYPE_FLOAT_RANGE = "FLOAT_RANGE"
 export const ONTOLOGY_TYPE_INTEGER_RANGE = "INTEGER_RANGE"
+
+export function ontologyDisplayName(ontology_type) {
+    switch(ontology_type) {
+        case ONTOLOGY_TYPE_BINARY:
+            return "binary";
+        case ONTOLOGY_TYPE_FLOAT_RANGE:
+            return "floating point range";
+        case ONTOLOGY_TYPE_INTEGER_RANGE:
+            return "integer range";
+        default:
+            return false;
+    }
+}
+
+export function isNumeric(n) {
+    return isANumber(parseFloat(n));
+}
+
+export function isANumber(n) {
+    if(n == 0){
+        return true
+    }
+    return n && !isNaN(n) && isFinite(n) && !writingDecimal(n) && !writingNegative(n);
+}
+
+export function couldBeNumeric(n) {
+    return n && (writingDecimal(n) || isNumeric(n) || writingNegative(n) )
+}
+
+export function writingDecimal(n) {
+    return String(n).match(/^-?\d+\.$/)
+}
+
+export function writingNegative(n){
+    return n=="-"
+}
+
+export function validMinMax(min, max) {
+    if(isNumeric(min) && isNumeric(max)) {
+        return Number(min) < Number(max);
+    }
+    return false
+}
+
+export function valueInRange(value, min, max) {
+    if(isNumeric(value) && isNumeric(min) && isNumeric(max)){
+        return value <= max && value >= min
+    }
+    return false
+}

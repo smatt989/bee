@@ -25,11 +25,16 @@ class ParticipantsList extends React.Component {
       return null;
     };
 
+
+    var participantsText = participants.length > 1 ? "Participants" : "Participant"
+
     return <div>
-        <h3>{participants.length} Participants</h3>
-        <LinkContainer to={'/tasks/'+this.props.match.params.id+'/participant-link/new'}>
-            <Button className="new-tbl-item-btn" bsStyle="primary" type="button">Share</Button>
-        </LinkContainer>
+        <div className="inline m-t-5">
+            <h3>{participants.length} {participantsText}</h3>
+            <LinkContainer to={'/tasks/'+this.props.match.params.id+'/participant-link/new'}>
+                <Button className="new-tbl-item-btn" bsStyle="primary" type="button">Share</Button>
+            </LinkContainer>
+        </div>
         <Table id="participant-tbl" responsive striped hover>
           <thead>
             <tr>

@@ -6,6 +6,7 @@ import {
   Button
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+import { Redirect, Link } from 'react-router-dom';
 import { viewImageSources, viewImageSourcesSuccess, viewImageSourcesError, viewImageSourcesDetails, viewImageSourcesDetailsSuccess, viewImageSourcesDetailsError } from '../../actions.js';
 import ImageSourcesCount from './ImageSourcesCount.jsx';
 import ImageSourcesImageCount from './ImageSourcesImageCount.jsx';
@@ -17,12 +18,14 @@ class ImageSourcesInfo extends React.Component {
   }
 
   render() {
-    return <div>
-      <ImageSourcesCount data={this.props.currentImageSources} {...this.props} />
-      <ImageSourcesImageCount data={this.props.currentImageSourcesDetails} {...this.props} />
-      <LinkContainer to={'/tasks/'+this.props.match.params.id+'/image-sources'}>
-          <Button className="new-tbl-item-btn" bsStyle="primary" type="button">Edit</Button>
-      </LinkContainer>
+    return <div className="inline">
+      <p>
+        <b>{this.props.currentImageSourcesDetails.getIn(['details', 'imageCount'])}&nbsp;</b>
+         images in
+         <b>&nbsp;{this.props.currentImageSources.get('imageSources').size}&nbsp;</b>
+          image sources
+      </p>
+      <Link to={'/tasks/'+this.props.match.params.id+'/image-sources'}>Edit</Link>
     </div>
   }
 }

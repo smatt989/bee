@@ -5,6 +5,7 @@ import {
   PageHeader,
   Button
 } from 'react-bootstrap';
+import { Redirect, Link } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
 import { viewTask, viewTaskSuccess, viewTaskError, cleanTaskState, startEditingTask } from '../../actions.js';
 import ImageSourcesInfoContainer from './ImageSourcesInfo.jsx';
@@ -34,12 +35,9 @@ class ViewTask extends React.Component {
     }
 
     return <div>
-      <div>Id: { task.id }</div>
-      <div>
-        Name: { task.name }
-        <LinkContainer to={'/tasks/'+task.id+'/edit'}>
-          <Button className="new-tbl-item-btn" bsStyle="primary" type="button">Edit</Button>
-        </LinkContainer>
+      <div className="inline">
+        <h1>{ task.name }</h1>
+        <Link to={'/tasks/'+task.id+'/edit'}>Edit</Link>
       </div>
     </div>
   }
@@ -48,13 +46,10 @@ class ViewTask extends React.Component {
     return <div>
       <NavBar inverse={false} />
       <div className='container'>
-        <PageHeader>
-          View Task
-        </PageHeader>
         { this.buildContent() }
+        <OntologyInfoContainer {...this.props} />
         <ImageSourcesInfoContainer {...this.props} />
         <ParticipantsListContainer {...this.props} />
-        <OntologyInfoContainer {...this.props} />
       </div>
     </div>;
   }

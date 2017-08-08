@@ -13,7 +13,7 @@ import {
 } from 'react-bootstrap';
 import { viewTaskOntology, viewTaskOntologySuccess, viewTaskOntologyError, ontologyTypes, ontologyTypesSuccess, ontologyTypesError, createOntology, createOntologySuccess, createOntologyError } from '../../actions.js';
 import FormGroupBase from '../shared/FormGroupBase.jsx';
-import { ONTOLOGY_TYPE_BINARY } from './../../utilities.js';
+import { ONTOLOGY_TYPE_BINARY, validMinMax } from './../../utilities.js';
 
 class NewOntology extends React.Component {
     componentDidMount() {
@@ -77,15 +77,48 @@ class NewOntology extends React.Component {
 
     this.onTargetChange = (e) => this.setState({target: e.target.value});
 
-    this.onMinChange = (e) => this.setState({min: e.target.value });
+    this.onMinChange = (e) => {
+        console.log(e.target.value)
+        this.setState({min: e.target.value });
+    }
 
     this.onMaxChange = (e) => this.setState({max: e.target.value});
 
     this.onLimitChange = (e) => this.setState({limit: e.target.value});
 
+    const validSubmission = () => {
+        return taskId && this.state.label && this.state.type && (this.state.type != ONTOLOGY_TYPE_BINARY ? validMinMax(this.state.min, this.state.max) : true)
+    }
+
+    this.validateMin = (state) => {
+      if (state.focused || !state.hasFocused || !this.state.max || !this.state.min) {
+        return null;
+      }
+
+      const value = this.state.min;
+      if (value.length > 0 && validMinMax(value, this.state.max)) {
+        return 'success';
+      }
+
+      return 'error';
+    }
+
+    this.validateMax = (state) => {
+      if (state.focused || !state.hasFocused || !this.state.max || !this.state.min) {
+        return null;
+      }
+
+      const value = this.state.max;
+      if (value.length > 0 && validMinMax(this.state.min, value)) {
+        return 'success';
+      }
+
+      return 'error';
+    }
+
     this.onSubmit = (e) => {
       e.preventDefault();
-      if(taskId) {
+      if(validSubmission()) {
         this.props.saveOntology(taskId, this.stateToOntologyObject())
             .then(isSuccess => this.setState({ redirectToReferrer: isSuccess }));
       }
@@ -121,6 +154,7 @@ class NewOntology extends React.Component {
         label: 'Min:',
         placeholder: 'Min',
         onChange: this.onMinChange,
+        validation: this.validateMin,
         value: this.state.min
     };
 
@@ -129,6 +163,7 @@ class NewOntology extends React.Component {
         label: 'Max:',
         placeholder: 'Max',
         onChange: this.onMaxChange,
+        validation: this.validateMax,
         value: this.state.max
     };
 
