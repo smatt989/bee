@@ -34,7 +34,11 @@ class LabelImage extends React.Component {
       rect: {startX: 0, startY: 0, h: 0, w: 0},
       drag: false,
       hasSavedLabels: false,
-      doneForNow: false
+      doneForNow: false,
+      imageHeight: 1,
+      imageWidth: 1,
+      imageNaturalHeight: 1,
+      imageNaturalWidth: 1
     };
 
     this.imageHandleMouseMove = (limit) => (e) => {
@@ -56,7 +60,7 @@ class LabelImage extends React.Component {
          if(rect.h != 0 || rect.w != 0){
              var value = this.props.currentOntology.getIn(['ontology', 'ontologyType']) == ONTOLOGY_TYPE_BINARY ? 1 : null;
              this.removeNullLabels()
-             this.props.addLabel(createLabelFunction(rect, value));
+             this.props.addLabel(this.transposeRectToLabelJSProportions(createLabelFunction(rect, value)));
          }
          this.setState({rect: {startX: 0, startY: 0, h: 0, w: 0}, drag: false});
     }
@@ -71,7 +75,10 @@ class LabelImage extends React.Component {
     this.seenImage = this.seenImage.bind(this);
     this.removeNullLabels = this.removeNullLabels.bind(this);
     this.handleDoneForNow = this.handleDoneForNow.bind(this);
-    this.validLabels = this.validLabels.bind(this)
+    this.validLabels = this.validLabels.bind(this);
+    this.handleImageLoad = this.handleImageLoad.bind(this);
+    this.transposeLabelJSToRectProportions = this.transposeLabelJSToRectProportions.bind(this);
+    this.transposeRectToLabelJSProportions = this.transposeRectToLabelJSProportions.bind(this);
   }
 
   removeAllPreexistingLabels() {
@@ -109,6 +116,10 @@ class LabelImage extends React.Component {
     rect.w = 0
     this.setState({drag: true, rect: rect});
     e.preventDefault()
+  }
+
+  labelToRectCoordinateTranspose(labelCoordinate){
+
   }
 
   imageHandleClick() {
@@ -174,6 +185,52 @@ class LabelImage extends React.Component {
         this.props.saveLabels(taskId, imageId, labels, this.seenImage)
     }
     return false;
+  }
+
+  handleImageLoad() {
+    const img = document.getElementById("tagging_image")
+
+    this.setState({imageHeight: img.height, imageWidth: img.width, imageNaturalHeight: img.naturalHeight, imageNaturalWidth: img.naturalWidth})
+  }
+
+  transposeLabelJSToRectProportions(label) {
+    const xRatio = this.state.imageWidth / this.state.imageNaturalWidth
+    const yRatio = this.state.imageHeight / this.state.imageNaturalHeight
+    if(label.xCoordinate){
+        label.xCoordinate = label.xCoordinate * xRatio
+        label.yCoordinate = label.yCoordinate * yRatio
+        label.width = label.width * xRatio
+        label.height = label.height * yRatio
+    }
+
+    if(label.point1x){
+        label.point1x = label.point1x * xRatio
+        label.point2x = label.point2x * xRatio
+        label.point1y = label.point1y * yRatio
+        label.point2y = label.point2y * yRatio
+    }
+
+    return label
+  }
+
+  transposeRectToLabelJSProportions(rect){
+      const xRatio = this.state.imageNaturalWidth / this.state.imageWidth
+      const yRatio = this.state.imageNaturalHeight / this.state.imageHeight
+      if(rect.xCoordinate){
+          rect.xCoordinate = rect.xCoordinate * xRatio
+          rect.yCoordinate = rect.yCoordinate * yRatio
+          rect.width = rect.width * xRatio
+          rect.height = rect.height * yRatio
+      }
+
+      if(rect.point1x){
+          rect.point1x = rect.point1x * xRatio
+          rect.point2x = rect.point2x * xRatio
+          rect.point1y = rect.point1y * yRatio
+          rect.point2y = rect.point2y * yRatio
+      }
+
+      return rect
   }
 
   validLabels() {
@@ -283,7 +340,7 @@ class LabelImage extends React.Component {
         areaLabelDiv = <div>
 
                 {labels.map((label, index) => {
-                    return <RectangleLabel key={index} rect={label.toJS()} remove={removeLabel(label)} update={this.props.updateLabelValue} ontologyType={ontologyType} min={min} max={max} />
+                    return <RectangleLabel key={index} rect={this.transposeLabelJSToRectProportions(label.toJS())} remove={removeLabel(label)} update={this.props.updateLabelValue} ontologyType={ontologyType} min={min} max={max} />
                 })}
                 <RectangleLabel rect={this.makeAreaLabel(this.state.rect, 1)} />
             </div>
@@ -295,7 +352,7 @@ class LabelImage extends React.Component {
         lengthLabelDiv = <div>
 
                 {labels.map((label, index) => {
-                    return <LineLabel key={index} rect={label.toJS()} remove={removeLabel(label)} update={this.props.updateLabelValue} ontologyType={ontologyType} min={min} max={max} />
+                    return <LineLabel key={index} rect={this.transposeLabelJSToRectProportions(label.toJS())} remove={removeLabel(label)} update={this.props.updateLabelValue} ontologyType={ontologyType} min={min} max={max} />
                 })}
                 <LineLabel rect={this.makeLengthLabel(this.state.rect, 1)} />
             </div>
@@ -326,7 +383,7 @@ class LabelImage extends React.Component {
 
                 {areaLabelDiv}
 
-                <img className={imageLabelStyle} unselectable="on" id="tagging_image" src={this.props.currentImage.getIn(['image', 'location'], '')} onClick={imageClickFunction} />
+                <img onLoad={this.handleImageLoad} className={imageLabelStyle} unselectable="on" id="tagging_image" src={this.props.currentImage.getIn(['image', 'location'], '')} onClick={imageClickFunction} />
 
 
                 {imageLabelValueInput}
