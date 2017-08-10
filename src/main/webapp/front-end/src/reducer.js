@@ -6,6 +6,8 @@ import {
   LOGIN_EMAIL_CHANGED, LOGIN_PASSWORD_CHANGED, LOGIN_CLEAR_INPUTS
 } from './actions.js';
 
+const uuidv1 = require('uuid/v1');
+
 const cleanTask = Map({task: null, error: null, loading: false});
 const cleanOntology = Map({ontology: null, error: null, loading: false});
 const cleanImageSource = Map({imageSource: null, error: null, loading: false});
@@ -39,6 +41,7 @@ function cleanState() {
     currentImageSources: cleanImageSources,
     currentImageSourcesDetails: cleanImageSourcesDetails,
     currentParticipantsDetails: cleanParticipantsDetails,
+    currentParticipationDetails: Map({details: null, error: null, loading: false}),
     deactivatingParticipant: Map({error: null, loading: false}),
     activatingParticipant: Map({error: null, loading: false}),
     leavingTask: Map({error: null, loading: false}),
@@ -277,6 +280,18 @@ function viewParticipantsDetailsError(state, error){
     return state.set('currentParticipantsDetails', Map({details: List.of(), error: Immutable.fromJS(error), loading: false}));
 }
 
+function viewParticipationDetails(state){
+    return state.set('currentParticipationDetails', Map({details: null, error: null, loading: true}));
+}
+
+function viewParticipationDetailsSuccess(state, details){
+    return state.set('currentParticipationDetails', Map({details: Immutable.fromJS(details), error: null, loading: false}));
+}
+
+function viewParticipationDetailsError(state, error){
+    return state.set('currentParticipationDetails', Map({details: null, error: Immutable.fromJS(error), loading: false}));
+}
+
 function imageSourceTypes(state) {
   return state.set('imageSourceTypes', Map({types: List.of(), error: null, loading: true}));
 }
@@ -418,7 +433,7 @@ function viewParticipantImageLabels(state) {
 }
 
 function viewParticipantImageLabelsSuccess(state, labels) {
-  return state.set('currentLabels', Map({labels: Immutable.fromJS(labels), error: null, loading: false}));
+  return state.set('currentLabels', Map({labels: Immutable.fromJS(labels).map(function(l){return l.set({'uuid': uuidv1()})}), error: null, loading: false}));
 }
 
 function viewParticipantImageLabelsError(state, error) {
@@ -455,13 +470,13 @@ function addLabel(state, label) {
   return state.setIn(['currentLabels', 'labels'], state.getIn(['currentLabels','labels']).push(Immutable.fromJS(label)));
 }
 
-function removeLabel(state, label) {
-  const indexOfLabel = state.getIn(['currentLabels', 'labels']).findIndex(function(o){return is(o, Immutable.fromJS(label))})
+function removeLabel(state, uuid) {
+  const indexOfLabel = state.getIn(['currentLabels', 'labels']).findIndex(function(o){return o.get('uuid') == uuid})
   return state.setIn(['currentLabels', 'labels'], state.getIn(['currentLabels', 'labels']).delete(indexOfLabel))
 }
 
-function updateLabelValue(state, label, value) {
-  const indexOfLabel = state.getIn(['currentLabels', 'labels']).findIndex(function(o){return is(o, Immutable.fromJS(label))})
+function updateLabelValue(state, uuid, value) {
+  const indexOfLabel = state.getIn(['currentLabels', 'labels']).findIndex(function(o){return o.get('uuid') == uuid})
   return state.setIn(['currentLabels', 'labels'], state.getIn(['currentLabels', 'labels']).update(indexOfLabel, o => o.set('labelValue', value)));
 }
 
@@ -596,6 +611,12 @@ export default function reducer(state = Map(), action) {
       return viewParticipantsDetailsSuccess(state, action.payload);
     case 'VIEW_PARTICIPANTS_DETAILS_ERROR':
       return viewParticipantsDetailsError(state, action.error);
+    case 'VIEW_PARTICIPATION_DETAILS':
+      return viewParticipationDetails(state);
+    case 'VIEW_PARTICIPATION_DETAILS_SUCCESS':
+      return viewParticipationDetailsSuccess(state, action.payload);
+    case 'VIEW_PARTICIPATION_DETAILS_ERROR':
+      return viewParticipationDetailsError(state, action.error);
     case 'DEACTIVATE_PARTICIPANT':
       return deactivateParticipant(state);
     case 'DEACTIVATE_PARTICIPANT_SUCCESS':
@@ -659,9 +680,9 @@ export default function reducer(state = Map(), action) {
     case 'ADD_LABEL':
       return addLabel(state, action.label);
     case 'REMOVE_LABEL':
-      return removeLabel(state, action.label);
+      return removeLabel(state, action.uuid);
     case 'UPDATE_LABEL_VALUE':
-      return updateLabelValue(state, action.label, action.value);
+      return updateLabelValue(state, action.uuid, action.value);
     case "START_EDITING_TASK":
       return startEditingTask(state);
     case "STOP_EDITING_TASK":

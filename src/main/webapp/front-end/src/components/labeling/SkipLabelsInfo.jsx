@@ -5,7 +5,7 @@ const SkipLabelsInfo = ({ labels, hasSavedLabels, viewInfo }) => {
 
   var labelText = "Skip"
 
-  if(labels.size == 0 && viewInfo && hasSavedLabels) {
+  if(labels.size > 0 && viewInfo && hasSavedLabels) {
     labelText += " (previously labeled)"
   }
 

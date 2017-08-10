@@ -577,6 +577,33 @@ export function viewParticipantsDetailsError(error) {
     }
 }
 
+export function viewParticipationDetails(taskId) {
+    const request = axios({
+        method: 'get',
+        url: `${domain}/tasks/${taskId}/participation`,
+        headers: authenticate()
+    });
+
+    return {
+        type: 'VIEW_PARTICIPATION_DETAILS',
+        payload: request
+    }
+}
+
+export function viewParticipationDetailsSuccess(loaded) {
+    return {
+        type: 'VIEW_PARTICIPATION_DETAILS_SUCCESS',
+        payload: loaded
+    }
+}
+
+export function viewParticipationDetailsError(error) {
+    return {
+        type: 'VIEW_PARTICIPATION_DETAILS_ERROR',
+        error: error
+    }
+}
+
 export function deactivateParticipant(participantId) {
   const request = axios({
     method: 'post',
@@ -847,17 +874,17 @@ export function addLabel(label) {
     }
 }
 
-export function removeLabel(label) {
+export function removeLabel(labelUuid) {
     return {
         type: 'REMOVE_LABEL',
-        label: label
+        uuid: labelUuid
     }
 }
 
-export function updateLabelValue(label, value) {
+export function updateLabelValue(labelUuid, value) {
     return {
         type: 'UPDATE_LABEL_VALUE',
-        label: label,
+        uuid: labelUuid,
         value: value
     }
 }

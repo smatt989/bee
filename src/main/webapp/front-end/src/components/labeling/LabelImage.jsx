@@ -13,7 +13,7 @@ import {
 } from 'react-bootstrap';
 import NavBar from '../NavBar.jsx';
 import { LinkContainer } from 'react-router-bootstrap';
-import { addLabel, removeLabel, viewTaskOntology, viewTaskOntologySuccess, viewTaskOntologyError, updateLabelValue, viewParticipantImageLabels, viewParticipantImageLabelsSuccess, viewParticipantImageLabelsError, nextImage, nextImageSuccess, nextImageError, saveLabels, saveLabelsSuccess, saveLabelsError, markImageSeen, markImageSeenSuccess, markImageSeenError, previousImage, previousImageSuccess, previousImageError } from '../../actions.js';
+import { addLabel, removeLabel, viewTaskOntology, viewTaskOntologySuccess, viewTaskOntologyError, updateLabelValue, viewParticipantImageLabels, viewParticipantImageLabelsSuccess, viewParticipantImageLabelsError, nextImage, nextImageSuccess, nextImageError, saveLabels, saveLabelsSuccess, saveLabelsError, markImageSeen, markImageSeenSuccess, markImageSeenError, previousImage, previousImageSuccess, previousImageError, viewParticipationDetails, viewParticipationDetailsSuccess, viewParticipationDetailsError } from '../../actions.js';
 import FormGroupBase from '../shared/FormGroupBase.jsx';
 import RectangleLabel from './RectangleLabel.jsx';
 import LineLabel from './LineLabel.jsx';
@@ -25,6 +25,9 @@ import SubmitLabelsInfo from './SubmitLabelsInfo.jsx';
 import SkipLabelsInfo from './SkipLabelsInfo.jsx';
 import OntologySentenceContainer from '../tasks/OntologySentence.jsx';
 import DoneLabeling from './DoneLabeling.jsx';
+import ParticipationContainers from './Participation.jsx';
+
+const uuidv1 = require('uuid/v1');
 
 class LabelImage extends React.Component {
 
@@ -39,7 +42,9 @@ class LabelImage extends React.Component {
       imageHeight: 1,
       imageWidth: 1,
       imageNaturalHeight: 1,
-      imageNaturalWidth: 1
+      imageNaturalWidth: 1,
+      addingLabelValue: false,
+      autofocus: true
     };
 
     this.imageHandleMouseMove = (limit) => (e) => {
@@ -61,6 +66,7 @@ class LabelImage extends React.Component {
          if(rect.h != 0 || rect.w != 0){
              var value = this.props.currentOntology.getIn(['ontology', 'ontologyType']) == ONTOLOGY_TYPE_BINARY ? 1 : null;
              this.removeNullLabels()
+             this.turnOnAutofocus();
              this.props.addLabel(this.transposeRectToLabelJSProportions(createLabelFunction(rect, value)));
          }
          this.setState({rect: {startX: 0, startY: 0, h: 0, w: 0}, drag: false});
@@ -80,6 +86,11 @@ class LabelImage extends React.Component {
     this.handleImageLoad = this.handleImageLoad.bind(this);
     this.transposeLabelJSToRectProportions = this.transposeLabelJSToRectProportions.bind(this);
     this.transposeRectToLabelJSProportions = this.transposeRectToLabelJSProportions.bind(this);
+    this.handleInputFocus = this.handleInputFocus.bind(this);
+    this.handleInputBlur = this.handleInputBlur.bind(this);
+    this.handleGlobalKeyPress = this.handleGlobalKeyPress.bind(this);
+    this.turnOffAutofocus = this.turnOffAutofocus.bind(this);
+    this.turnOnAutofocus = this.turnOnAutofocus.bind(this);
   }
 
   removeAllPreexistingLabels() {
@@ -124,6 +135,7 @@ class LabelImage extends React.Component {
   }
 
   imageHandleClick() {
+    this.turnOnAutofocus()
     if(this.isPositiveImageLabel()) {
         this.removeAllPreexistingLabels()
         //TODO: CRAP... COLLISION BETWEEN LABELING "NO LABEL" AND "0" VALUE FOR INTEGER RANGE... COULD USE SPECIAL VALUE... UGH
@@ -147,7 +159,8 @@ class LabelImage extends React.Component {
         xCoordinate: left,
         yCoordinate: top,
         width: width,
-        height: height
+        height: height,
+        uuid: uuidv1()
     }
   }
 
@@ -157,13 +170,15 @@ class LabelImage extends React.Component {
         point1x: rect.startX,
         point1y: rect.startY,
         point2x: rect.startX + rect.w,
-        point2y: rect.startY + rect.h
+        point2y: rect.startY + rect.h,
+        uuid: uuidv1()
     }
   }
 
   makeImageLabel(value) {
     return {
-        labelValue: value
+        labelValue: value,
+        uuid: uuidv1()
     }
   }
 
@@ -181,7 +196,6 @@ class LabelImage extends React.Component {
   handleSaveLabels(labels) {
     const taskId = Number(this.props.match.params.id)
     const imageId = this.props.currentImage.getIn(['image', 'id'])
-
     if(this.validLabels()){
         this.props.saveLabels(taskId, imageId, labels, this.seenImage)
     }
@@ -241,7 +255,7 @@ class LabelImage extends React.Component {
     if(this.props.currentOntology.getIn(['ontology', 'ontologyType'], '') != ONTOLOGY_TYPE_BINARY){
         var allValid = true
         this.props.currentLabels.get('labels', List.of()).map(label => {
-            if(!valueInRange(label.get('labelValue', null), min, max)){
+            if(!valueInRange(label.get('labelValue', null), min, max) && !isNullLabel(label.toJS())){
                 allValid = false
             }
         })
@@ -278,12 +292,14 @@ class LabelImage extends React.Component {
   loadNewImage(next) {
     const taskId = Number(this.props.match.params.id)
     const imageViewId = this.props.currentImage.getIn(['viewInfo', 'imageViewId'], null)
-    const callback = (data) => this.props.getLabels(taskId, data.image.id, (d) => this.state.hasSavedLabels = d.length > 0)
+    const callback = (data) => this.props.getLabels(taskId, data.image.id, (d) => this.setState({hasSavedLabels: d.length > 0}))
+    this.turnOffAutofocus()
     if(next){
         this.props.nextImage(taskId, imageViewId, callback)
     }else {
         this.props.previousImage(taskId, imageViewId, callback)
     }
+    this.props.getParticipation(taskId)
   }
 
   componentDidMount() {
@@ -291,6 +307,56 @@ class LabelImage extends React.Component {
     if(!this.props.currentOntology.get('ontology') && !this.props.currentOntology.get('loading')){
         this.props.getOntology(this.props.match.params.id)
     }
+
+  }
+
+  componentWillMount(){
+    document.addEventListener("keydown", this.handleGlobalKeyPress.bind(this))
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("keydown", this.handleGlobalKeyPress.bind(this))
+  }
+
+  handleGlobalKeyPress(e){
+    if(!this.state.addingLabelValue){
+        switch(e.keyCode) {
+            case 39 /*right*/:
+                this.handleSaveLabels(this.getLabelsWithNullLabels())
+                e.preventDefault()
+                break;
+            case 37 /*left*/:
+                this.loadNewImage(false);
+                e.preventDefault()
+                break;
+            case 32 /*space*/:
+                break;
+            case 13 /*enter*/:
+                break;
+            case 40 /*down*/:
+                this.handleSkipLabeling()
+                e.preventDefault()
+                break;
+            default:
+                break;
+        }
+    }
+  }
+
+  handleInputFocus() {
+    this.setState({addingLabelValue: true})
+  }
+
+  handleInputBlur() {
+    this.setState({addingLabelValue: false})
+  }
+
+  turnOnAutofocus() {
+    this.setState({autofocus: true})
+  }
+
+  turnOffAutofocus() {
+    this.setState({autofocus: false})
   }
 
   render() {
@@ -333,6 +399,11 @@ class LabelImage extends React.Component {
 
     var imageLabelValueInput = null
 
+    const handleFocus = this.handleInputFocus
+    const handleBlur = this.handleInputBlur
+
+    const autofocusState = this.state.autofocus
+
     if(isAreaLabel) {
         mouseDownFunction = this.imageHandleMouseDown
         mouseUpFunction = this.imageHandleMouseUp(this.makeAreaLabel)
@@ -341,7 +412,7 @@ class LabelImage extends React.Component {
         areaLabelDiv = <div>
 
                 {labels.map((label, index) => {
-                    return <RectangleLabel key={index} rect={this.transposeLabelJSToRectProportions(label.toJS())} remove={removeLabel(label)} update={this.props.updateLabelValue} ontologyType={ontologyType} min={min} max={max} />
+                    return <RectangleLabel key={index} rect={this.transposeLabelJSToRectProportions(label.toJS())} remove={removeLabel(label.get('uuid'))} update={this.props.updateLabelValue} ontologyType={ontologyType} min={min} max={max} handleFocus={handleFocus} handleBlur={handleBlur} autofocusState={autofocusState} />
                 })}
                 <RectangleLabel rect={this.makeAreaLabel(this.state.rect, 1)} />
             </div>
@@ -353,7 +424,7 @@ class LabelImage extends React.Component {
         lengthLabelDiv = <div>
 
                 {labels.map((label, index) => {
-                    return <LineLabel key={index} rect={this.transposeLabelJSToRectProportions(label.toJS())} remove={removeLabel(label)} update={this.props.updateLabelValue} ontologyType={ontologyType} min={min} max={max} />
+                    return <LineLabel key={index} rect={this.transposeLabelJSToRectProportions(label.toJS())} remove={removeLabel(label.get('uuid'))} update={this.props.updateLabelValue} ontologyType={ontologyType} min={min} max={max} handleFocus={handleFocus} handleBlur={handleBlur} autofocusState={autofocusState} />
                 })}
                 <LineLabel rect={this.makeLengthLabel(this.state.rect, 1)} />
             </div>
@@ -367,7 +438,7 @@ class LabelImage extends React.Component {
         }
 
         if(this.isPositiveImageLabel() && (ontologyType == ONTOLOGY_TYPE_FLOAT_RANGE || ontologyType == ONTOLOGY_TYPE_INTEGER_RANGE)){
-            imageLabelValueInput = <LabelValueInput top={5} left={5} update={this.props.updateLabelValue} label={imageLabel} />
+            imageLabelValueInput = <LabelValueInput top={5} left={5} update={this.props.updateLabelValue} label={imageLabel} ontologyType={ontologyType} min={min} max={max} handleFocus={handleFocus} handleBlur={handleBlur} autofocusState={autofocusState}/>
         }
     }
 
@@ -397,7 +468,10 @@ class LabelImage extends React.Component {
             </div>
         </div>
         <div className="col-md-4 m-t-5 pull-right">
-            <Button onClick={this.handleDoneForNow}>Done for now</Button>
+            <div>
+                <ParticipationContainers />
+                <Button className="m-t-3" onClick={this.handleDoneForNow}>Done for now</Button>
+            </div>
             <div className="m-t-5">
                 <LabelingHint currentOntology={this.props.currentOntology} />
             </div>
@@ -469,6 +543,18 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
                return true;
            })
+    },
+    getParticipation: (taskId) => {
+        return dispatch(viewParticipationDetails(taskId))
+            .then(response => {
+                if(response.error) {
+                    dispatch(viewParticipationDetailsError(response.error));
+                    return false;
+                }
+
+                dispatch(viewParticipationDetailsSuccess(response.payload.data));
+                return true;
+            })
     },
     getLabels: (taskId, imageId, callback) => {
         return dispatch(viewParticipantImageLabels(taskId, imageId))

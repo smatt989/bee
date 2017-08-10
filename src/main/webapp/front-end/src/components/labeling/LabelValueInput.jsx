@@ -24,10 +24,12 @@ class LabelValueInput extends React.Component {
     }
 
     handleFocus(e) {
+        this.props.handleFocus()
         e.currentTarget.style.width = this.defaultSize
     }
 
     handleBlur(e) {
+        this.props.handleBlur()
         if(e.currentTarget.value.length > 0){
             e.currentTarget.style.width = ((e.currentTarget.value.length + 1) * 9 + 20) + 'px';
         } else {
@@ -60,10 +62,9 @@ class LabelValueInput extends React.Component {
       }
 
       const updateFunction = (e) => {
-        console.log("updating...")
         //const value = couldBeNumeric(e.target.value) ? e.targetValue : isANumber(e.target.value) ? Number(e.target.value) : ''
         const value = couldBeNumeric(e.target.value) ? isANumber(e.target.value) ? Number(e.target.value) : e.target.value : null
-        update(label, value)
+        update(label.uuid, value)
       }
 
       const currentLabelValue = label ? couldBeNumeric(label.labelValue) ? String(label.labelValue) : '' : ''
@@ -91,7 +92,7 @@ class LabelValueInput extends React.Component {
                 value={currentLabelValue}
                 onChange={updateFunction}
                 onKeyUp={this.handleEnterPress}
-                placeholder="Label value" autoFocus />
+                placeholder="Label value" autoFocus={this.props.autofocusState} />
 
               </FormGroup>
       }

@@ -7,7 +7,7 @@ import RemoveLabelButton from './RemoveLabelButton.jsx';
 import LabelValueInput from './LabelValueInput.jsx';
 import { ONTOLOGY_TYPE_BINARY, ONTOLOGY_TYPE_FLOAT_RANGE, ONTOLOGY_TYPE_INTEGER_RANGE } from './../../utilities.js';
 
-const LineLabel = ({ rect, remove, ontologyType, update, min, max }) => {
+const LineLabel = ({ rect, remove, ontologyType, update, min, max, handleFocus, handleBlur, autofocusState }) => {
 
  var divStyle = {
    display: "none"
@@ -54,7 +54,7 @@ const LineLabel = ({ rect, remove, ontologyType, update, min, max }) => {
  var labelValueInput = null
 
  if(ontologyType == ONTOLOGY_TYPE_FLOAT_RANGE || ontologyType == ONTOLOGY_TYPE_INTEGER_RANGE){
-   labelValueInput = <LabelValueInput top={rect.height} left={5} label={rect} update={update} min={min} max={max} />
+   labelValueInput = <LabelValueInput top={rect.height} left={5} label={rect} update={update} min={min} max={max} handleFocus={handleFocus} handleBlur={handleBlur} autofocusState={autofocusState} />
  }
 
  return (<div style={divStyle} className={className}>
