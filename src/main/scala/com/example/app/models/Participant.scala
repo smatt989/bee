@@ -62,4 +62,23 @@ object Participant extends UpdatableDBObject[ParticipantsRow, Participants] {
 
   def idColumnFromTable(a: _root_.com.example.app.db.Tables.Participants) =
     a.participantId
+
+  def participantDetails(taskId: Int) = {
+    db.run(
+      (
+        for {
+          ((participants, seen), labeled) <- table
+            .filter(_.taskId === taskId) joinLeft ImageView.table on (_.participantId === _.participantId) joinLeft Label.table on (_._1.participantId === _.participantId)
+        } yield (participants, seen, labeled)
+        ).result
+    ).map(_.groupBy(_._1.participantId).map(a =>
+      ParticipantDetails(
+        a._1,
+        a._2.flatMap(_._2).map(_.imageId).distinct.size,
+        a._2.flatMap(_._3).map(_.imageId).distinct.size
+      )
+    ))
+  }
 }
+
+case class ParticipantDetails(participantId: Int, seen: Int, labeled: Int)

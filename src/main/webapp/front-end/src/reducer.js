@@ -11,7 +11,8 @@ const cleanOntology = Map({ontology: null, error: null, loading: false});
 const cleanImageSource = Map({imageSource: null, error: null, loading: false});
 const cleanImageSources = Map({imageSources: List.of(), error: null, loading: false});
 const cleanParticipants = Map({participants: List.of(), error: null, loading: false});
-const cleanImageSourcesDetails = Map({details: null, error: null, loading: false});
+const cleanImageSourcesDetails = Map({details: List.of(), error: null, loading: false});
+const cleanParticipantsDetails = Map({details: List.of(), error: null, loading: false});
 
 function cleanState() {
   const sessionKey = getSession();
@@ -37,6 +38,7 @@ function cleanState() {
     deletingImageSource: Map({error: null, loading: false}),
     currentImageSources: cleanImageSources,
     currentImageSourcesDetails: cleanImageSourcesDetails,
+    currentParticipantsDetails: cleanParticipantsDetails,
     deactivatingParticipant: Map({error: null, loading: false}),
     activatingParticipant: Map({error: null, loading: false}),
     leavingTask: Map({error: null, loading: false}),
@@ -120,8 +122,9 @@ function cleanTaskState(state) {
   const newImageSources = newImageSource.set('currentImageSources', cleanImageSources);
   const newParticipants = newImageSources.set('taskParticipants', cleanParticipants);
   const newImageSourcesDetails = newParticipants.set('currentImageSourcesDetails', cleanImageSourcesDetails);
+  const newParticipantsDetails = newImageSourcesDetails.set('currentParticipantsDetails', cleanParticipantsDetails);
 
-  return newImageSourcesDetails
+  return newParticipantsDetails
 }
 
 function viewTask(state) {
@@ -251,7 +254,7 @@ function viewImageSourceError(state, error) {
 }
 
 function viewImageSourcesDetails(state) {
-  return state.set('currentImageSourcesDetails',  Map({details: null, error: null, loading: true}));
+  return state.set('currentImageSourcesDetails',  Map({details: List.of(), error: null, loading: true}));
 }
 
 function viewImageSourcesDetailsSuccess(state, details) {
@@ -259,7 +262,19 @@ function viewImageSourcesDetailsSuccess(state, details) {
 }
 
 function viewImageSourcesDetailsError(state, error) {
-  return state.set('currentImageSourcesDetails',  Map({details: null, error: Immutable.fromJS(error), loading: false}));
+  return state.set('currentImageSourcesDetails',  Map({details: List.of(), error: Immutable.fromJS(error), loading: false}));
+}
+
+function viewParticipantsDetails(state) {
+    return state.set('currentParticipantsDetails', Map({details: List.of(), error: null, loading: true}));
+}
+
+function viewParticipantsDetailsSuccess(state, details){
+    return state.set('currentParticipantsDetails', Map({details: Immutable.fromJS(details), error: null, loading: false}));
+}
+
+function viewParticipantsDetailsError(state, error){
+    return state.set('currentParticipantsDetails', Map({details: List.of(), error: Immutable.fromJS(error), loading: false}));
 }
 
 function imageSourceTypes(state) {
@@ -575,6 +590,12 @@ export default function reducer(state = Map(), action) {
       return viewImageSourcesDetailsSuccess(state, action.payload);
     case 'VIEW_IMAGE_SOURCES_DETAILS_ERROR':
       return viewImageSourcesDetailsError(state, action.error);
+    case 'VIEW_PARTICIPANTS_DETAILS':
+      return viewParticipantsDetails(state);
+    case 'VIEW_PARTICIPANTS_DETAILS_SUCCESS':
+      return viewParticipantsDetailsSuccess(state, action.payload);
+    case 'VIEW_PARTICIPANTS_DETAILS_ERROR':
+      return viewParticipantsDetailsError(state, action.error);
     case 'DEACTIVATE_PARTICIPANT':
       return deactivateParticipant(state);
     case 'DEACTIVATE_PARTICIPANT_SUCCESS':

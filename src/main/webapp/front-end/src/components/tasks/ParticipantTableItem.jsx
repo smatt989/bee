@@ -5,7 +5,7 @@ import {
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 
-const ParticipantTableItem = ({ data, match, activate, deactivate }) => {
+const ParticipantTableItem = ({ data, match, activate, deactivate, details }) => {
   var deactivateButton = null
   var activateButton = null
 
@@ -17,8 +17,9 @@ const ParticipantTableItem = ({ data, match, activate, deactivate }) => {
 
   return (
     <tr>
-      <td>{1}</td>
       <td>{data.email}</td>
+      <td>{details.get('labeled')}</td>
+      <td>{details.get('seen')}</td>
       <td>
         <ButtonGroup>
           {activateButton}

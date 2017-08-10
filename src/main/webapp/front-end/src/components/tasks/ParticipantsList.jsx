@@ -7,12 +7,24 @@ import {
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Map, List } from 'immutable';
-import { taskParticipants, taskParticipantsSuccess, taskParticipantsError, activateParticipant, activateParticipantSuccess, activateParticipantError, deactivateParticipant, deactivateParticipantSuccess, deactivateParticipantError } from '../../actions.js';
+import { taskParticipants, taskParticipantsSuccess, taskParticipantsError, activateParticipant, activateParticipantSuccess, activateParticipantError, deactivateParticipant, deactivateParticipantSuccess, deactivateParticipantError, viewParticipantsDetails, viewParticipantsDetailsSuccess, viewParticipantsDetailsError } from '../../actions.js';
 import ParticipantTableItem from './ParticipantTableItem.jsx';
 
 class ParticipantsList extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.participantDetailsFromParticipantId = this.participantDetailsFromParticipantId.bind(this);
+
+  }
+
   componentDidMount() {
     this.props.getParticipants(this.props.match.params.id);
+    this.props.getParticipantsDetails(this.props.match.params.id);
+  }
+
+  participantDetailsFromParticipantId(id){
+    return this.props.participantsDetails.get('details').find(function(a){return a.get('participantId') == id}, null, Map({}))
   }
 
   buildContent() {
@@ -38,14 +50,15 @@ class ParticipantsList extends React.Component {
         <Table id="participant-tbl" responsive striped hover>
           <thead>
             <tr>
-              <th>#</th>
               <th>Name</th>
-              <th>Actions</th>
+              <th># Labeled</th>
+              <th># Seen</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             { participants.map(o =>
-              <ParticipantTableItem key={o.email} data={o} {...this.props} />)}
+              <ParticipantTableItem details={this.participantDetailsFromParticipantId(o.participantId)} key={o.email} data={o} {...this.props} />)}
           </tbody>
         </Table>
     </div>;
@@ -59,6 +72,7 @@ class ParticipantsList extends React.Component {
 const mapStateToProps = state => {
   return {
     participants: state.getIn(['taskParticipants', 'participants'], List.of()).toJS(),
+    participantsDetails: state.get('currentParticipantsDetails'),
     loading: state.getIn(['taskParticipants', 'loading']),
     error: state.getIn(['taskParticipants', 'error'])
   };
@@ -77,6 +91,18 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                 dispatch(taskParticipantsSuccess(response.payload.data));
                 return true;
             });
+    },
+    getParticipantsDetails: (taskId) => {
+        return dispatch(viewParticipantsDetails(taskId))
+            .then(response => {
+                if(response.error) {
+                    dispatch(viewParticipantsDetailsError(response.error));
+                    return false;
+                }
+
+                dispatch(viewParticipantsDetailsSuccess(response.payload.data));
+                return true;
+            })
     },
     activate: (participantId) => {
         return dispatch(activateParticipant(participantId))

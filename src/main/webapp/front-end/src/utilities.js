@@ -118,3 +118,7 @@ export function valueInRange(value, min, max) {
     }
     return false
 }
+
+export function sum(collection) {
+  return collection.reduce((sum, x) => sum + x, 0)
+}

@@ -67,9 +67,23 @@ object ImageSource extends UpdatableDBObject[ImageSourcesRow, ImageSources]{
     )
   }
 
-  def imageCountInSources(imageSourceIds: Seq[Int]) = {
-    //TODO: MAY WANT TO ADD SOME SORT OF DISTINCT THING HERE...
-    db.run(ImageToImageSourceRelation.table.filter(_.imageSourceId inSet imageSourceIds).length.result).map(ImageSourceDetails)
+  def imageSourceDetails(imageSourceIds: Seq[Int]) = {
+    db.run(
+      (
+        for {
+          ((images, seen), label) <- ImageToImageSourceRelation.table
+            .filter(_.imageSourceId inSet imageSourceIds) joinLeft ImageView.table on (_.imageId === _.imageId) joinLeft Label.table on (_._1.imageId === _.imageId)
+
+        } yield (images, seen, label)
+        ).result
+    ).map(_.groupBy(_._1.imageSourceId).map(a =>
+      ImageSourceDetails(
+        a._1,
+        a._2.map(_._1.imageId).distinct.size,
+        a._2.flatMap(_._2).map(_.imageId).distinct.size,
+        a._2.flatMap(_._3).map(_.imageId).distinct.size
+      )
+    ))
   }
 
   def deleteImagesFromSource(imageSourceId: Int, images: Seq[ImagesRow]) = {
@@ -132,4 +146,4 @@ object ImageSource extends UpdatableDBObject[ImageSourcesRow, ImageSources]{
 
 case class ImageSourceType(name: String, fields: Seq[String])
 
-case class ImageSourceDetails(imageCount: Int)
+case class ImageSourceDetails(imageSourceId: Int, imageCount: Int, seen: Int, labeled: Int)

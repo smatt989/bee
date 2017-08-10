@@ -1,16 +1,33 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Map, List} from 'immutable';
 import {
   Table,
   Button,
   ButtonGroup
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { viewImageSources, viewImageSourcesSuccess, viewImageSourcesError, deleteImageSource, deleteImageSourceSuccess, deleteImageSourceError } from '../../actions.js';
+import { viewImageSources, viewImageSourcesSuccess, viewImageSourcesError, deleteImageSource, deleteImageSourceSuccess, deleteImageSourceError, viewImageSourcesDetails, viewImageSourcesDetailsSuccess, viewImageSourcesDetailsError } from '../../actions.js';
+
 
 class ImagesSourcesTable extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+    this.imageSourceInfo = this.imageSourceInfo.bind(this);
+
+  }
+
+  imageSourceInfo(imageSourceId, detail) {
+    const imageSourceDetail = this.props.currentImageSourcesDetails.get('details').find(function(a){ return a.get('imageSourceId') == imageSourceId}, null, Map({}))
+
+    return imageSourceDetail.get(detail, 0)
+  }
+
     componentDidMount() {
         this.props.getImageSources(this.props.match.params.id)
+        this.props.getImageSourcesDetails(this.props.match.params.id)
     }
 
     render() {
@@ -24,7 +41,9 @@ class ImagesSourcesTable extends React.Component {
               <th>#</th>
               <th>Name</th>
               <th>Type</th>
-              <th>Number</th>
+              <th>Images</th>
+              <th>% Seen</th>
+              <th>% Labeled</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -34,7 +53,9 @@ class ImagesSourcesTable extends React.Component {
                           <td>{o.get('id')}</td>
                           <td>{o.get('name')}</td>
                           <td>{o.get('imageSourceType')}</td>
-                          <td>55 images</td>
+                          <td>{this.imageSourceInfo(o.get('id'), 'imageCount')}</td>
+                          <td>{(this.imageSourceInfo(o.get('id'), 'seen') / this.imageSourceInfo(o.get('id'), 'imageCount') * 100).toFixed(1)}%</td>
+                          <td>{(this.imageSourceInfo(o.get('id'), 'labeled') / this.imageSourceInfo(o.get('id'), 'imageCount') * 100).toFixed(1)}%</td>
                           <td>        <ButtonGroup>
                                         <Button onClick={() => deleteImageSource(o.get('id'))}>Remove</Button>
                                         <LinkContainer to={'/tasks/'+o.get('taskId')+'/image-sources/'+o.get('id')}>
@@ -51,7 +72,8 @@ class ImagesSourcesTable extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    imagesSources: state.get('currentImageSources')
+    imagesSources: state.get('currentImageSources'),
+    currentImageSourcesDetails: state.get('currentImageSourcesDetails')
   }
 }
 
@@ -79,6 +101,18 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
                 dispatch(deleteImageSourceSuccess(imageSourceId));
                 return true
+            })
+    },
+    getImageSourcesDetails: (taskId) => {
+        return dispatch(viewImageSourcesDetails(taskId))
+            .then(response => {
+                if(response.error) {
+                    dispatch(viewImageSourcesDetailsError(response.error));
+                    return false;
+                }
+
+                dispatch(viewImageSourcesDetailsSuccess(response.payload.data));
+                return true;
             })
     }
   }

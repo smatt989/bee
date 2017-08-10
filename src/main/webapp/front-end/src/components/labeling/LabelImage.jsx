@@ -24,6 +24,7 @@ import LabelingHint from './LabelingHint.jsx';
 import SubmitLabelsInfo from './SubmitLabelsInfo.jsx';
 import SkipLabelsInfo from './SkipLabelsInfo.jsx';
 import OntologySentenceContainer from '../tasks/OntologySentence.jsx';
+import DoneLabeling from './DoneLabeling.jsx';
 
 class LabelImage extends React.Component {
 
@@ -369,6 +370,12 @@ class LabelImage extends React.Component {
             imageLabelValueInput = <LabelValueInput top={5} left={5} update={this.props.updateLabelValue} label={imageLabel} />
         }
     }
+
+    const imger = this.props.currentImage
+    if(!imger.get('image') && !imger.get('error') && !imger.get('loading')){
+        return <DoneLabeling {...this.props} />
+    }
+
 
     return <div>
         <NavBar inverse={false}/>

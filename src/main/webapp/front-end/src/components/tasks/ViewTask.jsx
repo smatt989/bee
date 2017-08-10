@@ -3,13 +3,15 @@ import { connect } from 'react-redux';
 import {
   Grid,
   PageHeader,
-  Button
+  Button,
+  Row
 } from 'react-bootstrap';
 import { Redirect, Link } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
 import { viewTask, viewTaskSuccess, viewTaskError, cleanTaskState, startEditingTask } from '../../actions.js';
 import ImageSourcesInfoContainer from './ImageSourcesInfo.jsx';
 import { ParticipantsListContainer } from './ParticipantsList.jsx';
+import TaskNumbersContainers from './TaskNumbers.jsx';
 import OntologyInfoContainer from './OntologyInfo.jsx';
 import NavBar from '../NavBar.jsx';
 
@@ -46,10 +48,19 @@ class ViewTask extends React.Component {
     return <div>
       <NavBar inverse={false} />
       <div className='container'>
-        { this.buildContent() }
-        <OntologyInfoContainer {...this.props} />
-        <ImageSourcesInfoContainer {...this.props} />
-        <ParticipantsListContainer {...this.props} />
+        <Row>
+            <div className="col-md-8">
+                { this.buildContent() }
+                <OntologyInfoContainer {...this.props} />
+                <ImageSourcesInfoContainer {...this.props} />
+            </div>
+            <div className='m-t-2'>
+                <TaskNumbersContainers {...this.props}/>
+            </div>
+        </Row>
+        <Row>
+            <ParticipantsListContainer {...this.props} />
+        </Row>
       </div>
     </div>;
   }

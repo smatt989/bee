@@ -550,6 +550,33 @@ export function viewImageSourcesDetailsError(error) {
     }
 }
 
+export function viewParticipantsDetails(taskId) {
+    const request = axios({
+        method: 'get',
+        url: `${domain}/tasks/${taskId}/participants/details`,
+        headers: authenticate()
+    });
+
+    return {
+        type: 'VIEW_PARTICIPANTS_DETAILS',
+        payload: request
+    }
+}
+
+export function viewParticipantsDetailsSuccess(loaded) {
+    return {
+        type: 'VIEW_PARTICIPANTS_DETAILS_SUCCESS',
+        payload: loaded
+    }
+}
+
+export function viewParticipantsDetailsError(error) {
+    return {
+        type: 'VIEW_PARTICIPANTS_DETAILS_ERROR',
+        error: error
+    }
+}
+
 export function deactivateParticipant(participantId) {
   const request = axios({
     method: 'post',
