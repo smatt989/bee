@@ -28,7 +28,7 @@ class NavBar extends React.Component {
     props.className = 'm-t-4';
     return <Navbar {...props} collapseOnSelect>
       <Navbar.Header>
-        <BeeLabel />
+        <BeeLabel inverse={inverse} />
       </Navbar.Header>
       <Navbar.Collapse>
         <NavRight session={this.props.session} logout={this.props.logout}/>

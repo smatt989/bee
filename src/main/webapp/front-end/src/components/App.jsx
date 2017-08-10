@@ -10,7 +10,7 @@ import NavBarContainer from './NavBar.jsx';
 import Home from './Home.jsx';
 import LoginContainer from './account_forms/Login.jsx';
 import RegisterContainer from './account_forms/Register.jsx';
-import PrivateRouteContainer from './PrivateRoute.jsx';
+import { PrivateRouteContainer, HomeRouteContainer } from './PrivateRoute.jsx';
 import ImageSources from './image_sources/ImageSources.jsx';
 import NewImageSource from './image_sources/NewImageSource.jsx';
 import Tasks from './tasks/Tasks.jsx';
@@ -21,13 +21,14 @@ import ShareTask from './tasks/ShareTask.jsx';
 import AcceptTaskInvitation from './tasks/AcceptTaskInvitation.jsx';
 import LabelImage from './labeling/LabelImage.jsx';
 import Err from './Error.jsx';
+import { isAuthenticated } from '../actions.js';
 
 export default class App extends React.Component {
   render() {
     return <Router>
       <div>
         <Switch>
-          <Route exact path="/" component={Home}/>
+          <HomeRouteContainer exact path="/" component={Home}/>
           <Route exact path="/login" component={LoginContainer}/>
           <Route exact path="/register" component={RegisterContainer}/>
           <Route exact path="/recover" component={LoginContainer}/>
@@ -49,3 +50,13 @@ export default class App extends React.Component {
     </Router>;
   }
 }
+
+/*
+function requireAuth() {
+    if(!isAuthenticated()) {
+        replace({
+          pathname: '/login',
+          state: { nextPathname: nextState.location.pathname }
+        })
+    }
+}*/

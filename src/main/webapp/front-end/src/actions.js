@@ -84,6 +84,19 @@ export function loginError(error) {
   };
 }
 
+export function checkAuthentication() {
+    const request = axios({
+        method: 'get',
+        url: `${domain}/sessions/new`,
+        headers: authenticate()
+    });
+
+    return {
+        type: 'CHECK_AUTHENTICATION',
+        payload: request
+    };
+}
+
 export function logout(session) {
   const request = axios({
     method: 'post',

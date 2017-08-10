@@ -1,6 +1,6 @@
 import store from './store.js';
 import Cookies from 'js-cookie';
-import { login, loginError, loginSuccess, loginClearInputs } from './actions.js';
+import { login, loginError, loginSuccess, loginClearInputs, checkAuthentication } from './actions.js';
 var _ = require('lodash');
 
 export var authenticationHeader = 'bee-session-key';
@@ -22,6 +22,25 @@ export function authenticate() {
   var authentication = {};
   authentication[authenticationHeader] = Cookies.get(cookieName);
   return authentication;
+}
+
+export function isAuthenticated(){
+    const sessionKey = getSession()
+    return store.dispatch(checkAuthentication(sessionKey))
+        .then(response => {
+          if (response.error) {
+            store.dispatch(loginError(response.error));
+            return false;
+          }
+
+          const session = response.payload.headers[authenticationHeader];
+          if (!session) {
+            return false;
+          }
+
+          store.dispatch(loginSuccess(session));
+          return true;
+        });
 }
 
 export const tryLogin = (email, password) => {

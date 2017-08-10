@@ -76,7 +76,12 @@ function loginSuccess(state, session) {
 }
 
 function loginError(state, error) {
+  setSession(null)
   return state.set('login', Map({session: null, error: error, loading: false}));
+}
+
+function checkAuthentication(state) {
+  return login(state);
 }
 
 function logout(state) {
@@ -470,6 +475,8 @@ export default function reducer(state = Map(), action) {
       return loginSuccess(state, action.payload);
     case 'LOGIN_ERROR':
       return loginError(state, action.error);
+    case 'CHECK_AUTHENTICATION':
+      return checkAuthentication(state);
     case 'LOGOUT':
       return logout(state);
     case 'LOGOUT_SUCCESS':
