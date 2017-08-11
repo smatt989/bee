@@ -63,7 +63,7 @@ object Participant extends UpdatableDBObject[ParticipantsRow, Participants] {
   def idColumnFromTable(a: _root_.com.example.app.db.Tables.Participants) =
     a.participantId
 
-  def participantDetails(taskId: Int) = {
+  def participantsDetails(taskId: Int) = {
     db.run(
       (
         for {

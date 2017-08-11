@@ -68,11 +68,22 @@ object ImageSource extends UpdatableDBObject[ImageSourcesRow, ImageSources]{
   }
 
   def imageSourceDetails(imageSourceIds: Seq[Int]) = {
+    val participants = Await.result(db.run(
+      (
+        for {
+          imageSources <- table.filter(_.imageSourceId inSet imageSourceIds)
+          participants <- Participant.table if participants.taskId === imageSources.taskId
+        } yield (participants)
+        ).result
+    ), Duration.Inf)
+
+    val participantIds = participants.map(_.participantId)
+
     db.run(
       (
         for {
           ((images, seen), label) <- ImageToImageSourceRelation.table
-            .filter(_.imageSourceId inSet imageSourceIds) joinLeft ImageView.table on (_.imageId === _.imageId) joinLeft Label.table on (_._1.imageId === _.imageId)
+            .filter(_.imageSourceId inSet imageSourceIds) joinLeft ImageView.table.filter(_.participantId inSet participantIds) on (_.imageId === _.imageId) joinLeft Label.table.filter(_.participantId inSet participantIds) on (_._1.imageId === _.imageId)
 
         } yield (images, seen, label)
         ).result

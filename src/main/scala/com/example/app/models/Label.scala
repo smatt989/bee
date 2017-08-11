@@ -7,6 +7,7 @@ import AppGlobals.dbConfig.driver.api._
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import com.example.app.db.Tables._
+import scala.concurrent.ExecutionContext.Implicits.global
 /**
   * Created by matt on 5/31/17.
   */
@@ -75,6 +76,17 @@ object Label extends SlickUUIDObject[LabelsRow, Labels] {
       } yield labels).result
     )
 
+  def labelAndImageByTask(taskId: Int) =
+    db.run(
+      (
+        for {
+          participants <- Participant.table.filter(_.taskId === taskId)
+          labels <- table if labels.participantId === participants.participantId
+          images <- Image.table if labels.imageId === images.imageId
+        } yield (images, labels)
+        ).result
+    ).map(_.map(a => ImageAndLabel(a._1, a._2)))
+
   def saveLabels(userId: Int, saveLabels: SaveLabels) = {
     val participant = Await.result(Participant.participantByUserAndTask(userId, saveLabels.taskId), Duration.Inf).get
     val ontology = Await.result(OntologyVersion.latestVersionByTask(saveLabels.taskId), Duration.Inf).get
@@ -102,3 +114,5 @@ object Label extends SlickUUIDObject[LabelsRow, Labels] {
   def idColumnFromTable(a: _root_.com.example.app.db.Tables.Labels) =
     a.labelId
 }
+
+case class ImageAndLabel(image: ImagesRow, label: LabelsRow)

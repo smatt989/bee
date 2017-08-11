@@ -1,7 +1,7 @@
 package com.example.app.Routes
 
 import com.example.app.models._
-import com.example.app.{AuthenticationSupport, SlickRoutes}
+import com.example.app.{AuthenticationSupport, CSVWriter, SlickRoutes}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -40,4 +40,44 @@ trait LabelRoutes extends SlickRoutes with AuthenticationSupport {
     else
       throw new Exception("Not authorized to view labels for this image")
   }
+
+  get("/tasks/:id/labels/dump") {
+
+    authenticate()
+
+    val userId = user.userAccountId
+    val taskId = {params("id")}.toInt
+
+    val taskAuthorization = Task.authorizedToViewTaskDetails(userId, taskId)
+
+    if(taskAuthorization){
+      val labels = Await.result(Label.labelAndImageByTask(taskId), Duration.Inf)
+
+      try {
+
+        val columns = Seq(
+          ("externalId", (a: ImageAndLabel) => a.image.externalId),
+          ("location", (a: ImageAndLabel) => a.image.location),
+          ("participantId", (a: ImageAndLabel) => a.label.participantId),
+          ("ontologyType", (a: ImageAndLabel) => a.label.ontologyType),
+          ("labelValue", (a: ImageAndLabel) => a.label.labelValue),
+          ("createdMillis", (a: ImageAndLabel) => a.label.createdMillis),
+          ("xCoordinate", (a: ImageAndLabel) => a.label.xCoordinate.getOrElse("")),
+          ("yCoordinate", (a: ImageAndLabel) => a.label.yCoordinate.getOrElse("")),
+          ("width", (a: ImageAndLabel) => a.label.width.getOrElse("")),
+          ("height", (a: ImageAndLabel) => a.label.height.getOrElse("")),
+          ("point1x", (a: ImageAndLabel) => a.label.point1X.getOrElse("")),
+          ("point1y", (a: ImageAndLabel) => a.label.point1Y.getOrElse("")),
+          ("point2x", (a: ImageAndLabel) => a.label.point2X.getOrElse("")),
+          ("point2y", (a: ImageAndLabel) => a.label.point2Y.getOrElse(""))
+        )
+
+        CSVWriter.writeCsv[ImageAndLabel](labels, columns)
+      } catch {
+        case _ => throw new Exception("Error generating CSV")
+      }
+    } else
+      throw new Exception("Not authorized to view labels for this task")
+  }
+
 }

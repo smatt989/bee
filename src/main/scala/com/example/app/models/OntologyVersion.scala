@@ -38,7 +38,7 @@ object OntologyVersion extends SlickDbObject[OntologyVersionsRow, OntologyVersio
     ).map(_.reverse.headOption)
   }
 
-  val ontologyTypes = Seq(OntologyType("BINARY"), OntologyType("INTEGER_RANGE"), OntologyType("FLOAT_RANGE"))
+  val ontologyTypes = Seq(OntologyType.binary, OntologyType.integerRange, OntologyType.floatRange)
 
   def idFromRow(a: _root_.com.example.app.db.Tables.OntologyVersionsRow) =
     a.ontologyVersionId
@@ -51,3 +51,9 @@ object OntologyVersion extends SlickDbObject[OntologyVersionsRow, OntologyVersio
 }
 
 case class OntologyType(name: String)
+
+object OntologyType {
+  val binary = OntologyType("BINARY")
+  val integerRange = OntologyType("INTEGER_RANGE")
+  val floatRange = OntologyType("FLOAT_RANGE")
+}
