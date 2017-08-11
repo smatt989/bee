@@ -17,7 +17,7 @@ class NewImageSource extends React.Component {
 
   componentDidMount() {
     if(this.imageSourceId()){
-        this.props.getImageSource(this.imageSourceId(), () => {this.state = this.imageSourceObjectToState(); this.forceUpdate()})
+        this.props.getImageSource(this.imageSourceId(), () => {this.setState(this.imageSourceObjectToState())})
     }
   }
 
@@ -50,6 +50,7 @@ class NewImageSource extends React.Component {
   constructor(props) {
     super(props);
     this.state = this.imageSourceObjectToState();
+    this.state.saving = false;
 
     this.onNameChange = (e) => this.setState({ name: e.target.value });
     this.onTypeChange = (e) => this.setState({ type: e.target.value, typeFields:  this.fieldsByType(e.target.value)});
@@ -61,6 +62,7 @@ class NewImageSource extends React.Component {
     }
 
     this.onSubmit = (e) => {
+      this.handleSavingStart()
       e.preventDefault();
       const taskId = this.taskId();
       //TODO: DEAL WITH SAVING OVER OLD IMAGE SOURCE
@@ -70,12 +72,18 @@ class NewImageSource extends React.Component {
         configs[f] = this.state[f]
       )
       this.props.onSubmit(imageSource, configs)
-        .then(isSuccess => this.setState({ redirectToReferrer: isSuccess }));
+        .then(isSuccess => this.setState({ redirectToReferrer: isSuccess, saving: false }));
     };
+
+    this.handleSavingStart = this.handleSavingStart.bind(this);
   }
 
   fieldsByType(type) {
     return this.props.imageSourceTypes.get('types').find(function(a){return a.get('name') == type}).get('fields').toJS()
+  }
+
+  handleSavingStart() {
+    this.setState({saving: true})
   }
 
   render() {
@@ -103,7 +111,9 @@ class NewImageSource extends React.Component {
 
     const imageSourceTypes = this.props.imageSourceTypes.get('types', null);
 
-    const isLoading = this.props.savingImageSource.get('loading', false);
+    const isLoading = this.state.saving
+
+    const buttonText = isLoading ? "Saving (may take a minute)..." : "Save Image Source"
 
     console.log(isLoading)
 
@@ -123,7 +133,7 @@ class NewImageSource extends React.Component {
         </FormGroup>
 
         {this.state.typeFields.map(f =>
-            <FormGroup>
+            <FormGroup key={f}>
                 <ControlLabel>{f}</ControlLabel>
                 <FormControl value={this.state[f] ? this.state[f] : ''} onChange={ this.changeState(f) } placeholder={f} />
             </FormGroup>
@@ -133,7 +143,7 @@ class NewImageSource extends React.Component {
               bsStyle="primary"
               type="submit"
               disabled={isLoading}>
-              Save Image Source
+              {buttonText}
             </Button>
             <p className='m-t-1'><Link to={{ pathname: redirectTo }}>{cancelText}</Link></p>
         </div>

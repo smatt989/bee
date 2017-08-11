@@ -38,7 +38,6 @@ class ImagesSourcesTable extends React.Component {
         <Table id="imgsrc-tbl" responsive striped hover>
           <thead>
             <tr>
-              <th>#</th>
               <th>Name</th>
               <th>Type</th>
               <th>Images</th>
@@ -49,8 +48,7 @@ class ImagesSourcesTable extends React.Component {
           </thead>
           <tbody>
             { this.props.imagesSources.get('imageSources') ? this.props.imagesSources.get('imageSources').map(o =>
-                        <tr>
-                          <td>{o.get('id')}</td>
+                        <tr key={o.get('id')}>
                           <td>{o.get('name')}</td>
                           <td>{o.get('imageSourceType')}</td>
                           <td>{this.imageSourceInfo(o.get('id'), 'imageCount')}</td>
