@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {authenticatedSession, authenticationHeader, authenticate} from './utilities';
 
-const domain = CONFIG ? CONFIG.frontServer ? 'http://localhost:8080' : '' : '';
+export const domain = CONFIG ? CONFIG.frontServer ? 'http://localhost:8080' : '' : '';
 
 /*
  * action types

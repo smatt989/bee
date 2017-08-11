@@ -7,7 +7,7 @@ import {
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Map, List } from 'immutable';
-import { taskParticipants, taskParticipantsSuccess, taskParticipantsError, activateParticipant, activateParticipantSuccess, activateParticipantError, deactivateParticipant, deactivateParticipantSuccess, deactivateParticipantError, viewParticipantsDetails, viewParticipantsDetailsSuccess, viewParticipantsDetailsError } from '../../actions.js';
+import { taskParticipants, taskParticipantsSuccess, taskParticipantsError, activateParticipant, activateParticipantSuccess, activateParticipantError, deactivateParticipant, deactivateParticipantSuccess, deactivateParticipantError, viewParticipantsDetails, viewParticipantsDetailsSuccess, viewParticipantsDetailsError, downloadLabels, downloadLabelsSuccess, downloadLabelsError, domain } from '../../actions.js';
 import ParticipantTableItem from './ParticipantTableItem.jsx';
 
 class ParticipantsList extends React.Component {
@@ -46,6 +46,9 @@ class ParticipantsList extends React.Component {
             <LinkContainer to={'/tasks/'+this.props.match.params.id+'/participant-link/new'}>
                 <Button className="new-tbl-item-btn" bsStyle="primary" type="button">Share</Button>
             </LinkContainer>
+            <a className="pull-right" href={domain+'/tasks/'+this.props.match.params.id+'/labels/dump'}>
+                <Button className="pull-right">Download Labels</Button>
+            </a>
         </div>
         <Table id="participant-tbl" responsive striped hover>
           <thead>
@@ -74,7 +77,8 @@ const mapStateToProps = state => {
     participants: state.getIn(['taskParticipants', 'participants'], List.of()).toJS(),
     participantsDetails: state.get('currentParticipantsDetails'),
     loading: state.getIn(['taskParticipants', 'loading']),
-    error: state.getIn(['taskParticipants', 'error'])
+    error: state.getIn(['taskParticipants', 'error']),
+    downloadLabels: state.get('downloadLabels')
   };
 };
 
@@ -125,6 +129,19 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                 }
 
                 dispatch(deactivateParticipantSuccess(response.payload.data));
+                return true;
+            })
+    },
+    downloadLabels: (taskId) => {
+        return dispatch(downloadLabels(taskId))
+            .then(response => {
+                if(response.error){
+                    dispatch(downloadLabelsError(response.error));
+                    return false;
+                }
+                //return response;
+                window.open(response.file)
+                dispatch(downloadLabelsSuccess());
                 return true;
             })
     }
