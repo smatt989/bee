@@ -103,6 +103,10 @@ class NewImageSource extends React.Component {
 
     const imageSourceTypes = this.props.imageSourceTypes.get('types', null);
 
+    const isLoading = this.props.savingImageSource.get('loading', false);
+
+    console.log(isLoading)
+
     return <div className="col-md-push-4 col-md-4 m-t-5">
       <h1>Add Image Source</h1>
       <form role="form" onSubmit={this.onSubmit}>
@@ -127,7 +131,8 @@ class NewImageSource extends React.Component {
         <div className="text-xs-center">
             <Button
               bsStyle="primary"
-              type="submit">
+              type="submit"
+              disabled={isLoading}>
               Save Image Source
             </Button>
             <p className='m-t-1'><Link to={{ pathname: redirectTo }}>{cancelText}</Link></p>
@@ -141,7 +146,8 @@ const mapStateToProps = state => {
   return {
     imageSourceTypes: state.get('imageSourceTypes'),
     currentImageSource: state.get('currentImageSource'),
-    editingTask: state.get('editingTask')
+    editingTask: state.get('editingTask'),
+    savingImageSource: state.get('savingImageSource')
   };
 };
 
