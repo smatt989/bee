@@ -130,10 +130,6 @@ class LabelImage extends React.Component {
     e.preventDefault()
   }
 
-  labelToRectCoordinateTranspose(labelCoordinate){
-
-  }
-
   imageHandleClick() {
     this.turnOnAutofocus()
     if(this.isPositiveImageLabel()) {
@@ -319,6 +315,9 @@ class LabelImage extends React.Component {
   }
 
   handleGlobalKeyPress(e){
+    const isAreaLabel = this.props.currentOntology.getIn(['ontology', 'isAreaLabel'], false);
+    const isLengthLabel = this.props.currentOntology.getIn(['ontology', 'isLengthLabel'], false);
+
     if(!this.state.addingLabelValue){
         switch(e.keyCode) {
             case 39 /*right*/:
@@ -330,6 +329,9 @@ class LabelImage extends React.Component {
                 e.preventDefault()
                 break;
             case 32 /*space*/:
+                if(!isAreaLabel && !isLengthLabel){
+                    this.imageHandleClick()
+                }
                 break;
             case 13 /*enter*/:
                 break;
@@ -431,14 +433,14 @@ class LabelImage extends React.Component {
     } else {
         imageClickFunction = this.imageHandleClick
 
-        const imageLabel = labels[0] ? labels[0] : null
+        const imageLabel = labels.get(0) ? labels.get(0) : null
 
         if(this.isPositiveImageLabel()){
             imageLabelStyle = "positive-label"
         }
 
         if(this.isPositiveImageLabel() && (ontologyType == ONTOLOGY_TYPE_FLOAT_RANGE || ontologyType == ONTOLOGY_TYPE_INTEGER_RANGE)){
-            imageLabelValueInput = <LabelValueInput top={5} left={5} update={this.props.updateLabelValue} label={imageLabel} ontologyType={ontologyType} min={min} max={max} handleFocus={handleFocus} handleBlur={handleBlur} autofocusState={autofocusState}/>
+            imageLabelValueInput = <LabelValueInput top={5} left={5} update={this.props.updateLabelValue} label={imageLabel.toJS()} ontologyType={ontologyType} min={min} max={max} handleFocus={handleFocus} handleBlur={handleBlur} autofocusState={autofocusState}/>
         }
     }
 
