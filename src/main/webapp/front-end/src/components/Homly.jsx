@@ -105,7 +105,7 @@ export default class Homely extends React.Component {
             </Grid>
         </div>
         <div className="text-xs-center landing-fourth-segment">
-            <h3>Questions? Interested?</h3>
+            <h3 className="m-b-2">Questions? Interested?</h3>
             <Button>Get in Touch!</Button>
         </div>
     </div>;
