@@ -22,6 +22,7 @@ import AcceptTaskInvitation from './tasks/AcceptTaskInvitation.jsx';
 import LabelImage from './labeling/LabelImage.jsx';
 import Err from './Error.jsx';
 import { isAuthenticated } from '../actions.js';
+import Homely from './Homly.jsx';
 
 export default class App extends React.Component {
   render() {
@@ -29,6 +30,7 @@ export default class App extends React.Component {
       <div>
         <Switch>
           <HomeRouteContainer exact path="/" component={Home}/>
+          <Route exact path="/home" component={Homely}/>
           <Route exact path="/login" component={LoginContainer}/>
           <Route exact path="/register" component={RegisterContainer}/>
           <Route exact path="/recover" component={LoginContainer}/>
