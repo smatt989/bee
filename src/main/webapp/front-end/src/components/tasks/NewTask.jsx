@@ -58,7 +58,7 @@ class NewTask extends React.Component {
     const nameFormProps = {
       type: 'name',
       label: 'Name:',
-      placeholder: 'Task Name',
+      placeholder: 'A New Task, The Labelers Strike back, ...',
       onChange: this.onNameChange,
       value: this.state.name
     };

@@ -144,7 +144,7 @@ class NewOntology extends React.Component {
     const labelFormProps = {
       type: 'label',
       label: 'Label:',
-      placeholder: 'Task Label',
+      placeholder: 'Apples, Very Small Rocks, ...',
       onChange: this.onLabelChange,
       value: this.state.label
     };

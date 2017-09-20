@@ -104,7 +104,7 @@ class NewImageSource extends React.Component {
     const nameFormProps = {
       type: 'name',
       label: 'Name:',
-      placeholder: 'Image Source Name',
+      placeholder: 'Lions, Tigers, ...',
       onChange: this.onNameChange,
       value: this.state.name
     };

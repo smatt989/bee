@@ -27,6 +27,7 @@ export default class Homely extends React.Component {
                     </Grid>
                 </div>
             </div>
+
         <div className="landing-second-segment">
             <div className="text-xs-center">
                 <h1>In This Release</h1>
